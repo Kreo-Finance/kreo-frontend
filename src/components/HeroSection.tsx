@@ -167,7 +167,7 @@ const HeroSection = () => {
           <div className="flex items-center rounded-lg border border-border bg-muted px-4 py-3">
             <input
               type="text"
-              placeholder="Search marketplace ..."
+              placeholder="Search for your Creators ..."
               className="bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none w-48 sm:w-64"
             />
             <Search className="ml-2 h-4 w-4 text-muted-foreground" />
