@@ -7,6 +7,13 @@ const footerLinks = {
   Legal: ["Terms of Service", "Privacy Policy", "Security"],
 };
 
+const socials = [
+  { label: "X",  href: "https://x.com/creoprotocol.xyz" },
+  { label: "Discord",  href: "https://discord.gg/creoprotocol" },
+  { label: "GitHub",   href: "https://github.com/Creo-Protocol" },
+  { label: "YouTube",  href: "https://youtube.com/@CreoProtocol" },
+];
+
 const FooterSection = () => {
   return (
     <footer className="border-t border-border bg-background">
@@ -58,13 +65,15 @@ const FooterSection = () => {
             </span>
           </div>
           <div className="flex items-center gap-6">
-            {["Twitter", "Discord", "GitHub"].map((social) => (
+            {socials.map(({ label, href }) => (
               <a
-                key={social}
-                href="#"
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="font-body text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                {social}
+                {label}
               </a>
             ))}
           </div>

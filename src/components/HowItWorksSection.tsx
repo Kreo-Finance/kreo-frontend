@@ -16,18 +16,18 @@ const creatorSteps = [
     description: "Deposit 5% commitment bond to show investors you're serious. Earn it back with a bonus when your offering completes.",
     accent: "creo-teal",
   },
-  {
-    icon: Coins,
-    number: "03",
-    title: "Tokenize & Launch",
-    description: "Set your revenue share %, duration, and fundraise target. Smart contract mints your Revenue Share Tokens — you're live.",
-    accent: "creo-yellow",
-  },
+  // {
+  //   icon: Coins,
+  //   number: "03",
+  //   title: "Tokenize & Launch",
+  //   description: "Set your revenue share %, duration, and fundraise target. Smart contract mints your Revenue Share Tokens — you're live.",
+  //   accent: "creo-yellow",
+  // },
   {
     icon: TrendingUp,
-    number: "04",
+    number: "03",
     title: "Get Funded",
-    description: "Investors fund your offering with USDC. You receive capital instantly (minus 3% fee). Monthly settlements run automatically.",
+    description: "Set your revenue share %, duration, and fundraise target. Investors fund your offering with USDC. You receive capital instantly (minus 3% fee).",
     accent: "creo-pink",
   },
 ];
@@ -53,14 +53,14 @@ const investorSteps = [
     title: "Earn Real Yield",
     description: "Monthly oracle-verified settlements update your claimable balance. Claim USDC anytime or enable auto-claim.",
     accent: "creo-yellow",
-  },
-  {
-    icon: ShieldCheck,
-    number: "04",
-    title: "Protected by Bonds",
-    description: "Creator commitment bonds ensure accountability. If a creator defaults, their bond distributes to you pro-rata.",
-    accent: "creo-teal",
-  },
+  }
+  // {
+  //   icon: ShieldCheck,
+  //   number: "04",
+  //   title: "Protected by Bonds",
+  //   description: "Creator commitment bonds ensure accountability. If a creator defaults, their bond distributes to you pro-rata.",
+  //   accent: "creo-teal",
+  // },
 ];
 
 const StepCard = ({ step, index }: { step: typeof creatorSteps[0]; index: number }) => {
@@ -80,7 +80,7 @@ const StepCard = ({ step, index }: { step: typeof creatorSteps[0]; index: number
       className="relative flex gap-4"
     >
       {/* Vertical connector */}
-      {index < 3 && (
+      {index < 2 && (
         <div className="absolute left-6 top-14 bottom-0 w-px bg-border" />
       )}
       
