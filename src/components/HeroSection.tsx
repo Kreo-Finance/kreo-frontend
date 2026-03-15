@@ -91,7 +91,7 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Headline Slider */}
-        <div className="relative h-[180px] md:h-[250px] lg:h-[280px] w-full max-w-4xl flex items-center justify-center overflow-hidden">
+        <div className="relative h-[160px] xs:h-[180px] sm:h-[200px] md:h-[250px] lg:h-[280px] w-full max-w-4xl flex items-center justify-center overflow-hidden">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.h1
               key={index}
@@ -105,7 +105,7 @@ const HeroSection = () => {
                 opacity: { duration: 0.35 },
                 filter: { duration: 0.35 },
               }}
-              className="absolute w-full text-center font-display text-5xl font-bold leading-tight tracking-tight md:text-7xl lg:text-8xl px-4"
+              className="absolute w-full text-center font-display text-[1.75rem] leading-snug sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight px-4"
             >
               {current.top}{" "}
               <span className="text-gradient-hero">{current.highlight}</span>{" "}
@@ -144,7 +144,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          className="mt-6 max-w-2xl text-center font-body text-lg text-muted-foreground md:text-xl"
+          className="mt-6 max-w-2xl text-center font-body text-sm text-muted-foreground sm:text-base md:text-xl px-2"
         >
           Tokenize your future earnings. Get funded instantly. Investors earn real yield
           backed by verifiable creator revenue — not speculation.

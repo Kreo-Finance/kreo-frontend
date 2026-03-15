@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import { ShieldCheck, TrendingUp, ScanFace, Clock, BarChart3, Layers } from "lucide-react";
 
 // ─── Variance Model Data ───────────────────────────────────────────────────
@@ -20,6 +21,7 @@ const creators = [
     ringData: [5900, 6100, 6400, 5800, 6200, 5600],
     ringMax: 8500,
     description: "Rock-steady income. Rewarded with the largest raise ceiling.",
+    highlightRaise: true,
   },
   {
     name: "Creator B",
@@ -38,6 +40,7 @@ const creators = [
     ringData: [8500, 3200, 7800, 4100, 9000, 5400],
     ringMax: 8500,
     description: "Spiky income — correctly priced, never rejected.",
+    highlightRaise: false,
   },
 ];
 
@@ -110,21 +113,156 @@ const MiniChart = ({
   data,
   max,
   color,
+  inView,
+  baseDelay,
 }: {
   data: number[];
   max: number;
   color: string;
+  inView: boolean;
+  baseDelay: number;
 }) => (
   <div className="flex items-end gap-1 h-10">
     {data.map((v, i) => (
-      <div
+      <motion.div
         key={i}
         className={`flex-1 rounded-sm ${color} opacity-80`}
-        style={{ height: `${(v / max) * 100}%` }}
+        initial={{ height: 0 }}
+        animate={inView ? { height: `${(v / max) * 100}%` } : { height: 0 }}
+        transition={{
+          delay: baseDelay + i * 0.12,
+          duration: 0.55,
+          ease: [0.16, 1, 0.3, 1],
+        }}
       />
     ))}
   </div>
 );
+
+// ─── Creator Card with sequential left-to-right animation ─────────────────
+const CreatorCard = ({
+  c,
+  cardDelay = 0,
+}: {
+  c: (typeof creators)[0];
+  cardDelay?: number;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+
+  // Each section slides in from left, staggered
+  const slide = (step: number) => ({
+    initial: { opacity: 0, x: -20 },
+    animate: inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 },
+    transition: {
+      delay: cardDelay + step * 0.22,
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+    },
+  });
+
+  // Stats start after chart label + bars finish
+  const statsDelay = cardDelay + 0.55;
+
+  return (
+    <div
+      ref={ref}
+      className="rounded-xl border border-border bg-muted/40 p-5 flex flex-col gap-4"
+    >
+      {/* ── Header ── */}
+      <motion.div {...slide(0)} className="flex items-start justify-between gap-2">
+        <div>
+          <p className="font-display text-base font-bold text-foreground">{c.name}</p>
+          <p className="font-body text-xs text-muted-foreground mt-0.5">{c.description}</p>
+        </div>
+        <span
+          className={`flex-shrink-0 rounded-full border px-2.5 py-1 font-body text-xs font-semibold ${c.tagColor} ${c.tagBg}`}
+        >
+          {c.tag}
+        </span>
+      </motion.div>
+
+      {/* ── Mini earnings chart ── */}
+      <motion.div {...slide(1)}>
+        <p className="font-body text-xs text-muted-foreground mb-1.5">6-month earnings</p>
+        <MiniChart
+          data={c.ringData}
+          max={c.ringMax}
+          color={c.barColor}
+          inView={inView}
+          baseDelay={cardDelay + 0.3}
+        />
+      </motion.div>
+
+      {/* ── Stats grid ── */}
+      <div className="grid grid-cols-2 gap-2 text-sm">
+        {[
+          { label: "Monthly Avg", value: c.avg },
+          { label: "CV (volatility)", value: c.cv },
+          { label: "Variance Tier", value: c.tier },
+          { label: "Floor Discount", value: c.discount },
+        ].map((s, si) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, x: -16 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
+            transition={{
+              delay: statsDelay + si * 0.14,
+              duration: 0.6,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="rounded-lg bg-background/60 border border-border px-3 py-2"
+          >
+            <p className="font-body text-xs text-muted-foreground">{s.label}</p>
+            <p className="font-display text-xs font-bold text-foreground mt-0.5">{s.value}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* ── Divider ── */}
+      <motion.div {...slide(5)} className="h-px bg-border" />
+
+      {/* ── Outcomes row ── */}
+      <motion.div {...slide(6)} className="flex items-center justify-between gap-3">
+        <div className="text-center min-w-0">
+          <p className="font-body text-xs text-muted-foreground">Floor</p>
+          <p className={`font-display text-lg font-bold ${c.tagColor}`}>{c.floor}</p>
+        </div>
+        <div className="h-8 w-px bg-border flex-shrink-0" />
+        <div className="text-center min-w-0">
+          <p className="font-body text-xs text-muted-foreground">Max Raise</p>
+          {c.highlightRaise ? (
+            <div className="h-8 flex items-center justify-center overflow-visible">
+              <motion.p
+                className="font-display font-bold text-creo-teal"
+                style={{ fontSize: "1.125rem", lineHeight: 1 }}
+                animate={{
+                  scale: [1, 1.45, 1.45, 1],
+                }}
+                transition={{
+                  duration: 1.6,
+                  repeat: Infinity,
+                  repeatDelay: 2.2,
+                  ease: "easeInOut",
+                  times: [0, 0.25, 0.65, 1],
+                }}
+              >
+                {c.maxRaise}
+              </motion.p>
+            </div>
+          ) : (
+            <p className="font-display text-lg font-bold text-foreground">{c.maxRaise}</p>
+          )}
+        </div>
+        <div className="h-8 w-px bg-border flex-shrink-0" />
+        <div className="text-center min-w-0">
+          <p className="font-body text-xs text-muted-foreground">Floor Yield</p>
+          <p className="font-display text-lg font-bold text-creo-teal">{c.worstYield}</p>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 // ─── Main Section ──────────────────────────────────────────────────────────
 const ComparisonSection = () => {
@@ -195,83 +333,8 @@ const ComparisonSection = () => {
             {/* Two creator cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {creators.map((c, i) => (
-                <motion.div
-                  key={c.name}
-                  initial={{ opacity: 0, x: i === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="rounded-xl border border-border bg-muted/40 p-5 flex flex-col gap-4"
-                >
-                  {/* Creator header */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-display text-base font-bold text-foreground">
-                        {c.name}
-                      </p>
-                      <p className="font-body text-xs text-muted-foreground mt-0.5">
-                        {c.description}
-                      </p>
-                    </div>
-                    <span
-                      className={`flex-shrink-0 rounded-full border px-2.5 py-1 font-body text-xs font-semibold ${c.tagColor} ${c.tagBg}`}
-                    >
-                      {c.tag}
-                    </span>
-                  </div>
-
-                  {/* Mini earnings chart */}
-                  <div>
-                    <p className="font-body text-xs text-muted-foreground mb-1.5">
-                      6-month earnings
-                    </p>
-                    <MiniChart data={c.ringData} max={c.ringMax} color={c.barColor} />
-                  </div>
-
-                  {/* Stats grid */}
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    {[
-                      { label: "Monthly Avg", value: c.avg },
-                      { label: "CV (volatility)", value: c.cv },
-                      { label: "Variance Tier", value: c.tier },
-                      { label: "Floor Discount", value: c.discount },
-                    ].map((s) => (
-                      <div key={s.label} className="rounded-lg bg-background/60 border border-border px-3 py-2">
-                        <p className="font-body text-xs text-muted-foreground">{s.label}</p>
-                        <p className="font-display text-xs font-bold text-foreground mt-0.5">
-                          {s.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Divider */}
-                  <div className="h-px bg-border" />
-
-                  {/* Outcomes */}
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-center">
-                      <p className="font-body text-xs text-muted-foreground">Floor</p>
-                      <p className={`font-display text-lg font-bold ${c.tagColor}`}>
-                        {c.floor}
-                      </p>
-                    </div>
-                    <div className="h-8 w-px bg-border" />
-                    <div className="text-center">
-                      <p className="font-body text-xs text-muted-foreground">Max Raise</p>
-                      <p className="font-display text-lg font-bold text-foreground">
-                        {c.maxRaise}
-                      </p>
-                    </div>
-                    <div className="h-8 w-px bg-border" />
-                    <div className="text-center">
-                      <p className="font-body text-xs text-muted-foreground">Floor Yield</p>
-                      <p className="font-display text-lg font-bold text-creo-teal">
-                        {c.worstYield}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
+                // Creator A finishes ~1.8s; 2.5s pause → Creator B starts at 4.3s
+                <CreatorCard key={c.name} c={c} cardDelay={i === 0 ? 0 : 4.3} />
               ))}
             </div>
 
