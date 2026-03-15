@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,69 @@ const navLinks = [
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+
+  const WORD = "CREO";
+  const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&!?%";
+  const [chars, setChars] = useState<string[]>(WORD.split(""));
+  const [landed, setLanded] = useState<boolean[]>(
+    WORD.split("").map(() => true),
+  );
+
+  useEffect(() => {
+    const ids: ReturnType<typeof setTimeout>[] = [];
+
+    const runScramble = () => {
+      WORD.split("").forEach((target, li) => {
+        const stagger = li * 90;
+        const frames = 8 + li * 3;
+
+        ids.push(
+          setTimeout(() => {
+            setLanded((prev) => prev.map((v, i) => (i === li ? false : v)));
+          }, stagger),
+        );
+
+        for (let f = 0; f < frames; f++) {
+          ids.push(
+            setTimeout(
+              () => {
+                setChars((prev) => {
+                  const n = [...prev];
+                  n[li] =
+                    SCRAMBLE_CHARS[
+                      Math.floor(Math.random() * SCRAMBLE_CHARS.length)
+                    ];
+                  return n;
+                });
+              },
+              stagger + f * 45,
+            ),
+          );
+        }
+
+        ids.push(
+          setTimeout(
+            () => {
+              setChars((prev) => {
+                const n = [...prev];
+                n[li] = target;
+                return n;
+              });
+              setLanded((prev) => prev.map((v, i) => (i === li ? true : v)));
+            },
+            stagger + frames * 45,
+          ),
+        );
+      });
+    };
+
+    runScramble();
+    const loopId = setInterval(runScramble, 3500);
+    return () => {
+      clearInterval(loopId);
+      ids.forEach(clearTimeout);
+    };
+  }, []);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -65,8 +128,41 @@ const Navbar = () => {
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
-          <Link to="/" className="font-display text-2xl font-bold tracking-tight">
-            <span className="text-gradient-hero">CREO</span>
+          <Link
+            to="/"
+            className="font-display text-3xl font-bold tracking-tight select-none flex-shrink-0"
+          >
+            <span className="inline-flex items-center gap-px">
+              {chars.map((char, i) => (
+                <motion.span
+                  key={`${i}-${landed[i] ? "on" : "off"}`}
+                  initial={
+                    landed[i]
+                      ? { y: -10, scale: 1.4, filter: "blur(4px)" }
+                      : { opacity: 1 }
+                  }
+                  animate={
+                    landed[i]
+                      ? { y: 0, scale: 1, filter: "blur(0px)" }
+                      : { opacity: 1 }
+                  }
+                  transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+                  style={{ display: "inline-block", minWidth: "0.6em" }}
+                  className={
+                    landed[i]
+                      ? "text-gradient-hero"
+                      : "text-violet-400 drop-shadow-[0_0_8px_rgba(167,139,250,0.9)]"
+                  }
+                  whileHover={{
+                    y: -3,
+                    scale: 1.2,
+                    transition: { duration: 0.12 },
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </span>
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
@@ -84,12 +180,14 @@ const Navbar = () => {
                   key={link.label}
                   to={link.href}
                   className={`font-body text-sm font-medium transition-colors hover:text-foreground ${
-                    location.pathname === link.href ? "text-foreground" : "text-muted-foreground"
+                    location.pathname === link.href
+                      ? "text-foreground"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {link.label}
                 </Link>
-              )
+              ),
             )}
           </div>
 
@@ -144,13 +242,16 @@ const Navbar = () => {
                     >
                       {link.label}
                     </Link>
-                  )
+                  ),
                 )}
                 <div className="flex flex-col gap-2 pt-4 border-t border-border">
                   <Button
                     variant="ghost"
                     className="justify-start font-body text-sm text-muted-foreground"
-                    onClick={() => { setMobileOpen(false); setWaitlistOpen(true); }}
+                    onClick={() => {
+                      setMobileOpen(false);
+                      setWaitlistOpen(true);
+                    }}
                   >
                     Join Waitlist
                   </Button>
@@ -178,7 +279,8 @@ const Navbar = () => {
                   You&apos;re on the list!
                 </DialogTitle>
                 <DialogDescription className="font-body text-muted-foreground">
-                  Thanks for joining the CREO waitlist. We&apos;ll be in touch soon.
+                  Thanks for joining the CREO waitlist. We&apos;ll be in touch
+                  soon.
                 </DialogDescription>
               </DialogHeader>
             </div>
@@ -192,10 +294,14 @@ const Navbar = () => {
                   Join the Waitlist
                 </DialogTitle>
                 <DialogDescription className="font-body text-muted-foreground">
-                  Be among the first to experience CREO — the creator economy&apos;s investment platform.
+                  Be among the first to experience CREO — the creator
+                  economy&apos;s investment platform.
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleWaitlistSubmit} className="flex flex-col gap-4 pt-2">
+              <form
+                onSubmit={handleWaitlistSubmit}
+                className="flex flex-col gap-4 pt-2"
+              >
                 <div className="flex flex-col gap-1.5">
                   <Input
                     type="email"
@@ -206,7 +312,9 @@ const Navbar = () => {
                     className="font-body h-11 border-border bg-background focus-visible:ring-ring"
                   />
                   {error && (
-                    <p className="font-body text-xs text-destructive">{error}</p>
+                    <p className="font-body text-xs text-destructive">
+                      {error}
+                    </p>
                   )}
                 </div>
                 <Button
