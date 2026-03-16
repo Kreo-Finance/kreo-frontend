@@ -203,16 +203,14 @@ const Navbar = () => {
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
-            {!isConnected && (
-              <Button
-                variant="ghost"
-                className="font-body text-sm text-muted-foreground hover:text-foreground transition-all"
-                onClick={() => setWaitlistOpen(true)}
-              >
-                Join Waitlist
-              </Button>
-            )}
-            
+            <Button
+              variant="ghost"
+              className="font-body text-sm text-muted-foreground hover:text-foreground transition-all"
+              onClick={() => setWaitlistOpen(true)}
+            >
+              Join Waitlist
+            </Button>
+
             {isConnected ? (
               <div className="flex items-center gap-3">
                 <Button
@@ -224,7 +222,7 @@ const Navbar = () => {
                 </Button>
                 <Link to="/creator/dashboard">
                   <Button className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-glow-pink px-5 h-10">
-                    Dashboard
+                    Start Creating
                   </Button>
                 </Link>
               </div>

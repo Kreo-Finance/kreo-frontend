@@ -157,55 +157,49 @@ const Marketplace = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-creo-pink/5 blur-[120px] animate-pulse-slow" />
-        <div className="absolute -right-1/4 top-1/2 h-[600px] w-[600px] rounded-full bg-creo-teal/5 blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
-      </div>
-
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-24 relative z-10">
+      <main className="pt-16">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-            <h1 className="font-display text-5xl font-bold text-foreground tracking-tight">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+            <h1 className="font-display text-4xl font-bold text-foreground">
               Creator <span className="text-gradient-hero">Marketplace</span>
             </h1>
-            <p className="mt-4 font-body text-xl text-muted-foreground max-w-2xl leading-relaxed">
-              Discover creators, analyze earnings, and invest in real revenue streams backed by verifiable on-chain data.
+            <p className="mt-2 font-body text-muted-foreground">
+              Discover creators, analyze earnings, and invest in real revenue streams.
             </p>
           </motion.div>
 
           {/* Search & Filters */}
-          <div className="flex flex-col lg:flex-row gap-6 mb-12">
-            <div className="flex items-center flex-1 glass-card rounded-2xl px-6 py-4 focus-within:border-white/20 transition-all">
-              <Search className="h-5 w-5 text-muted-foreground mr-4" />
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="flex items-center flex-1 rounded-lg border border-border bg-card px-4 py-2.5">
+              <Search className="h-4 w-4 text-muted-foreground mr-3" />
               <input
                 type="text"
-                placeholder="Search by name, category, or niche..."
+                placeholder="Search by name, category..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="flex-1 bg-transparent font-body text-base text-foreground placeholder:text-muted-foreground/50 outline-none"
+                className="flex-1 bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none"
               />
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 lg:pb-0">
+            <div className="flex gap-2">
               {(["all", "active", "funded"] as const).map((f) => (
                 <Button
                   key={f}
-                  variant={filter === f ? "default" : "secondary"}
-                  size="lg"
+                  variant={filter === f ? "default" : "outline"}
+                  size="sm"
                   onClick={() => setFilter(f)}
-                  className={`rounded-xl px-8 h-12 font-bold font-body transition-all ${filter === f ? "bg-gradient-hero text-primary-foreground shadow-glow-pink" : "bg-white/5 border-white/5 hover:bg-white/10"}`}
+                  className={filter === f ? "bg-gradient-hero text-primary-foreground" : ""}
                 >
-                  <span className="capitalize">{f}</span>
+                  <span className="font-body text-xs capitalize">{f}</span>
                 </Button>
               ))}
             </div>
           </div>
 
           {/* Grid */}
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((c, i) => {
               const colors = colorMap[c.color];
               return (
@@ -214,71 +208,66 @@ const Marketplace = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.08 }}
-                  className="glass-card rounded-3xl p-7 transition-all hover:border-creo-pink/30 hover:neon-glow-pink hover:-translate-y-2 duration-300 group"
+                  className="rounded-xl border border-border bg-card p-6 transition-all hover:border-creo-pink/30 hover:shadow-glow-pink group"
                 >
                   {/* Header */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`flex h-14 w-14 items-center justify-center rounded-2xl ${colors.bg} ring-4 ring-white/5 transition-transform group-hover:scale-110 duration-300`}>
-                        <span className={`font-display text-lg font-bold ${colors.text}`}>{c.avatar}</span>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-11 w-11 items-center justify-center rounded-full ${colors.bg}`}>
+                        <span className={`font-display text-sm font-bold ${colors.text}`}>{c.avatar}</span>
                       </div>
                       <div>
-                        <h3 className="font-display text-lg font-bold text-foreground leading-tight group-hover:text-creo-pink transition-colors">{c.name}</h3>
-                        <p className="font-body text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{c.category} · {c.subscribers}</p>
+                        <h3 className="font-display text-base font-semibold text-foreground">{c.name}</h3>
+                        <p className="font-body text-xs text-muted-foreground">{c.category} · {c.subscribers} subs</p>
                       </div>
                     </div>
-                    <span className={`rounded-xl px-3 py-1 font-body text-xs font-bold uppercase tracking-widest border ${riskColors[c.riskRating]}`}>
+                    <span className={`rounded-full px-2 py-0.5 font-body text-xs font-medium ${riskColors[c.riskRating]}`}>
                       {c.riskRating}
                     </span>
                   </div>
 
-                  {/* Stats Card */}
-                  <div className="bg-white/5 rounded-2xl p-4 grid grid-cols-3 gap-4 mb-6 border border-white/5">
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
                     <div>
-                      <p className="font-body text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Yield Est.</p>
+                      <p className="font-body text-xs text-muted-foreground">Yield Est.</p>
                       <p className="font-display text-sm font-bold text-creo-teal">{c.yieldEstimate}</p>
                     </div>
                     <div>
-                      <p className="font-body text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Share</p>
+                      <p className="font-body text-xs text-muted-foreground">Share</p>
                       <p className="font-display text-sm font-bold text-foreground">{c.revenueShare}</p>
                     </div>
                     <div>
-                      <p className="font-body text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Months</p>
-                      <p className="font-display text-sm font-bold text-foreground">{c.duration.split(' ')[0]}</p>
+                      <p className="font-body text-xs text-muted-foreground">Duration</p>
+                      <p className="font-display text-sm font-bold text-foreground">{c.duration}</p>
                     </div>
                   </div>
 
-                  {/* Progress Section */}
-                  <div className="mb-6">
-                    <div className="flex justify-between font-body text-xs font-bold text-muted-foreground mb-2 px-1">
-                      <span>{c.raised} RAISED</span>
-                      <span className="text-foreground">{Math.round((parseInt(c.raised.replace(/\D/g,'')) / parseInt(c.target.replace(/\D/g,''))) * 100)}%</span>
+                  {/* Progress */}
+                  <div className="mb-4">
+                    <div className="flex justify-between font-body text-xs text-muted-foreground mb-1">
+                      <span>{c.raised} raised</span>
+                      <span>{c.target} target</span>
                     </div>
-                    <div className="h-2.5 rounded-full bg-white/5 border border-white/5 overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${c.progress}%` }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                        className="h-full bg-gradient-hero rounded-full transition-all" 
-                      />
+                    <div className="h-2 rounded-full bg-muted overflow-hidden">
+                      <div className="h-full bg-gradient-hero rounded-full transition-all" style={{ width: `${c.progress}%` }} />
                     </div>
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between pt-5 border-t border-white/5">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1.5">
-                        <Star className="h-4 w-4 text-creo-yellow" />
-                        <span className="font-body text-xs font-bold text-foreground">{c.creoScore}</span>
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-3.5 w-3.5 text-creo-yellow" />
+                        <span className="font-body text-xs text-muted-foreground">{c.creoScore} · {c.tier}</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Shield className="h-4 w-4 text-creo-teal" />
-                        <span className="font-body text-xs font-bold text-muted-foreground">{c.bondAmount}</span>
+                      <div className="flex items-center gap-1">
+                        <Shield className="h-3.5 w-3.5 text-creo-teal" />
+                        <span className="font-body text-xs text-muted-foreground">{c.bondAmount}</span>
                       </div>
                     </div>
-                    <Button size="sm" variant="ghost" className="text-creo-pink hover:text-creo-pink hover:bg-creo-pink/10 font-bold px-4 rounded-xl group-hover:bg-creo-pink/10 transition-all">
-                      <span className="font-body text-sm">Invest</span>
-                      <ArrowRight className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
+                    <Button size="sm" variant="ghost" className="text-creo-pink hover:text-creo-pink group-hover:bg-creo-pink/10">
+                      <span className="font-body text-xs">Invest</span>
+                      <ArrowRight className="h-3 w-3 ml-1" />
                     </Button>
                   </div>
                 </motion.div>

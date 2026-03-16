@@ -155,8 +155,8 @@ const CreatorCard = ({
     initial: { opacity: 0, x: -20 },
     animate: inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 },
     transition: {
-      delay: cardDelay + step * 0.22,
-      duration: 0.7,
+      delay: cardDelay + step * 0.1,
+      duration: 0,
       ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     },
   });

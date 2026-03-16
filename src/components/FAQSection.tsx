@@ -81,24 +81,24 @@ const FAQItem = ({
     accentColor: string;
 }) => (
     <div
-        className={`border border-white/10 rounded-xl overflow-hidden transition-all duration-300 ${isOpen ? "bg-white/5 shadow-glow-teal/5" : "bg-white/[0.02] hover:bg-white/[0.05]"
+        className={`border border-border rounded-xl overflow-hidden transition-colors duration-200 ${isOpen ? "bg-muted/60" : "bg-background hover:bg-muted/30"
             }`}
     >
         <button
             onClick={onToggle}
-            className="w-full flex items-start justify-between gap-4 px-6 py-5 text-left group"
+            className="w-full flex items-start justify-between gap-4 px-6 py-5 text-left"
         >
             <span
-                className={`font-display text-sm font-bold leading-snug md:text-base transition-colors duration-200 ${isOpen ? accentColor : "text-foreground group-hover:text-foreground/80"
+                className={`font-display text-sm font-semibold leading-snug md:text-base transition-colors duration-200 ${isOpen ? accentColor : "text-foreground"
                     }`}
             >
                 {q}
             </span>
             <span
-                className={`mt-0.5 flex-shrink-0 rounded-full p-1.5 transition-all duration-300 ${isOpen ? "bg-white/10 text-creo-pink rotate-180" : "bg-white/5 text-muted-foreground"
+                className={`mt-0.5 flex-shrink-0 rounded-full p-1 transition-colors duration-200 ${isOpen ? "bg-creo-pink/10 text-creo-pink" : "bg-muted text-muted-foreground"
                     }`}
             >
-                {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                {isOpen ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
             </span>
         </button>
 
@@ -108,11 +108,11 @@ const FAQItem = ({
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "circOut" }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
                 >
-                    <div className="px-6 pb-6">
-                        <div className="h-px bg-white/5 mb-5" />
-                        <p className="font-body text-sm leading-relaxed text-muted-foreground/90 font-medium">{a}</p>
+                    <div className="px-6 pb-5">
+                        <div className="h-px bg-border mb-4" />
+                        <p className="font-body text-sm leading-relaxed text-muted-foreground">{a}</p>
                     </div>
                 </motion.div>
             )}
@@ -127,40 +127,28 @@ const FAQSection = () => {
     const activeGroup = faqs.find((f) => f.category === activeTab)!;
 
     return (
-        <section className="py-28 relative overflow-hidden bg-background">
-            {/* Background Blobs */}
-            <div className="pointer-events-none absolute inset-0 -z-10">
-                <div className="absolute right-0 top-0 h-[400px] w-[400px] rounded-full bg-creo-pink/[0.03] blur-[100px]" />
-                <div className="absolute left-0 bottom-0 h-[400px] w-[400px] rounded-full bg-creo-teal/[0.03] blur-[100px]" />
-            </div>
-
+        <section className="py-24 bg-background">
             <div className="container mx-auto px-4">
                 {/* Header */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-16"
-                >
-                    <div className="mb-4 flex items-center justify-center gap-3">
-                        <div className="h-px w-8 bg-gradient-to-r from-transparent to-creo-pink/40" />
-                        <span className="font-body text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                            Common Curiosities
-                        </span>
-                        <div className="h-px w-8 bg-gradient-to-l from-transparent to-creo-pink/40" />
-                    </div>
+                <div className="mb-4 flex items-center justify-center gap-2">
+                    <div className="h-px w-8 bg-creo-pink/40" />
+                    <span className="font-body text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                        Got questions?
+                    </span>
+                    <div className="h-px w-8 bg-creo-pink/40" />
+                </div>
 
-                    <h2 className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl mb-6">
-                        FAQ<span className="text-gradient-hero">s</span>
-                    </h2>
-                    <p className="font-body text-muted-foreground md:text-lg max-w-xl mx-auto font-medium">
-                        Everything you need to know before your first offering or investment.
-                    </p>
-                </motion.div>
+                <h2 className="text-center font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+                    FAQ
+                    <span className="text-gradient-hero">s</span>
+                </h2>
+                <p className="mt-4 text-center font-body text-muted-foreground md:text-lg max-w-xl mx-auto">
+                    Everything you need to know before your first offering or investment.
+                </p>
 
                 {/* Tab switcher */}
-                <div className="flex items-center justify-center mb-12">
-                    <div className="inline-flex items-center gap-1 rounded-2xl border border-white/10 bg-white/5 p-1.5 backdrop-blur-md">
+                <div className="mt-10 flex items-center justify-center">
+                    <div className="inline-flex items-center gap-1 rounded-xl border border-border bg-muted p-1">
                         {faqs.map((group) => (
                             <button
                                 key={group.category}
@@ -168,12 +156,12 @@ const FAQSection = () => {
                                     setActiveTab(group.category as "Creators" | "Investors");
                                     setOpenIndex(0);
                                 }}
-                                className={`relative flex items-center gap-2.5 rounded-xl px-6 py-3 font-display text-sm font-bold transition-all duration-300 ${activeTab === group.category
-                                    ? "bg-white/10 text-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.02]"
+                                className={`relative flex items-center gap-2 rounded-lg px-5 py-2.5 font-display text-sm font-semibold transition-all duration-200 ${activeTab === group.category
+                                    ? "bg-background text-foreground shadow-sm"
+                                    : "text-muted-foreground hover:text-foreground"
                                     }`}
                             >
-                                <span className={`h-2 w-2 rounded-full ${group.dot} ${activeTab === group.category ? "animate-pulse" : ""}`} />
+                                <span className={`h-2 w-2 rounded-full ${group.dot}`} />
                                 For {group.category}
                             </button>
                         ))}
