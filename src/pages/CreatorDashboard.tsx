@@ -34,46 +34,56 @@ const recentSettlements = [
 
 const CreatorDashboard = () => {
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background relative overflow-hidden">
+      {/* Background Blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-1/4 -top-1/4 h-[600px] w-[600px] rounded-full bg-creo-pink/5 blur-[120px] animate-pulse-slow" />
+        <div className="absolute -right-1/4 -bottom-1/4 h-[600px] w-[600px] rounded-full bg-creo-teal/5 blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
+      </div>
+
       <DashboardSidebar type="creator" />
       
-      <main className="flex-1 pt-16">
-        <div className="p-6 lg:p-8 max-w-6xl">
+      <main className="flex-1 pt-20 relative z-10">
+        <div className="p-6 lg:p-8 max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12"
+          >
             <div>
-              <h1 className="font-display text-3xl font-bold text-foreground">Welcome back, Rahul</h1>
-              <p className="font-body text-muted-foreground mt-1">Here's how your offerings are performing.</p>
+              <h1 className="font-display text-4xl font-bold text-foreground tracking-tight">Welcome back, Rahul</h1>
+              <p className="font-body text-muted-foreground mt-2 text-lg">Here&apos;s how your offerings are performing.</p>
             </div>
             <Link to="/creator/offerings">
-              <Button className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
+              <Button className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-glow-pink h-11 px-6 rounded-xl">
                 <Coins className="h-4 w-4 mr-2" />
                 New Offering
               </Button>
             </Link>
-          </div>
+          </motion.div>
 
           {/* Stats Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="rounded-xl border border-border bg-card p-5"
+                className="glass-card rounded-2xl p-6 transition-all hover:border-white/20 hover:neon-glow-pink group"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${stat.bg}`}>
-                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.bg} group-hover:scale-110 transition-transform`}>
+                    <stat.icon className={`h-5 w-5 ${stat.color}`} />
                   </div>
-                  <span className={`flex items-center gap-1 font-body text-xs font-medium ${stat.up ? "text-creo-teal" : "text-destructive"}`}>
+                  <span className={`flex items-center gap-1 font-body text-xs font-semibold px-2 py-1 rounded-full ${stat.up ? "bg-creo-teal/10 text-creo-teal" : "bg-destructive/10 text-destructive"}`}>
                     {stat.up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                     {stat.change}
                   </span>
                 </div>
-                <p className="font-display text-2xl font-bold text-foreground">{stat.value}</p>
-                <p className="font-body text-xs text-muted-foreground mt-1">{stat.label}</p>
+                <p className="font-display text-3xl font-bold text-foreground tracking-tight">{stat.value}</p>
+                <p className="font-body text-sm text-muted-foreground mt-1 font-medium">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -83,38 +93,41 @@ const CreatorDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-xl border border-border bg-card p-6 mb-8"
+            className="glass-card rounded-2xl p-8 mb-12"
           >
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">Active Offering</h2>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-display text-xl font-bold text-foreground">Active Offering</h2>
+              <Button variant="ghost" size="sm" className="text-creo-pink hover:text-creo-pink hover:bg-creo-pink/10 font-medium">View All</Button>
+            </div>
             {offerings.map((o) => (
-              <div key={o.id} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div>
-                  <p className="font-body text-xs text-muted-foreground">Offering</p>
-                  <p className="font-display text-sm font-semibold text-foreground">{o.title}</p>
-                  <span className="inline-flex items-center gap-1 mt-1 rounded-full bg-creo-teal/10 px-2 py-0.5 font-body text-xs font-medium text-creo-teal">
-                    <span className="h-1.5 w-1.5 rounded-full bg-creo-teal" />
+              <div key={o.id} className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="space-y-2">
+                  <p className="font-body text-xs font-bold text-muted-foreground uppercase tracking-widest">Offering</p>
+                  <p className="font-display text-lg font-bold text-foreground leading-tight">{o.title}</p>
+                  <span className="inline-flex items-center gap-1.5 mt-1 rounded-full bg-creo-teal/10 px-3 py-1 font-body text-xs font-bold text-creo-teal border border-creo-teal/20">
+                    <span className="h-1.5 w-1.5 rounded-full bg-creo-teal animate-pulse" />
                     {o.status}
                   </span>
                 </div>
-                <div>
-                  <p className="font-body text-xs text-muted-foreground">Raised / Target</p>
-                  <p className="font-display text-sm font-bold text-foreground">{o.raised} / {o.target}</p>
-                  <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
+                <div className="space-y-3">
+                  <p className="font-body text-xs font-bold text-muted-foreground uppercase tracking-widest">Raised / Target</p>
+                  <p className="font-display text-lg font-bold text-foreground">{o.raised} / {o.target}</p>
+                  <div className="h-2.5 rounded-full bg-white/5 border border-white/5 overflow-hidden">
                     <div className="h-full bg-gradient-hero rounded-full" style={{ width: "100%" }} />
                   </div>
                 </div>
-                <div>
-                  <p className="font-body text-xs text-muted-foreground">Revenue Share</p>
-                  <p className="font-display text-sm font-bold text-foreground">{o.sharePercent} for {o.duration}</p>
-                  <p className="font-body text-xs text-muted-foreground mt-1">{o.remaining} remaining</p>
+                <div className="space-y-2">
+                  <p className="font-body text-xs font-bold text-muted-foreground uppercase tracking-widest">Revenue Share</p>
+                  <p className="font-display text-lg font-bold text-foreground">{o.sharePercent} for {o.duration}</p>
+                  <p className="font-body text-sm text-muted-foreground mt-1 font-medium">{o.remaining} remaining</p>
                 </div>
-                <div>
-                  <p className="font-body text-xs text-muted-foreground">Bond Status</p>
+                <div className="space-y-2">
+                  <p className="font-body text-xs font-bold text-muted-foreground uppercase tracking-widest">Bond Status</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Shield className="h-4 w-4 text-creo-yellow" />
-                    <p className="font-display text-sm font-semibold text-creo-yellow">{o.bondStatus}</p>
+                    <Shield className="h-5 w-5 text-creo-yellow" />
+                    <p className="font-display text-lg font-bold text-creo-yellow">{o.bondStatus}</p>
                   </div>
-                  <p className="font-body text-xs text-muted-foreground mt-1">{o.investors} investors</p>
+                  <p className="font-body text-sm text-muted-foreground mt-1 font-medium">{o.investors} investors</p>
                 </div>
               </div>
             ))}
@@ -125,29 +138,42 @@ const CreatorDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="rounded-xl border border-border bg-card p-6"
+            className="glass-card rounded-2xl p-8"
           >
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">Settlement History</h2>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-display text-xl font-bold text-foreground">Settlement History</h2>
+              <Button variant="outline" size="sm" className="border-white/10 hover:bg-white/5 font-medium">Export CSV</Button>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full font-body text-sm">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="py-3 px-2 text-left text-muted-foreground font-medium">Month</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Earnings</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Distributed</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Claimed</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Pending</th>
+                  <tr className="border-b border-white/5">
+                    <th className="py-4 px-3 text-left text-muted-foreground font-bold uppercase tracking-wider text-xs">Month</th>
+                    <th className="py-4 px-3 text-right text-muted-foreground font-bold uppercase tracking-wider text-xs">Earnings</th>
+                    <th className="py-4 px-3 text-right text-muted-foreground font-bold uppercase tracking-wider text-xs">Distributed</th>
+                    <th className="py-4 px-3 text-right text-muted-foreground font-bold uppercase tracking-wider text-xs">Claimed</th>
+                    <th className="py-4 px-3 text-right text-muted-foreground font-bold uppercase tracking-wider text-xs">Pending</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {recentSettlements.map((s) => (
-                    <tr key={s.month} className="border-b border-border hover:bg-muted/50">
-                      <td className="py-3 px-2 font-medium text-foreground">{s.month}</td>
-                      <td className="py-3 px-2 text-right text-foreground">{s.earnings}</td>
-                      <td className="py-3 px-2 text-right text-creo-teal">{s.distributed}</td>
-                      <td className="py-3 px-2 text-right text-muted-foreground">{s.claimed}</td>
-                      <td className="py-3 px-2 text-right text-creo-yellow">{s.pending}</td>
-                    </tr>
+                <tbody className="divide-y divide-white/5">
+                  {recentSettlements.map((s, idx) => (
+                    <motion.tr 
+                      key={s.month} 
+                      className="hover:bg-white/[0.02] transition-colors group"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 + idx * 0.05 }}
+                    >
+                      <td className="py-5 px-3 font-semibold text-foreground group-hover:text-creo-pink transition-colors">{s.month}</td>
+                      <td className="py-5 px-3 text-right text-foreground font-medium">{s.earnings}</td>
+                      <td className="py-5 px-3 text-right text-creo-teal font-bold">{s.distributed}</td>
+                      <td className="py-5 px-3 text-right text-muted-foreground font-medium">{s.claimed}</td>
+                      <td className="py-5 px-3 text-right text-creo-yellow font-bold">
+                        <span className={s.pending !== "$0" ? "px-2 py-1 rounded bg-creo-yellow/10" : ""}>
+                          {s.pending}
+                        </span>
+                      </td>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>

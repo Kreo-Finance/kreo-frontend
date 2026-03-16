@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { Menu, X, Wallet, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Link, useLocation } from "react-router-dom";
+import { useAppKit } from "@reown/appkit/react";
+import { useAccount } from "wagmi";
+
 
 const navLinks = [
   { label: "Discover", href: "/#features" },
@@ -23,6 +26,10 @@ const navLinks = [
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const WORD = "CREO";
   const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&!?%";
@@ -53,7 +60,7 @@ const Navbar = () => {
                   const n = [...prev];
                   n[li] =
                     SCRAMBLE_CHARS[
-                      Math.floor(Math.random() * SCRAMBLE_CHARS.length)
+                    Math.floor(Math.random() * SCRAMBLE_CHARS.length)
                     ];
                   return n;
                 });
@@ -86,11 +93,14 @@ const Navbar = () => {
       ids.forEach(clearTimeout);
     };
   }, []);
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+
   const location = useLocation();
+  const { open } = useAppKit();
+  const { address, isConnected } = useAccount();
+
+  const truncatedAddress = address
+    ? `${address.slice(0, 6)}...${address.slice(-4)}`
+    : "";
 
   const isHashLink = (href: string) => href.startsWith("/#");
 
@@ -124,9 +134,11 @@ const Navbar = () => {
     }
   };
 
+
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-white/5">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
           <Link
             to="/"
@@ -165,13 +177,13 @@ const Navbar = () => {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-10 md:flex">
             {navLinks.map((link) =>
               isHashLink(link.href) ? (
                 <a
                   key={link.label}
                   href={link.href}
-                  className="font-body text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="font-body text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:translate-y-[-1px]"
                 >
                   {link.label}
                 </a>
@@ -179,11 +191,10 @@ const Navbar = () => {
                 <Link
                   key={link.label}
                   to={link.href}
-                  className={`font-body text-sm font-medium transition-colors hover:text-foreground ${
-                    location.pathname === link.href
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  }`}
+                  className={`font-body text-sm font-medium transition-all hover:text-foreground hover:translate-y-[-1px] ${location.pathname === link.href
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -191,20 +202,44 @@ const Navbar = () => {
             )}
           </div>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <Button
-              variant="ghost"
-              className="font-body text-sm text-muted-foreground hover:text-foreground"
-              onClick={() => setWaitlistOpen(true)}
-            >
-              Join Waitlist
-            </Button>
-            <Link to="/creator/dashboard">
-              <Button className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90">
-                Start Creating
+          <div className="hidden items-center gap-4 md:flex">
+            {!isConnected && (
+              <Button
+                variant="ghost"
+                className="font-body text-sm text-muted-foreground hover:text-foreground transition-all"
+                onClick={() => setWaitlistOpen(true)}
+              >
+                Join Waitlist
               </Button>
-            </Link>
+            )}
+            
+            {isConnected ? (
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={() => open()}
+                  className="bg-card/40 border border-white/10 backdrop-blur-md font-body text-sm font-semibold text-foreground hover:bg-white/5 flex items-center gap-2 h-10 px-4"
+                >
+                  <div className="h-2 w-2 rounded-full bg-creo-teal animate-pulse" />
+                  {truncatedAddress}
+                </Button>
+                <Link to="/creator/dashboard">
+                  <Button className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-glow-pink px-5 h-10">
+                    Dashboard
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <Button
+                onClick={() => open()}
+                className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 flex items-center gap-2 h-10 px-5"
+              >
+                <Wallet size={16} />
+                Connect Wallet
+              </Button>
+            )}
           </div>
+
+
 
           <button
             className="md:hidden text-foreground"
@@ -246,21 +281,36 @@ const Navbar = () => {
                 )}
                 <div className="flex flex-col gap-2 pt-4 border-t border-border">
                   <Button
-                    variant="ghost"
-                    className="justify-start font-body text-sm text-muted-foreground"
                     onClick={() => {
                       setMobileOpen(false);
-                      setWaitlistOpen(true);
+                      open();
                     }}
+                    className="w-full bg-gradient-hero font-body text-sm font-semibold text-primary-foreground flex items-center justify-center gap-2"
                   >
-                    Join Waitlist
+                    <Wallet size={16} />
+                    {isConnected ? truncatedAddress : "Connect Wallet"}
                   </Button>
-                  <Link to="/creator/dashboard">
-                    <Button className="w-full bg-gradient-hero font-body text-sm font-semibold text-primary-foreground">
-                      Start Creating
+                  {isConnected ? (
+                    <Link to="/creator/dashboard">
+                      <Button className="w-full font-body text-sm font-semibold border-border hover:bg-accent text-foreground" variant="outline">
+                        Start Creating
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      className="justify-start font-body text-sm text-muted-foreground"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setWaitlistOpen(true);
+                      }}
+                    >
+                      Join Waitlist
                     </Button>
-                  </Link>
+                  )}
                 </div>
+
+
               </div>
             </motion.div>
           )}
@@ -340,7 +390,9 @@ const Navbar = () => {
         </DialogContent>
       </Dialog>
     </>
+
   );
 };
 
 export default Navbar;
+
