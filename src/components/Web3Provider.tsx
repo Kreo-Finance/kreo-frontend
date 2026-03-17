@@ -1,6 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { mainnet, sepolia, baseSepolia, base } from '@reown/appkit/networks'
+import {  baseSepolia, base } from '@reown/appkit/networks'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 
@@ -11,12 +11,12 @@ const projectId = '4342fb30e173a60c65a462d4e2ca74f5'
 const metadata = {
   name: 'Creo',
   description: 'Creo - The creator economy\'s investment platform',
-  url: 'https://creo.xyz', // origin must match your domain & subdomain
+  url: 'https://creo-protocol.xyz', // origin must match your domain & subdomain
   icons: ['https://assets.reown.com/reown-profile-pic.png']
 }
 
 // 3. Set the networks
-const networks = [sepolia, baseSepolia, base, mainnet] as [any, ...any[]]
+const networks = [ baseSepolia, base] as [any, ...any[]]
 
 // 4. Create Wagmi Adapter
 const wagmiAdapter = new WagmiAdapter({
