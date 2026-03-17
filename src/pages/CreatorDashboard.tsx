@@ -3,6 +3,7 @@ import { ArrowUpRight, ArrowDownRight, DollarSign, Users, Shield, Star, Trending
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useAccount } from "wagmi";
 
 const stats = [
   { label: "Total Raised", value: "$12,000", change: "+100%", up: true, icon: DollarSign, color: "text-creo-pink", bg: "bg-creo-pink/10" },
@@ -33,6 +34,11 @@ const recentSettlements = [
 ];
 
 const CreatorDashboard = () => {
+  const { address, isConnected } = useAccount();
+  const displayName = isConnected && address
+    ? `${address.slice(0, 5)}...${address.slice(-4)}`
+    : "Guest";
+
   return (
     <div className="flex min-h-screen bg-background">
       <DashboardSidebar type="creator" />
@@ -42,7 +48,7 @@ const CreatorDashboard = () => {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h1 className="font-display text-3xl font-bold text-foreground">Welcome back, Rahul</h1>
+              <h1 className="font-display text-3xl font-bold text-foreground">Welcome back, {displayName}</h1>
               <p className="font-body text-muted-foreground mt-1">Here's how your offerings are performing.</p>
             </div>
             <Link to="/creator/offerings">
