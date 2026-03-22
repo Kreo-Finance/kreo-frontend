@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform, useInView } from "framer-motion";
 import { Coins, Shield, Zap, BarChart3, Lock, Users } from "lucide-react";
 import { useRef, type MouseEvent } from "react";
 
@@ -74,8 +73,6 @@ const GAP    = 24;
 const ROW1_BASE  = 0;    // row 1 starts immediately
 const ROW2_BASE  = 1.4;  // row 2 starts after row 1 finishes
 const DEAL_STEP  = 0.28; // gap between each card being dealt
-const CYCLE_MS   = 5600;
-
 type Feature = (typeof features)[number];
 
 /* ── Single card with cursor spotlight + hover glow ── */
@@ -83,10 +80,12 @@ const FeatureCard = ({
   feature,
   dealDelay,
   deckIndex, // 0 = leftmost slot, used to compute start offset
+  inView,
 }: {
   feature: Feature;
   dealDelay: number;
   deckIndex: number;
+  inView: boolean;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const mouseX  = useMotionValue(0.5);
@@ -117,9 +116,9 @@ const FeatureCard = ({
       ref={cardRef}
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
-      /* Deal animation: slide from deck to final position */
+      /* Deal animation: slide from deck to final position, triggered by scroll */
       initial={{ x: startX, opacity: 0, rotate: -deckIndex * 3, scale: 1 - deckIndex * 0.04 }}
-      animate={{ x: 0,      opacity: 1, rotate: 0,              scale: 1 }}
+      animate={inView ? { x: 0, opacity: 1, rotate: 0, scale: 1 } : { x: startX, opacity: 0, rotate: -deckIndex * 3, scale: 1 - deckIndex * 0.04 }}
       transition={{
         delay:     dealDelay,
         type:      "spring",
@@ -176,7 +175,7 @@ const FeatureCard = ({
           <motion.div
             className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${feature.gradient}`}
             initial={{ width: "0%" }}
-            animate={{ width: "100%" }}
+            animate={inView ? { width: "100%" } : { width: "0%" }}
             transition={{ delay: dealDelay + 0.4, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
         </div>
@@ -187,13 +186,8 @@ const FeatureCard = ({
 
 /* ── Main Section ── */
 const FeaturesSection = () => {
-  const [animKey, setAnimKey] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => setAnimKey((k) => k + 1), CYCLE_MS);
-    return () => clearInterval(t);
-  }, []);
-
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(cardsRef, { once: true, margin: "-80px" });
   const row1 = features.slice(0, 3);
   const row2 = features.slice(3, 6);
 
@@ -253,8 +247,8 @@ const FeaturesSection = () => {
           </motion.p>
         </motion.div>
 
-        {/* Card rows — keyed so they re-mount and re-deal on each cycle */}
-        <div key={animKey} className="flex flex-col gap-6">
+        {/* Card rows */}
+        <div ref={cardsRef} className="flex flex-col gap-6">
 
           {/* Row 1 */}
           <div className="flex gap-6 justify-center flex-wrap">
@@ -264,6 +258,7 @@ const FeaturesSection = () => {
                 feature={feature}
                 deckIndex={i}
                 dealDelay={ROW1_BASE + i * DEAL_STEP}
+                inView={inView}
               />
             ))}
           </div>
@@ -276,6 +271,7 @@ const FeaturesSection = () => {
                 feature={feature}
                 deckIndex={i}
                 dealDelay={ROW2_BASE + i * DEAL_STEP}
+                inView={inView}
               />
             ))}
           </div>

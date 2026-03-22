@@ -64,6 +64,56 @@
   }
 }
 
+/* ── Light theme overrides ─────────────────────────────────────────── */
+.light {
+  --background: 0 0% 97%;
+  --foreground: 0 0% 8%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 8%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 8%;
+
+  --primary: 340 82% 60%;
+  --primary-foreground: 0 0% 98%;
+
+  --secondary: 168 72% 42%;
+  --secondary-foreground: 0 0% 98%;
+
+  --muted: 0 0% 92%;
+  --muted-foreground: 0 0% 40%;
+
+  --accent: 45 100% 52%;
+  --accent-foreground: 0 0% 8%;
+
+  --destructive: 0 84% 55%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --ring: 340 82% 60%;
+
+  --sidebar-background: 0 0% 94%;
+  --sidebar-foreground: 0 0% 8%;
+  --sidebar-primary: 340 82% 60%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 0 0% 88%;
+  --sidebar-accent-foreground: 0 0% 8%;
+  --sidebar-border: 0 0% 82%;
+  --sidebar-ring: 340 82% 60%;
+
+  --creo-dark: 0 0% 97%;
+  --creo-card: 0 0% 100%;
+  --creo-surface: 0 0% 94%;
+
+  --gradient-hero: linear-gradient(135deg, hsl(340 82% 60%), hsl(168 72% 42%));
+  --gradient-accent: linear-gradient(135deg, hsl(45 100% 52%), hsl(340 82% 60%));
+  --gradient-teal-pink: linear-gradient(90deg, hsl(168 72% 42%), hsl(340 82% 60%));
+  --shadow-glow-pink: 0 0 40px hsl(340 82% 60% / 0.25);
+  --shadow-glow-teal: 0 0 40px hsl(168 72% 42% / 0.25);
+}
+
 @layer base {
   * {
     @apply border-border;

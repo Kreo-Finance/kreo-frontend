@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Wallet, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { Menu, X, Wallet, Mail, Loader2, CheckCircle2, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,8 +17,6 @@ import { useAccount } from "wagmi";
 
 
 const navLinks = [
-  { label: "Discover", href: "/#features" },
-  { label: "How It Works", href: "/#how-it-works" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "Creator Dashboard", href: "/creator/dashboard" },
   { label: "Portfolio", href: "/investor/portfolio" },
@@ -87,9 +86,7 @@ const Navbar = () => {
     };
 
     runScramble();
-    const loopId = setInterval(runScramble, 3500);
     return () => {
-      clearInterval(loopId);
       ids.forEach(clearTimeout);
     };
   }, []);
@@ -97,6 +94,7 @@ const Navbar = () => {
   const location = useLocation();
   const { open } = useAppKit();
   const { address, isConnected } = useAccount();
+  const { theme, toggleTheme } = useTheme();
 
   const truncatedAddress = address
     ? `${address.slice(0, 6)}...${address.slice(-4)}`
@@ -139,7 +137,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-white/5">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
+        <div className="container mx-auto relative flex h-16 items-center justify-between px-4 lg:px-8">
           <Link
             to="/"
             className="font-display text-3xl font-bold tracking-tight select-none flex-shrink-0"
@@ -177,7 +175,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-10 md:flex">
+          <div className="hidden items-center gap-10 md:flex absolute left-1/2 -translate-x-1/2">
             {navLinks.map((link) =>
               isHashLink(link.href) ? (
                 <a
@@ -203,6 +201,13 @@ const Navbar = () => {
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="h-9 w-9 rounded-full border border-creo-pink/30 bg-creo-pink/5 flex items-center justify-center text-creo-pink hover:bg-creo-pink/15 transition-colors"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <Button
               variant="ghost"
               className="font-body text-sm text-muted-foreground hover:text-foreground transition-all"
@@ -278,6 +283,14 @@ const Navbar = () => {
                   ),
                 )}
                 <div className="flex flex-col gap-2 pt-4 border-t border-border">
+                  <button
+                    onClick={toggleTheme}
+                    aria-label="Toggle theme"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 font-body text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  >
+                    {theme === "dark" ? <Sun className="h-4 w-4 text-creo-pink" /> : <Moon className="h-4 w-4 text-creo-pink" />}
+                    {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                  </button>
                   <Button
                     onClick={() => {
                       setMobileOpen(false);
