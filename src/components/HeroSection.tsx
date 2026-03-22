@@ -1,10 +1,9 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroCreator from "@/assets/hero-creator.png";
 import heroInvestor from "@/assets/hero-investor.png";
-
 
 const headlines = [
   {
@@ -35,9 +34,61 @@ const headlines = [
 
 const SLIDE_DURATION = 4000; // ms per slide
 
+function useCountUp(to: number, duration = 1800, trigger: boolean) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!trigger) return;
+    setValue(0);
+    const start = performance.now();
+    const frame = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      setValue(Math.round(eased * to));
+      if (progress < 1) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }, [trigger, to, duration]);
+  return value;
+}
+
+function AnimatedStat({ value, inView }: { value: string; inView: boolean }) {
+  const rangeMatch = value.match(/^(\d+)-(\d+)(.*)$/);
+  const singleMatch = !rangeMatch ? value.match(/^([^0-9]*)(\d+)(.*)$/) : null;
+
+  const lo = rangeMatch ? parseInt(rangeMatch[1]) : 0;
+  const hi = rangeMatch ? parseInt(rangeMatch[2]) : 0;
+  const single = singleMatch ? parseInt(singleMatch[2]) : 0;
+
+  const countLo = useCountUp(lo, 1800, inView && !!rangeMatch);
+  const countHi = useCountUp(hi, 1800, inView && !!rangeMatch);
+  const countSingle = useCountUp(single, 1800, inView && !!singleMatch);
+
+  if (rangeMatch) {
+    return (
+      <>
+        {countLo}-{countHi}
+        {rangeMatch[3]}
+      </>
+    );
+  }
+  if (singleMatch) {
+    return (
+      <>
+        {singleMatch[1]}
+        {countSingle}
+        {singleMatch[3]}
+      </>
+    );
+  }
+  return <>{value}</>;
+}
+
 const HeroSection = () => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+  const statsRef = useRef(null);
+  const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -129,10 +180,11 @@ const HeroSection = () => {
                 setDirection(i > index ? 1 : -1);
                 setIndex(i);
               }}
-              className={`transition-all duration-300 rounded-full ${i === index
+              className={`transition-all duration-300 rounded-full ${
+                i === index
                   ? "w-6 h-2 bg-creo-pink"
                   : "w-2 h-2 bg-muted-foreground/40 hover:bg-muted-foreground/70"
-                }`}
+              }`}
               aria-label={`Go to headline ${i + 1}`}
             />
           ))}
@@ -145,8 +197,8 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.25 }}
           className="mt-6 max-w-2xl text-center font-body text-sm text-muted-foreground sm:text-base md:text-xl px-2"
         >
-          Tokenize your future earnings. Get funded instantly. Investors earn real yield
-          backed by verifiable creator revenue — not speculation.
+          Tokenize your future earnings. Get funded instantly. Investors earn
+          real yield backed by verifiable creator revenue — not speculation.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -178,7 +230,7 @@ const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
+            transition={{ duration: 0.7, delay: 0.7 }}
             className="animate-float"
           >
             <img
@@ -206,12 +258,11 @@ const HeroSection = () => {
               INVESTOR
             </p>
           </motion.div>
-
-
         </div>
 
         {/* Stats bar */}
         <motion.div
+          ref={statsRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 1 }}
@@ -224,9 +275,11 @@ const HeroSection = () => {
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="font-display text-2xl font-bold text-foreground md:text-3xl">
-                {stat.value}
+                <AnimatedStat value={stat.value} inView={statsInView} />
               </div>
-              <div className="font-body text-xs text-muted-foreground">{stat.label}</div>
+              <div className="font-body text-xs text-muted-foreground">
+                {stat.label}
+              </div>
             </div>
           ))}
         </motion.div>

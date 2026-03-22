@@ -67,12 +67,12 @@ const features = [
 
 // Card dimensions for the deck-deal offset calculation
 const CARD_W = 380;
-const GAP    = 24;
+const GAP = 24;
 
 // Delay for each card: row 1 deals first, row 2 deals after
-const ROW1_BASE  = 0;    // row 1 starts immediately
-const ROW2_BASE  = 1.4;  // row 2 starts after row 1 finishes
-const DEAL_STEP  = 0.28; // gap between each card being dealt
+const ROW1_BASE = 0; // row 1 starts immediately
+const ROW2_BASE = 1.4; // row 2 starts after row 1 finishes
+const DEAL_STEP = 0.28; // gap between each card being dealt
 type Feature = (typeof features)[number];
 
 /* ── Single card with cursor spotlight + hover glow ── */
@@ -88,15 +88,15 @@ const FeatureCard = ({
   inView: boolean;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const mouseX  = useMotionValue(0.5);
-  const mouseY  = useMotionValue(0.5);
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
 
-  const spotlightX  = useTransform(mouseX, (v) => `${v * 100}%`);
-  const spotlightY  = useTransform(mouseY, (v) => `${v * 100}%`);
+  const spotlightX = useTransform(mouseX, (v) => `${v * 100}%`);
+  const spotlightY = useTransform(mouseY, (v) => `${v * 100}%`);
   const spotlightBg = useTransform(
     [spotlightX, spotlightY],
     ([x, y]: string[]) =>
-      `radial-gradient(420px circle at ${x} ${y}, ${feature.accentColor.replace(")", " / 0.08)")}, transparent 70%)`
+      `radial-gradient(420px circle at ${x} ${y}, ${feature.accentColor.replace(")", " / 0.08)")}, transparent 70%)`,
   );
 
   const handleMouse = (e: MouseEvent<HTMLDivElement>) => {
@@ -105,7 +105,10 @@ const FeatureCard = ({
     mouseX.set((e.clientX - rect.left) / rect.width);
     mouseY.set((e.clientY - rect.top) / rect.height);
   };
-  const handleMouseLeave = () => { mouseX.set(0.5); mouseY.set(0.5); };
+  const handleMouseLeave = () => {
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
 
   // Each card starts stacked at the leftmost slot (deckIndex 0).
   // Offset = how far it needs to travel left from its final position.
@@ -117,14 +120,28 @@ const FeatureCard = ({
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
       /* Deal animation: slide from deck to final position, triggered by scroll */
-      initial={{ x: startX, opacity: 0, rotate: -deckIndex * 3, scale: 1 - deckIndex * 0.04 }}
-      animate={inView ? { x: 0, opacity: 1, rotate: 0, scale: 1 } : { x: startX, opacity: 0, rotate: -deckIndex * 3, scale: 1 - deckIndex * 0.04 }}
+      initial={{
+        x: startX,
+        opacity: 0,
+        rotate: -deckIndex * 3,
+        scale: 1 - deckIndex * 0.04,
+      }}
+      animate={
+        inView
+          ? { x: 0, opacity: 1, rotate: 0, scale: 1 }
+          : {
+              x: startX,
+              opacity: 0,
+              rotate: -deckIndex * 3,
+              scale: 1 - deckIndex * 0.04,
+            }
+      }
       transition={{
-        delay:     dealDelay,
-        type:      "spring",
+        delay: dealDelay,
+        type: "spring",
         stiffness: 110,
-        damping:   18,
-        mass:      0.9,
+        damping: 18,
+        mass: 0.9,
       }}
       className={`group relative w-[${CARD_W}px] overflow-hidden rounded-2xl border border-white/[0.06]
         bg-gradient-to-br from-white/[0.04] to-white/[0.01]
@@ -154,14 +171,17 @@ const FeatureCard = ({
           className={`relative mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl
             bg-gradient-to-br ${feature.gradient} ${feature.iconGlow}
             transition-shadow duration-500 group-hover:shadow-none`}
-          whileHover={{ rotate: [0, -8, 8, -4, 0], transition: { duration: 0.5 } }}
+          whileHover={{
+            rotate: [0, -8, 8, -4, 0],
+            transition: { duration: 0.5 },
+          }}
         >
           <div className="absolute inset-[1px] rounded-[11px] bg-creo-dark/80 backdrop-blur" />
           <feature.icon className="relative z-10 h-6 w-6 text-white" />
         </motion.div>
 
         {/* Title */}
-        <h3 className="mb-2.5 font-display text-lg font-semibold tracking-tight text-foreground transition-colors duration-300 group-hover:text-white sm:text-xl">
+        <h3 className="mb-2.5 font-display text-lg font-semibold tracking-tight text-foreground transition-colors duration-300  sm:text-xl">
           {feature.title}
         </h3>
 
@@ -176,7 +196,11 @@ const FeatureCard = ({
             className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${feature.gradient}`}
             initial={{ width: "0%" }}
             animate={inView ? { width: "100%" } : { width: "0%" }}
-            transition={{ delay: dealDelay + 0.4, duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{
+              delay: dealDelay + 0.4,
+              duration: 0.9,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
           />
         </div>
       </div>
@@ -206,11 +230,21 @@ const FeaturesSection = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.4 }}
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12 } } }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.12 } },
+          }}
           className="mb-20 text-center"
         >
           <motion.div
-            variants={{ hidden: { opacity: 0, scale: 0.8 }, show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 200, damping: 20 } } }}
+            variants={{
+              hidden: { opacity: 0, scale: 0.8 },
+              show: {
+                opacity: 1,
+                scale: 1,
+                transition: { type: "spring", stiffness: 200, damping: 20 },
+              },
+            }}
             className="mb-6 flex justify-center"
           >
             <span className="inline-flex items-center gap-2 rounded-full border border-creo-pink/20 bg-creo-pink/[0.06] px-4 py-1.5 text-xs font-medium tracking-wider text-creo-pink uppercase backdrop-blur-sm">
@@ -223,7 +257,18 @@ const FeaturesSection = () => {
           </motion.div>
 
           <motion.h2
-            variants={{ hidden: { opacity: 0, y: 30, filter: "blur(8px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const } } }}
+            variants={{
+              hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+              show: {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                transition: {
+                  duration: 0.7,
+                  ease: [0.25, 0.46, 0.45, 0.94] as const,
+                },
+              },
+            }}
             className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl"
           >
             Sell{" "}
@@ -234,22 +279,37 @@ const FeaturesSection = () => {
                 initial={{ scaleX: 0, originX: 0 }}
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0.25, 0.46, 0.45, 0.94] as const,
+                }}
               />
             </span>
           </motion.h2>
 
           <motion.p
-            variants={{ hidden: { opacity: 0, y: 30, filter: "blur(8px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const } } }}
+            variants={{
+              hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+              show: {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                transition: {
+                  duration: 0.7,
+                  ease: [0.25, 0.46, 0.45, 0.94] as const,
+                },
+              },
+            }}
             className="mx-auto mt-5 max-w-2xl font-body text-base leading-relaxed text-muted-foreground sm:text-lg"
           >
-            Courses, sponsorships, newsletters — whatever you earn, Creo turns it into investable, on-chain revenue streams.
+            Courses, sponsorships, newsletters — whatever you earn, Creo turns
+            it into investable, on-chain revenue streams.
           </motion.p>
         </motion.div>
 
         {/* Card rows */}
         <div ref={cardsRef} className="flex flex-col gap-6">
-
           {/* Row 1 */}
           <div className="flex gap-6 justify-center flex-wrap">
             {row1.map((feature, i) => (
@@ -275,7 +335,6 @@ const FeaturesSection = () => {
               />
             ))}
           </div>
-
         </div>
       </div>
     </section>
