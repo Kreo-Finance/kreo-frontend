@@ -77,14 +77,14 @@ const CreatorAnalytics = () => {
               </div>
             </motion.div>
 
-            {/* CreoScore */}
+            {/* KreoScore */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="rounded-xl border border-border bg-card p-6"
             >
-              <h2 className="font-display text-lg font-semibold text-foreground mb-6">CreoScore</h2>
+              <h2 className="font-display text-lg font-semibold text-foreground mb-6">KreoScore</h2>
 
               {/* Score display */}
               <div className="flex items-center justify-center mb-8">

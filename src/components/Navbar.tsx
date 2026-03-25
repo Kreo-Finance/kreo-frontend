@@ -30,7 +30,7 @@ const Navbar = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const WORD = "CREO";
+  const WORD = "KREO";
   const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&!?%";
   const [chars, setChars] = useState<string[]>(WORD.split(""));
   const [landed, setLanded] = useState<boolean[]>(
@@ -340,7 +340,7 @@ const Navbar = () => {
                   You&apos;re on the list!
                 </DialogTitle>
                 <DialogDescription className="font-body text-muted-foreground">
-                  Thanks for joining the CREO waitlist. We&apos;ll be in touch
+                  Thanks for joining the KREO waitlist. We&apos;ll be in touch
                   soon.
                 </DialogDescription>
               </DialogHeader>
@@ -355,7 +355,7 @@ const Navbar = () => {
                   Join the Waitlist
                 </DialogTitle>
                 <DialogDescription className="font-body text-muted-foreground">
-                  Be among the first to experience CREO — the creator
+                  Be among the first to experience KREO — the creator
                   economy&apos;s investment platform.
                 </DialogDescription>
               </DialogHeader>

@@ -6,7 +6,7 @@ const testimonials = [
     name: "Rahul Mehta",
     role: "DeFi Educator · 80K Subscribers",
     avatar: "RM",
-    quote: "Banks rejected me three times. Creo got me $12K in 48 hours. My bond returned with a bonus after 6 months. This is how creator finance should work.",
+    quote: "Banks rejected me three times. Kreo got me $12K in 48 hours. My bond returned with a bonus after 6 months. This is how creator finance should work.",
     yield: "$12,000 raised",
     color: "border-creo-pink",
     bg: "bg-creo-pink/10",
@@ -26,7 +26,7 @@ const testimonials = [
     name: "Alex Kim",
     role: "Solidity Instructor · Gumroad",
     avatar: "AK",
-    quote: "The commitment bond scared me at first, but it actually builds investor trust. My second offering filled 3x faster because of my CreoScore.",
+    quote: "The commitment bond scared me at first, but it actually builds investor trust. My second offering filled 3x faster because of my KreoScore.",
     yield: "$25,000 raised",
     color: "border-creo-yellow",
     bg: "bg-creo-yellow/10",
@@ -36,7 +36,7 @@ const testimonials = [
     name: "Sarah Chen",
     role: "Crypto Newsletter Writer",
     avatar: "SC",
-    quote: "Substack takes a huge cut. Creo let me tokenize my newsletter revenue at 3% fees. Investors love the transparency of on-chain settlements.",
+    quote: "Substack takes a huge cut. Kreo let me tokenize my newsletter revenue at 3% fees. Investors love the transparency of on-chain settlements.",
     yield: "$8,500 raised",
     color: "border-creo-pink",
     bg: "bg-creo-pink/10",
@@ -46,7 +46,7 @@ const testimonials = [
     name: "Marcus Johnson",
     role: "Web3 Podcast Host",
     avatar: "MJ",
-    quote: "I needed studio equipment. Creo turned my sponsorship revenue into instant capital. The monthly settlement runs itself — I just focus on creating.",
+    quote: "I needed studio equipment. Kreo turned my sponsorship revenue into instant capital. The monthly settlement runs itself — I just focus on creating.",
     yield: "$15,000 raised",
     color: "border-creo-teal",
     bg: "bg-creo-teal/10",
@@ -56,7 +56,7 @@ const testimonials = [
     name: "David Park",
     role: "Yield Strategist",
     avatar: "DP",
-    quote: "After years of yield farming with inflationary tokens, Creo is refreshing. Real cash flows from real businesses. The bond system gives me confidence.",
+    quote: "After years of yield farming with inflationary tokens, Kreo is refreshing. Real cash flows from real businesses. The bond system gives me confidence.",
     yield: "13.1% APY earned",
     color: "border-creo-yellow",
     bg: "bg-creo-yellow/10",
@@ -113,7 +113,7 @@ const TestimonialsSection = () => {
             Loved by <span className="text-creo-yellow">creators</span> & <span className="text-creo-teal">investors</span>
           </h2>
           <p className="mt-4 font-body text-lg text-muted-foreground max-w-xl mx-auto">
-            Real stories from the Creo community — creators getting funded and investors earning real yield.
+            Real stories from the Kreo community — creators getting funded and investors earning real yield.
           </p>
         </motion.div>
       </div>

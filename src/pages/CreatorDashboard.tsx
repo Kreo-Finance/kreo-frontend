@@ -9,7 +9,7 @@ const stats = [
   { label: "Total Raised", value: "$12,000", change: "+100%", up: true, icon: DollarSign, color: "text-creo-pink", bg: "bg-creo-pink/10" },
   { label: "Monthly Earnings", value: "$6,200", change: "+3.4%", up: true, icon: TrendingUp, color: "text-creo-teal", bg: "bg-creo-teal/10" },
   { label: "Active Investors", value: "47", change: "+12", up: true, icon: Users, color: "text-creo-yellow", bg: "bg-creo-yellow/10" },
-  { label: "CreoScore", value: "185", change: "Established", up: true, icon: Star, color: "text-creo-pink", bg: "bg-creo-pink/10" },
+  { label: "KreoScore", value: "185", change: "Established", up: true, icon: Star, color: "text-creo-pink", bg: "bg-creo-pink/10" },
 ];
 
 const offerings = [

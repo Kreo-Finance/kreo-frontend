@@ -9,12 +9,12 @@ const faqs = [
         dot: "bg-creo-pink",
         questions: [
             {
-                q: "What income sources can I connect to Creo?",
+                q: "What income sources can I connect to Kreo?",
                 a: "Phase 1 supports Stripe, Gumroad, and Google AdSense — connect any combination. Your raise ceiling is sized to your total verified earnings across all connected sources. The more sources you connect, the more accurate your raise ceiling. Phase 2 will add Teachable, Substack, and Patreon.",
             },
             {
                 q: "How is my maximum raise amount calculated?",
-                a: "Creo uses a variance-discounted floor model. We pull 6 months of verified earnings, compute your Coefficient of Variation (CV), and apply a discount: Low variance (CV < 15%) → 85% of your average. Medium (15–30%) → 75%. High (>30%) → 60%. Your max raise is then sized so investors are guaranteed at least 122% return even at your floor performance every single month. Consistent creators get larger raises — automatically.",
+                a: "Kreo uses a variance-discounted floor model. We pull 6 months of verified earnings, compute your Coefficient of Variation (CV), and apply a discount: Low variance (CV < 15%) → 85% of your average. Medium (15–30%) → 75%. High (>30%) → 60%. Your max raise is then sized so investors are guaranteed at least 122% return even at your floor performance every single month. Consistent creators get larger raises — automatically.",
             },
             {
                 q: "When do I actually receive the capital?",
@@ -26,7 +26,7 @@ const faqs = [
             },
             {
                 q: "What is the Commitment Bond and do I get it back?",
-                a: "The bond is a deposit (10% for first-time creators, lower for returning creators based on your CreoScore tier) that shows investors you are serious. On successful completion of your offering, you receive your bond back plus a 2% bonus. The bond is only slashed if you abandon an active offering — at which point the Protocol Default Lock also activates, blocking future raises until investors are made whole.",
+                a: "The bond is a deposit (10% for first-time creators, lower for returning creators based on your KreoScore tier) that shows investors you are serious. On successful completion of your offering, you receive your bond back plus a 2% bonus. The bond is only slashed if you abandon an active offering — at which point the Protocol Default Lock also activates, blocking future raises until investors are made whole.",
             },
             {
                 q: "Can I run more than one offering at a time?",
@@ -45,7 +45,7 @@ const faqs = [
             },
             {
                 q: "What is the worst-case yield I can expect?",
-                a: "Every offering on Creo is required to pass a coverage ratio check before it can go live: the creator's variance-discounted floor earnings must cover at least 122% of the raise target over the offering period. This means even if the creator performs at their absolute worst-case floor every single month, investors still receive positive yield. The floor yield is shown on every offering card alongside the average-case yield.",
+                a: "Every offering on Kreo is required to pass a coverage ratio check before it can go live: the creator's variance-discounted floor earnings must cover at least 122% of the raise target over the offering period. This means even if the creator performs at their absolute worst-case floor every single month, investors still receive positive yield. The floor yield is shown on every offering card alongside the average-case yield.",
             },
             {
                 q: "What protects me if a creator abandons their offering?",
@@ -60,7 +60,7 @@ const faqs = [
                 a: "Creator Tokens (ERC-1155) are loyalty primitives auto-minted to your wallet in the same transaction as your RST purchase — zero extra cost. Phase 1 utilities: access to the creator's private community (Telegram/Discord), 48-hour early investor whitelist priority on the creator's next offering, and an on-chain early-backer credential visible on your portfolio. Phase 2 activates AMM price discovery, staking for exclusive content, and revenue multipliers for long-term holders.",
             },
             {
-                q: "How does Creo verify that creator earnings are real?",
+                q: "How does Kreo verify that creator earnings are real?",
                 a: "Three layers of verification run before any capital is released. First, Stripe payout verification checks actual bank payouts — not just gross earnings — to eliminate circular fake invoice fraud. Second, a Social Proof Score (minimum 40/100) is anchored on-chain using your YouTube, Twitter, GitHub, and Stripe consistency data. Third, a 3-day capital release window after every fundraise close runs automated re-checks and gives admins a freeze gate if any anomaly is detected. Sumsub KYC with live video verification is mandatory for raises above $5,000.",
             },
         ],

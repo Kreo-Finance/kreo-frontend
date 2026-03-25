@@ -9,8 +9,8 @@ const projectId = '4342fb30e173a60c65a462d4e2ca74f5'
 
 // 2. Create a metadata object - optional
 const metadata = {
-  name: 'Creo',
-  description: 'Creo - The creator economy\'s investment platform',
+  name: 'Kreo',
+  description: 'Kreo - The creator economy\'s investment platform',
   url: 'https://creo-protocol.xyz', // origin must match your domain & subdomain
   icons: ['https://assets.reown.com/reown-profile-pic.png']
 }

@@ -80,7 +80,7 @@ const CreatorBond = () => {
                 <div>
                   <p className="font-display text-sm font-semibold text-foreground">Success Path</p>
                   <p className="font-body text-xs text-muted-foreground">
-                    Complete all settlement months → bond returns with 2% bonus. CreoScore increases.
+                    Complete all settlement months → bond returns with 2% bonus. KreoScore increases.
                   </p>
                 </div>
               </div>

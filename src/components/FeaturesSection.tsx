@@ -35,7 +35,7 @@ const features = [
   },
   {
     icon: BarChart3,
-    title: "CreoScore",
+    title: "KreoScore",
     description:
       "Soulbound on-chain reputation. Earned through successful completions. Visible to all investors. Better scores unlock better terms.",
     gradient: "from-creo-pink via-creo-teal/60 to-creo-teal",
@@ -303,7 +303,7 @@ const FeaturesSection = () => {
             }}
             className="mx-auto mt-5 max-w-2xl font-body text-base leading-relaxed text-muted-foreground sm:text-lg"
           >
-            Courses, sponsorships, newsletters — whatever you earn, Creo turns
+            Courses, sponsorships, newsletters — whatever you earn, Kreo turns
             it into investable, on-chain revenue streams.
           </motion.p>
         </motion.div>

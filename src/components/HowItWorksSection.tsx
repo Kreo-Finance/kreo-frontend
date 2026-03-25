@@ -35,7 +35,7 @@ const investorSteps = [
     number: "01",
     title: "Browse Marketplace",
     description:
-      "Explore creator offerings filtered by yield, risk score, earnings history, and CreoScore reputation tier.",
+      "Explore creator offerings filtered by yield, risk score, earnings history, and KreoScore reputation tier.",
     accent: "creo-teal",
   },
   {

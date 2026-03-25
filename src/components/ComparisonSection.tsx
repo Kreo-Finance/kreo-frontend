@@ -295,7 +295,7 @@ const ComparisonSection = () => {
             <span className="text-gradient-hero">baked in natively</span>
           </h2>
           <p className="mt-4 font-body text-muted-foreground max-w-xl mx-auto md:text-lg">
-            Every platform uses raw averages. Creo uses a variance-discounted model
+            Every platform uses raw averages. Kreo uses a variance-discounted model
             that rewards consistency and correctly prices volatility — automatically, on-chain.
           </p>
         </motion.div>
@@ -319,7 +319,7 @@ const ComparisonSection = () => {
                 <p className="font-body text-sm text-muted-foreground mt-1">
                   Two creators. Both averaging{" "}
                   <span className="text-foreground font-medium">$6,000/month</span>.
-                  Every other platform treats them identically. Creo doesn't.
+                  Every other platform treats them identically. Kreo doesn't.
                 </p>
               </div>
               <div className="flex-shrink-0 inline-flex items-center gap-2 rounded-full border border-creo-pink/20 bg-creo-pink/5 px-4 py-2">

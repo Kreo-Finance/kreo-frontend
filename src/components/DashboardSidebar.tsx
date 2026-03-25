@@ -27,7 +27,7 @@ const SidebarContent = ({ type, onNavigate }: { type: "creator" | "investor", on
   return (
     <>
       <div className="p-6 border-b border-border">
-        <Link to="/" className="font-display text-xl font-bold text-gradient-hero" onClick={onNavigate}>CREO</Link>
+        <Link to="/" className="font-display text-xl font-bold text-gradient-hero" onClick={onNavigate}>KREO</Link>
         <p className="mt-1 font-body text-xs text-muted-foreground capitalize">{type} Dashboard</p>
       </div>
 
@@ -76,7 +76,7 @@ const DashboardSidebar = ({ type }: { type: "creator" | "investor" }) => {
     <>
       {/* Mobile Top Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 border-b border-border bg-background/80 backdrop-blur-md z-50 flex items-center justify-between px-4">
-        <Link to="/" className="font-display text-xl font-bold text-gradient-hero">CREO</Link>
+        <Link to="/" className="font-display text-xl font-bold text-gradient-hero">KREO</Link>
         
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>

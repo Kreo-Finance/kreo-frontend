@@ -10,7 +10,7 @@ const footerLinks = {
 const socials = [
   { label: "X",  href: "https://x.com/CreoProtocol" },
   { label: "Discord",  href: "https://discord.gg/creoprotocol" },
-  { label: "GitHub",   href: "https://github.com/Creo-Protocol" },
+  { label: "GitHub",   href: "https://github.com/Kreo-Protocol" },
   { label: "YouTube",  href: "https://youtube.com/@CreoProtocol" },
 ];
 
@@ -59,9 +59,9 @@ const FooterSection = () => {
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <div className="flex items-center gap-2">
-            <span className="font-display text-lg font-bold text-gradient-hero">CREO</span>
+            <span className="font-display text-lg font-bold text-gradient-hero">KREO</span>
             <span className="font-body text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Creo Protocol
+              © {new Date().getFullYear()} Kreo Protocol
             </span>
           </div>
           <div className="flex items-center gap-6">
@@ -78,7 +78,7 @@ const FooterSection = () => {
             ))}
           </div>
           <span className="font-body text-xs text-muted-foreground">
-            Built with ❤️ by Team Creo
+            Built with ❤️ by Team Kreo
           </span>
         </div>
       </div>
