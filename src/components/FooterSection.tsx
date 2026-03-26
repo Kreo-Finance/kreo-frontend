@@ -8,10 +8,10 @@ const footerLinks = {
 };
 
 const socials = [
-  { label: "X",  href: "https://x.com/CreoProtocol" },
-  { label: "Discord",  href: "https://discord.gg/creoprotocol" },
-  { label: "GitHub",   href: "https://github.com/Kreo-Protocol" },
-  { label: "YouTube",  href: "https://youtube.com/@CreoProtocol" },
+  { label: "X",  href: "https://x.com/kreofinance" },
+  { label: "Discord",  href: "https://discord.gg/kreofinance" },
+  { label: "GitHub",   href: "https://github.com/Kreo-Finance" },
+  { label: "YouTube",  href: "https://youtube.com/@KreoFinance" },
 ];
 
 const FooterSection = () => {
