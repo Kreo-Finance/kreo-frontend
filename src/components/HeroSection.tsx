@@ -196,7 +196,7 @@ const HeroSection = () => {
           transition={{ delay: 0.6 }}
           className="flex items-center gap-2 mt-4 mb-4"
         >
-          {headlines.map((_, i) => (
+          {/* {headlines.map((_, i) => (
             <button
               key={i}
               onClick={() => {
@@ -210,7 +210,7 @@ const HeroSection = () => {
               }`}
               aria-label={`Go to headline ${i + 1}`}
             />
-          ))}
+          ))} */}
         </motion.div>
 
         {/* Subheadline */}
