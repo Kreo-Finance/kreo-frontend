@@ -1,3 +1,3 @@
 
-# Kreo Frontend
+# Kreo Finance Frontend
 
