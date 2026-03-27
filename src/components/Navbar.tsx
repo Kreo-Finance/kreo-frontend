@@ -181,7 +181,7 @@ const Navbar = () => {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="font-body text-base font-bold text-muted-foreground transition-all hover:text-foreground hover:translate-y-[-1px]"
+                  className="font-body text-base font-medium text-muted-foreground transition-all hover:text-foreground hover:translate-y-[-1px]"
                 >
                   {link.label}
                 </a>
@@ -189,7 +189,7 @@ const Navbar = () => {
                 <Link
                   key={link.label}
                   to={link.href}
-                  className={`font-body text-base font-bold transition-all hover:text-foreground hover:translate-y-[-1px] ${location.pathname === link.href
+                  className={`font-body text-base font-medium transition-all hover:text-foreground hover:translate-y-[-1px] ${location.pathname === link.href
                     ? "text-foreground"
                     : "text-muted-foreground"
                     }`}
