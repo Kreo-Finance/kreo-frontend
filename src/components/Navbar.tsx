@@ -403,7 +403,7 @@ const Navbar = () => {
                   )}
                 </Button>
                 <p className="text-center font-body text-xs text-muted-foreground">
-                  No spam, ever. Unsubscribe anytime.
+                  No spam, ever. made for creators.
                 </p>
               </form>
             </>

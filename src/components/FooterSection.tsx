@@ -1,5 +1,7 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { joinWaitlist } from "@/services/waitlist";
 
 const footerLinks = {
   Protocol: ["Discover", "Features", "Pricing", "Roadmap"],
@@ -32,20 +34,80 @@ const YouTubeIcon = () => (
 );
 
 const FarcasterIcon = () => (
-  <svg viewBox="0 0 1000 1000" className="h-8 w-8 fill-current" aria-hidden="true">
+  <svg
+    viewBox="0 0 1000 1000"
+    className="h-8 w-8 fill-current"
+    aria-hidden="true"
+  >
     <path d="M257.778 155.556h484.444v688.889H671.111V528.889h-.697C662.554 441.677 589.258 373.333 500 373.333c-89.258 0-162.554 68.344-170.414 155.556h-.697v315.556H257.778V155.556zM128.889 253.333l28.889 97.778h24.444v395.556c-12.273 0-22.222 9.949-22.222 22.222v26.667h-4.444c-12.273 0-22.222 9.949-22.222 22.222v26.667h248.889v-26.667c0-12.273-9.949-22.222-22.222-22.222H355.556v-26.667c0-12.273-9.949-22.222-22.222-22.222h-4.445V253.333H128.889zM617.778 253.333V746.667h-4.445c-12.273 0-22.222 9.949-22.222 22.222v26.667H586.667c-12.273 0-22.222 9.949-22.222 22.222v26.667h248.889v-26.667c0-12.273-9.949-22.222-22.222-22.222H786.667v-26.667c0-12.273-9.949-22.222-22.222-22.222V351.111h24.444l28.889-97.778H617.778z" />
   </svg>
 );
 
 const socials = [
-  { label: "X", Icon: XIcon, href: "https://x.com/kreofinance", color: "text-black dark:text-white" },
-  { label: "Discord", Icon: DiscordIcon, href: "https://discord.gg/kreofinance", color: "text-[#738ADB]" },
-  { label: "GitHub", Icon: GitHubIcon, href: "https://github.com/Kreo-Finance", color: "text-black dark:text-white" },
-  { label: "YouTube", Icon: YouTubeIcon, href: "https://youtube.com/@KreoFinance", color: "text-red-600" },
-  { label: "Farcaster", Icon: FarcasterIcon, href: "https://farcaster.xyz/oxnerd", color: "text-purple-600" },
+  {
+    label: "X",
+    Icon: XIcon,
+    href: "https://x.com/kreofinance",
+    color: "text-black dark:text-white",
+  },
+  {
+    label: "Discord",
+    Icon: DiscordIcon,
+    href: "https://discord.gg/kreofinance",
+    color: "text-[#738ADB]",
+  },
+  {
+    label: "GitHub",
+    Icon: GitHubIcon,
+    href: "https://github.com/Kreo-Finance",
+    color: "text-black dark:text-white",
+  },
+  {
+    label: "YouTube",
+    Icon: YouTubeIcon,
+    href: "https://youtube.com/@KreoFinance",
+    color: "text-red-600",
+  },
+  {
+    label: "Farcaster",
+    Icon: FarcasterIcon,
+    href: "https://farcaster.xyz/oxnerd",
+    color: "text-purple-600",
+  },
 ];
 
 const FooterSection = () => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await joinWaitlist(email);
+      setSubmitted(true);
+      setEmail("");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!submitted && !error) return;
+
+    const timeout = setTimeout(() => {
+      setSubmitted(false);
+      setError("");
+      setEmail("");
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [submitted, error]);
   return (
     <footer className="border-t border-border bg-background">
       {/* CTA strip */}
@@ -58,26 +120,55 @@ const FooterSection = () => {
             <h3 className="font-display text-2xl font-bold leading-snug">
               Join to get the early beta access and other privileges.
             </h3>
-            <div className="mt-6 flex items-center gap-2">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-1 rounded-lg border border-border bg-muted px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-creo-pink"
-              />
-              <Button size="icon" className="bg-creo-pink text-primary-foreground hover:opacity-90 h-11 w-11">
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+            <div className="mt-6 flex flex-col gap-2">
+              <form
+                onSubmit={handleWaitlistSubmit}
+                className="flex items-center gap-2"
+              >
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email address"
+                  className="flex-1 rounded-lg border border-border bg-muted px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-creo-pink"
+                />
+                <Button
+                  type="submit"
+                  size="icon"
+                  className="bg-creo-pink text-primary-foreground hover:opacity-90 h-11 w-11"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ArrowRight className="h-4 w-4" />
+                  )}
+                </Button>
+              </form>
+              {submitted && (
+                <p className="text-sm text-green-600 flex items-center gap-1">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Successfully joined the waitlist!
+                </p>
+              )}
+              {error && <p className="text-sm text-red-600">{error}</p>}
             </div>
           </div>
 
           {/* Link columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-display text-sm font-semibold text-foreground mb-4">{title}</h4>
+              <h4 className="font-display text-sm font-semibold text-foreground mb-4">
+                {title}
+              </h4>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link}>
-                    <a href="#" className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <a
+                      href="#"
+                      className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
                       {link}
                     </a>
                   </li>
@@ -90,7 +181,9 @@ const FooterSection = () => {
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <div className="flex items-center gap-2">
-            <span className="font-display text-xl font-bold text-gradient-hero">KREO</span>
+            <span className="font-display text-xl font-bold text-gradient-hero">
+              KREO
+            </span>
             <span className="font-body text-sm text-muted-foreground">
               © {new Date().getFullYear()} Kreo Finance. All rights reserved
             </span>
