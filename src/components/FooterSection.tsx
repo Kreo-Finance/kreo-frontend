@@ -71,7 +71,7 @@ const socials = [
   {
     label: "Farcaster",
     Icon: FarcasterIcon,
-    href: "https://farcaster.xyz/oxnerd",
+    href: "https://farcaster.xyz/0xnerd",
     color: "text-purple-600",
   },
 ];
