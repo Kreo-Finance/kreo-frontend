@@ -56,12 +56,12 @@ const socials = [
     href: "https://discord.gg/kreofinance",
     color: "text-[#738ADB]",
   },
-  {
-    label: "GitHub",
-    Icon: GitHubIcon,
-    href: "https://github.com/Kreo-Finance",
-    color: "text-black dark:text-white",
-  },
+  // {
+  //   label: "GitHub",
+  //   Icon: GitHubIcon,
+  //   href: "https://github.com/Kreo-Finance",
+  //   color: "text-black dark:text-white",
+  // },
   {
     label: "YouTube",
     Icon: YouTubeIcon,
@@ -71,7 +71,7 @@ const socials = [
   {
     label: "Farcaster",
     Icon: FarcasterIcon,
-    href: "https://farcaster.xyz/oxnerd",
+    href: "https://farcaster.xyz/0xnerd",
     color: "text-purple-600",
   },
 ];
