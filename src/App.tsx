@@ -13,6 +13,8 @@ import CreatorBond from "./pages/CreatorBond.tsx";
 import Marketplace from "./pages/Marketplace.tsx";
 import InvestorPortfolio from "./pages/InvestorPortfolio.tsx";
 import InvestorEarnings from "./pages/InvestorEarnings.tsx";
+import SignIn from "./pages/auth/SignIn.tsx";
+import SignUp from "./pages/auth/SignUp.tsx";
 
 const App = () => (
   <ThemeProvider>
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/investor/portfolio" element={<InvestorPortfolio />} />
           <Route path="/investor/earnings" element={<InvestorEarnings />} />
+          <Route path="/auth/signin" element={<SignIn />} />
+          <Route path="/auth/signup" element={<SignUp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
