@@ -216,13 +216,13 @@ const Navbar = () => {
               )}
             </button>
             <Button
-              className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 flex items-center gap-2 h-10 px-5"
+                 className="bg-amber-300 hover:bg-amber-400 font-body text-sm font-semibold text-black  px-6 shadow-[0_0_16px_rgba(251,191,36,0.4)] hover:shadow-[0_0_24px_rgba(251,191,36,0.6)] transition-all"
               onClick={() => setWaitlistOpen(true)}
             >
-              Join Waitlist
+              Sign In
             </Button>
 
-            {/* {isConnected ? (
+            {isConnected ? (
               <div className="flex items-center gap-3">
                 <Button
                   onClick={() => open()}
@@ -245,7 +245,7 @@ const Navbar = () => {
                 <Wallet size={16} />
                 Connect Wallet
               </Button>
-            )} */}
+            )}
           </div>
 
           <button
