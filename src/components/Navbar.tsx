@@ -91,7 +91,9 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-white/5">
-      <div className="container mx-auto relative flex h-16 items-center justify-between px-4 lg:px-8">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8 gap-4">
+
+        {/* Logo — left */}
         <Link
           to="/"
           className="font-display text-3xl font-bold tracking-tight select-none flex-shrink-0"
@@ -129,13 +131,14 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-10 md:flex absolute left-1/2 -translate-x-1/2">
+        {/* Nav links — center (hidden on mobile) */}
+        <div className="hidden lg:flex items-center gap-8 flex-1 justify-center">
           {navLinks.map((link) =>
             isHashLink(link.href) ? (
               <a
                 key={link.label}
                 href={link.href}
-                className="font-body text-base font-medium text-muted-foreground transition-all hover:text-foreground hover:translate-y-[-1px]"
+                className="font-body text-base font-medium text-muted-foreground transition-all hover:text-foreground hover:translate-y-[-1px] whitespace-nowrap"
               >
                 {link.label}
               </a>
@@ -143,7 +146,7 @@ const Navbar = () => {
               <Link
                 key={link.label}
                 to={link.href}
-                className={`font-body text-base font-medium transition-all hover:text-foreground hover:translate-y-[-1px] ${
+                className={`font-body text-base font-medium transition-all hover:text-foreground hover:translate-y-[-1px] whitespace-nowrap ${
                   location.pathname === link.href
                     ? "text-foreground"
                     : "text-muted-foreground"
@@ -155,11 +158,12 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="hidden items-center gap-4 md:flex">
+        {/* Actions — right (hidden on mobile) */}
+        <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="h-9 w-9 rounded-full border border-creo-pink/30 bg-creo-pink/5 flex items-center justify-center text-creo-pink hover:bg-creo-pink/15 transition-colors"
+            className="h-9 w-9 rounded-full border border-creo-pink/30 bg-creo-pink/5 flex items-center justify-center text-creo-pink hover:bg-creo-pink/15 transition-colors flex-shrink-0"
           >
             {theme === "dark" ? (
               <Sun className="h-4 w-4" />
@@ -169,31 +173,31 @@ const Navbar = () => {
           </button>
 
           <Button
-            className="bg-amber-300 hover:bg-amber-400 font-body text-sm font-semibold text-black px-6 shadow-[0_0_16px_rgba(251,191,36,0.4)] hover:shadow-[0_0_24px_rgba(251,191,36,0.6)] transition-all"
+            className="bg-amber-300 hover:bg-amber-400 font-body text-sm font-semibold text-black px-5 shadow-[0_0_16px_rgba(251,191,36,0.4)] hover:shadow-[0_0_24px_rgba(251,191,36,0.6)] transition-all whitespace-nowrap"
             onClick={() => navigate("/auth/signin")}
           >
             Sign In
           </Button>
 
           {isConnected ? (
-            <div className="flex items-center gap-3">
+            <>
               <Button
                 onClick={() => open()}
-                className="bg-card/40 border border-white/10 backdrop-blur-md font-body text-sm font-semibold text-foreground hover:bg-white/5 flex items-center gap-2 h-10 px-4"
+                className="bg-card/40 border border-white/10 backdrop-blur-md font-body text-sm font-semibold text-foreground hover:bg-white/5 flex items-center gap-2 h-10 px-4 whitespace-nowrap"
               >
-                <div className="h-2 w-2 rounded-full bg-creo-teal animate-pulse" />
+                <div className="h-2 w-2 rounded-full bg-creo-teal animate-pulse flex-shrink-0" />
                 {truncatedAddress}
               </Button>
               <Link to="/creator/dashboard">
-                <Button className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-glow-pink px-5 h-10">
+                <Button className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-glow-pink px-5 h-10 whitespace-nowrap">
                   Start Creating
                 </Button>
               </Link>
-            </div>
+            </>
           ) : (
             <Button
               onClick={() => open()}
-              className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 flex items-center gap-2 h-10 px-5"
+              className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 flex items-center gap-2 h-10 px-5 whitespace-nowrap"
             >
               <Wallet size={16} />
               Connect Wallet
@@ -201,29 +205,32 @@ const Navbar = () => {
           )}
         </div>
 
+        {/* Mobile hamburger */}
         <button
-          className="md:hidden text-foreground"
+          className="lg:hidden text-foreground flex-shrink-0"
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle menu"
         >
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-b border-border bg-background md:hidden"
+            className="border-b border-border bg-background lg:hidden overflow-hidden"
           >
-            <div className="flex flex-col gap-4 px-4 py-6">
+            <div className="flex flex-col gap-1 px-4 py-4">
               {navLinks.map((link) =>
                 isHashLink(link.href) ? (
                   <a
                     key={link.label}
                     href={link.href}
-                    className="font-body text-base font-bold text-muted-foreground hover:text-foreground"
+                    className="font-body text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg px-3 py-2.5 transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     {link.label}
@@ -232,14 +239,19 @@ const Navbar = () => {
                   <Link
                     key={link.label}
                     to={link.href}
-                    className="font-body text-base font-bold text-muted-foreground hover:text-foreground"
+                    className={`font-body text-base font-medium rounded-lg px-3 py-2.5 transition-colors hover:bg-muted ${
+                      location.pathname === link.href
+                        ? "text-foreground bg-muted/50"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                     onClick={() => setMobileOpen(false)}
                   >
                     {link.label}
                   </Link>
                 ),
               )}
-              <div className="flex flex-col gap-2 pt-4 border-t border-border">
+
+              <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-border">
                 <button
                   onClick={toggleTheme}
                   aria-label="Toggle theme"
@@ -252,6 +264,17 @@ const Navbar = () => {
                   )}
                   {theme === "dark" ? "Light Mode" : "Dark Mode"}
                 </button>
+
+                <Button
+                  className="w-full bg-amber-300 hover:bg-amber-400 font-body text-sm font-semibold text-black shadow-[0_0_16px_rgba(251,191,36,0.4)] transition-all"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    navigate("/auth/signin");
+                  }}
+                >
+                  Sign In
+                </Button>
+
                 <Button
                   onClick={() => {
                     setMobileOpen(false);
@@ -262,8 +285,9 @@ const Navbar = () => {
                   <Wallet size={16} />
                   {isConnected ? truncatedAddress : "Connect Wallet"}
                 </Button>
-                {isConnected ? (
-                  <Link to="/creator/dashboard">
+
+                {isConnected && (
+                  <Link to="/creator/dashboard" onClick={() => setMobileOpen(false)}>
                     <Button
                       className="w-full font-body text-sm font-semibold border-border hover:bg-accent text-foreground"
                       variant="outline"
@@ -271,16 +295,6 @@ const Navbar = () => {
                       Start Creating
                     </Button>
                   </Link>
-                ) : (
-                  <Button
-                    className="w-full bg-amber-400 hover:bg-amber-500 font-body text-sm font-semibold text-black shadow-[0_0_16px_rgba(251,191,36,0.4)] transition-all"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      navigate("/auth/signin");
-                    }}
-                  >
-                    Sign In
-                  </Button>
                 )}
               </div>
             </div>
