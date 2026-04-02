@@ -15,6 +15,7 @@ import InvestorPortfolio from "./pages/InvestorPortfolio.tsx";
 import InvestorEarnings from "./pages/InvestorEarnings.tsx";
 import CreatorOnboarding from "./pages/onboarding/CreatorOnboarding.tsx";
 import InvestorOnboarding from "./pages/onboarding/InvestorOnboarding.tsx";
+import CreatorProfile from "./pages/CreatorProfile.tsx";
 
 const App = () => (
   <ThemeProvider>
@@ -26,6 +27,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/marketplace" element={<Marketplace />} />
+
+            {/* Public creator profile */}
+            <Route path="/creator/:address" element={<CreatorProfile />} />
 
             {/* Creator */}
             <Route path="/creator/dashboard" element={<CreatorDashboard />} />

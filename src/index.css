@@ -189,6 +189,14 @@
     box-shadow: 0 0 20px hsl(var(--creo-teal) / 0.2);
   }
 
+  .neon-glow-yellow {
+    box-shadow: 0 0 20px hsl(var(--creo-yellow) / 0.3);
+  }
+
+  .shadow-glow-yellow {
+    box-shadow: 0 0 40px hsl(var(--creo-yellow) / 0.25);
+  }
+
   .animate-pulse-slow {
     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }

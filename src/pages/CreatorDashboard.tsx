@@ -4,6 +4,7 @@ import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
+import CreoScorePanel from "@/components/dashboard/CreoScorePanel";
 
 const stats = [
   { label: "Total Raised", value: "$12,000", change: "+100%", up: true, icon: DollarSign, color: "text-creo-pink", bg: "bg-creo-pink/10" },
@@ -126,12 +127,18 @@ const CreatorDashboard = () => {
             ))}
           </motion.div>
 
+          {/* CreoScore Panel */}
+          <CreoScorePanel
+            score={185}
+            creatorAddress={isConnected && address ? address : ""}
+          />
+
           {/* Settlement History */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="rounded-xl border border-border bg-card p-6"
+            className="rounded-xl border border-border bg-card p-6 mt-8"
           >
             <h2 className="font-display text-lg font-semibold text-foreground mb-4">Settlement History</h2>
             <div className="overflow-x-auto">
