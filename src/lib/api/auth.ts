@@ -89,6 +89,11 @@ export const authApi = {
     localStorage.removeItem('kreo_wallet_address');
   },
 
+  getSumsubToken: async (role: 'creator' | 'investor'): Promise<{ token: string }> => {
+    const response = await apiClient.post('/kyc/token', { role });
+    return response.data;
+  },
+
   isAuthenticated: (): boolean => !!localStorage.getItem('kreo_access_token'),
   getAccessToken: (): string | null => localStorage.getItem('kreo_access_token'),
   getWalletAddress: (): string | null => localStorage.getItem('kreo_wallet_address'),

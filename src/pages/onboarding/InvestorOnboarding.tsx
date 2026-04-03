@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Circle, Loader2, ArrowRight, Globe } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, ArrowRight, Globe, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,13 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SumsubWidget from "@/components/SumsubWidget";
+import { authApi } from "@/lib/api/auth";
 
-type Step = "jurisdiction" | "kyc" | "accreditation" | "done";
+// Accreditation is bypassed for now — step flow is jurisdiction → kyc → done
+type Step = "jurisdiction" | "kyc" | "done";
 
 const STEPS: { id: Step; label: string }[] = [
   { id: "jurisdiction", label: "Jurisdiction" },
   { id: "kyc", label: "Identity KYC" },
-  { id: "accreditation", label: "Accreditation" },
   { id: "done", label: "All Set" },
 ];
 
@@ -35,44 +37,6 @@ const JURISDICTIONS = [
   { value: "OTHER", label: "Other" },
 ];
 
-const ACCREDITATION_INFO: Record<string, { tier: string; description: string }> = {
-  SG: {
-    tier: "Section 275 (MAS)",
-    description:
-      "High net worth individual (≥ SGD 2M net financial assets) or institutional investor under the Securities and Futures Act.",
-  },
-  US: {
-    tier: "Reg D Accredited Investor",
-    description:
-      "Income > $200K/yr (or $300K joint) for the past 2 years, or net worth > $1M excluding primary residence.",
-  },
-  IN: {
-    tier: "HNI / Qualified Investor",
-    description:
-      "SEBI-qualified institutional buyer or high net worth individual with net worth ≥ ₹5 Cr.",
-  },
-  UAE: {
-    tier: "Professional Investor (DIFC/ADGM)",
-    description:
-      "Net assets ≥ USD 1M or annual income ≥ USD 200K, verified by a DIFC/ADGM-licensed firm.",
-  },
-  EU: {
-    tier: "MiFID II Professional Client",
-    description:
-      "Meets at least two of: 10+ transactions/quarter, EUR 500K+ portfolio, 1+ year professional finance experience.",
-  },
-  UK: {
-    tier: "FCA High Net Worth / Sophisticated Investor",
-    description:
-      "Annual income ≥ £100K or net assets ≥ £250K (excl. primary residence and pension).",
-  },
-  OTHER: {
-    tier: "Equivalent Accreditation",
-    description:
-      "Equivalent accreditation in your home jurisdiction will be reviewed case-by-case by our compliance team.",
-  },
-};
-
 export default function InvestorOnboarding() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
@@ -80,60 +44,99 @@ export default function InvestorOnboarding() {
     walletAddress,
     selectedRole,
     investorKycStatus,
-    accreditationStatus,
     investorUnlocked,
     setInvestorKycStatus,
     setAccreditationStatus,
   } = useAuth({ autoAuthenticate: false });
 
   const [jurisdiction, setJurisdiction] = useState<string>("");
-  const [kycLoading, setKycLoading] = useState(false);
-  const [accreditationLoading, setAccreditationLoading] = useState(false);
+  const [sumsubToken, setSumsubToken] = useState<string | null>(null);
+  const [tokenLoading, setTokenLoading] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
 
   const activeStep: Step =
     !jurisdiction
       ? "jurisdiction"
       : investorKycStatus !== "approved"
         ? "kyc"
-        : accreditationStatus !== "approved"
-          ? "accreditation"
-          : "done";
+        : "done";
 
-  const handleStartKyc = async () => {
-    setKycLoading(true);
+  const fetchSumsubToken = useCallback(async () => {
+    setTokenLoading(true);
+    setTokenError(null);
+    setSumsubToken(null);
     try {
-      // TODO: Initialise Sumsub WebSDK with investor-level KYC
-      await new Promise((res) => setTimeout(res, 1500));
-      setInvestorKycStatus("pending");
+      const { token } = await authApi.getSumsubToken("investor");
+      setSumsubToken(token);
+    } catch {
+      setTokenError("Failed to start verification. Please try again.");
     } finally {
-      setKycLoading(false);
+      setTokenLoading(false);
     }
-  };
+  }, []);
 
-  const handleStartAccreditation = async () => {
-    setAccreditationLoading(true);
-    try {
-      // TODO: Initialise Sumsub accreditation module
-      await new Promise((res) => setTimeout(res, 1500));
-      setAccreditationStatus("pending");
-    } finally {
-      setAccreditationLoading(false);
+  // Auto-fetch token when KYC step becomes active and not yet pending
+  useEffect(() => {
+    if (activeStep === "kyc" && investorKycStatus !== "pending") {
+      fetchSumsubToken();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStep]);
+
+  const handleKycSubmitted = () => {
+    setInvestorKycStatus("pending");
+    // Bypass accreditation — mark as approved immediately
+    setAccreditationStatus("approved");
+    setSumsubToken(null);
   };
 
   const truncated = walletAddress
     ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
     : "";
 
-  const accInfo = jurisdiction ? ACCREDITATION_INFO[jurisdiction] : null;
-
   const stepDone = (step: Step) => {
     if (step === "jurisdiction") return !!jurisdiction;
     if (step === "kyc") return investorKycStatus === "approved";
-    if (step === "accreditation") return accreditationStatus === "approved";
     if (step === "done") return investorUnlocked;
     return false;
   };
+
+  function renderKycWidget() {
+    if (tokenLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-[120px]">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
+    if (tokenError) {
+      return (
+        <div className="space-y-3">
+          <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
+            {tokenError}
+          </div>
+          <Button
+            onClick={fetchSumsubToken}
+            variant="outline"
+            className="w-full font-body font-semibold"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" /> Retry
+          </Button>
+        </div>
+      );
+    }
+    if (sumsubToken) {
+      return (
+        <SumsubWidget
+          accessToken={sumsubToken}
+          containerId="sumsub-investor-kyc"
+          onApplicantSubmitted={handleKycSubmitted}
+          onError={() => setTokenError("Verification error. Please try again.")}
+        />
+      );
+    }
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -164,7 +167,7 @@ export default function InvestorOnboarding() {
           <div className="text-center space-y-2">
             <h1 className="font-display text-3xl font-bold">Investor Setup</h1>
             <p className="font-body text-muted-foreground text-sm">
-              Accreditation is required to invest on Kreo. This protects both you and the platform.
+              Verify your identity to start investing on Kreo.
             </p>
           </div>
 
@@ -212,7 +215,7 @@ export default function InvestorOnboarding() {
                       <Globe className="h-4 w-4" /> Select Jurisdiction
                     </CardTitle>
                     <CardDescription className="font-body text-sm">
-                      Accreditation requirements vary by country. Select your primary jurisdiction.
+                      Select your primary jurisdiction for compliance purposes.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -229,19 +232,7 @@ export default function InvestorOnboarding() {
                       </SelectContent>
                     </Select>
 
-                    {accInfo && (
-                      <div className="rounded-lg bg-creo-teal/5 border border-creo-teal/20 p-3 space-y-1">
-                        <p className="text-xs font-body font-semibold text-creo-teal">
-                          {accInfo.tier}
-                        </p>
-                        <p className="text-xs font-body text-muted-foreground leading-relaxed">
-                          {accInfo.description}
-                        </p>
-                      </div>
-                    )}
-
                     <Button
-                      onClick={() => {}}
                       disabled={!jurisdiction}
                       className="w-full bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90"
                     >
@@ -267,95 +258,20 @@ export default function InvestorOnboarding() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {investorKycStatus === "pending" && (
+                    {investorKycStatus === "pending" ? (
                       <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-4 text-sm font-body text-amber-400">
                         Verification under review. Usually approved within 24 hours.
                       </div>
+                    ) : investorKycStatus === "rejected" ? (
+                      <>
+                        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
+                          Verification rejected. Please retry with a valid government ID.
+                        </div>
+                        {renderKycWidget()}
+                      </>
+                    ) : (
+                      renderKycWidget()
                     )}
-                    {investorKycStatus === "rejected" && (
-                      <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
-                        Verification rejected. Please retry with a valid government ID.
-                      </div>
-                    )}
-
-                    <div id="sumsub-investor-kyc" className="min-h-[200px]" />
-
-                    <Button
-                      onClick={handleStartKyc}
-                      disabled={kycLoading || investorKycStatus === "pending"}
-                      className="w-full bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90"
-                    >
-                      {kycLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Launching...
-                        </>
-                      ) : investorKycStatus === "pending" ? (
-                        "Verification pending"
-                      ) : (
-                        <>
-                          Start Verification <ArrowRight className="ml-2 h-4 w-4" />
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-
-            {activeStep === "accreditation" && (
-              <motion.div
-                key="accreditation"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-              >
-                <Card className="border-white/10 bg-card/40 backdrop-blur-md">
-                  <CardHeader>
-                    <CardTitle className="font-display text-lg">Accreditation</CardTitle>
-                    <CardDescription className="font-body text-sm">
-                      {accInfo ? (
-                        <>
-                          Required for <span className="text-creo-teal">{accInfo.tier}</span>.{" "}
-                          {accInfo.description}
-                        </>
-                      ) : (
-                        "Prove your accredited investor status to unlock full investment access."
-                      )}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {accreditationStatus === "pending" && (
-                      <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-4 text-sm font-body text-amber-400">
-                        Accreditation under review. This typically takes 24–48 hours.
-                      </div>
-                    )}
-                    {accreditationStatus === "rejected" && (
-                      <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
-                        Accreditation rejected. Please contact support or retry with valid documents.
-                      </div>
-                    )}
-
-                    <div id="sumsub-accreditation" className="min-h-[200px]" />
-
-                    <Button
-                      onClick={handleStartAccreditation}
-                      disabled={accreditationLoading || accreditationStatus === "pending"}
-                      className="w-full bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90"
-                    >
-                      {accreditationLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Launching...
-                        </>
-                      ) : accreditationStatus === "pending" ? (
-                        "Review in progress"
-                      ) : (
-                        <>
-                          Submit Documents <ArrowRight className="ml-2 h-4 w-4" />
-                        </>
-                      )}
-                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -370,11 +286,10 @@ export default function InvestorOnboarding() {
                 <Card className="border-creo-teal/30 bg-creo-teal/5 backdrop-blur-md text-center">
                   <CardContent className="pt-8 pb-8 space-y-4">
                     <CheckCircle2 className="h-12 w-12 text-creo-teal mx-auto" />
-                    <h2 className="font-display text-xl font-bold">Accreditation Complete</h2>
+                    <h2 className="font-display text-xl font-bold">Verification Complete</h2>
                     <p className="font-body text-sm text-muted-foreground">
                       Your investor account is verified. You can now invest in creator tokens on Kreo.
                     </p>
-                    {/* If user selected "both", route to creator onboarding next */}
                     {selectedRole === "both" ? (
                       <div className="space-y-3">
                         <p className="text-xs text-muted-foreground font-body">

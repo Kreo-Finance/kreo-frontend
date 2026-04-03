@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Circle, Loader2, ExternalLink, ArrowRight } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, ExternalLink, ArrowRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
+import SumsubWidget from "@/components/SumsubWidget";
+import { authApi } from "@/lib/api/auth";
 
 type Step = "kyc" | "income" | "done";
 
@@ -41,7 +43,9 @@ export default function CreatorOnboarding() {
     setCreatorIncomeConnected,
   } = useAuth({ autoAuthenticate: false });
 
-  const [kycLoading, setKycLoading] = useState(false);
+  const [sumsubToken, setSumsubToken] = useState<string | null>(null);
+  const [tokenLoading, setTokenLoading] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const [incomeLoading, setIncomeLoading] = useState(false);
 
   const activeStep: Step =
@@ -51,19 +55,31 @@ export default function CreatorOnboarding() {
         ? "income"
         : "done";
 
-  // Simulate KYC launch — replace with Sumsub SDK init
-  const handleStartKyc = async () => {
-    setKycLoading(true);
+  const fetchSumsubToken = useCallback(async () => {
+    setTokenLoading(true);
+    setTokenError(null);
+    setSumsubToken(null);
     try {
-      // TODO: Initialise Sumsub WebSDK here
-      // import { init } from '@sumsub/websdk';
-      // const sdk = init({ token: await fetchSumsubToken(walletAddress) });
-      // sdk.launch('#sumsub-container');
-      await new Promise((res) => setTimeout(res, 1500));
-      setCreatorKycStatus("pending");
+      const { token } = await authApi.getSumsubToken("creator");
+      setSumsubToken(token);
+    } catch {
+      setTokenError("Failed to start verification. Please try again.");
     } finally {
-      setKycLoading(false);
+      setTokenLoading(false);
     }
+  }, []);
+
+  // Auto-fetch token when KYC step is active and not yet pending
+  useEffect(() => {
+    if (activeStep === "kyc" && creatorKycStatus !== "pending") {
+      fetchSumsubToken();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStep]);
+
+  const handleKycSubmitted = () => {
+    setCreatorKycStatus("pending");
+    setSumsubToken(null);
   };
 
   const handleConnectStripe = async () => {
@@ -178,29 +194,15 @@ export default function CreatorOnboarding() {
                         usually within 24 hours.
                       </div>
                     ) : creatorKycStatus === "rejected" ? (
-                      <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
-                        Verification was rejected. Please try again with a valid government ID.
-                      </div>
-                    ) : null}
-
-                    <div id="sumsub-container" className="min-h-[200px]" />
-
-                    <Button
-                      onClick={handleStartKyc}
-                      disabled={kycLoading || creatorKycStatus === "pending"}
-                      className="w-full bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90"
-                    >
-                      {kycLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Launching...
-                        </>
-                      ) : creatorKycStatus === "pending" ? (
-                        "Verification pending"
-                      ) : (
-                        <>Start Verification <ArrowRight className="ml-2 h-4 w-4" /></>
-                      )}
-                    </Button>
+                      <>
+                        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
+                          Verification was rejected. Please try again with a valid government ID.
+                        </div>
+                        {renderKycWidget()}
+                      </>
+                    ) : (
+                      renderKycWidget()
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -288,4 +290,41 @@ export default function CreatorOnboarding() {
       </main>
     </div>
   );
+
+  function renderKycWidget() {
+    if (tokenLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-[120px]">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
+    if (tokenError) {
+      return (
+        <div className="space-y-3">
+          <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
+            {tokenError}
+          </div>
+          <Button
+            onClick={fetchSumsubToken}
+            variant="outline"
+            className="w-full font-body font-semibold"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" /> Retry
+          </Button>
+        </div>
+      );
+    }
+    if (sumsubToken) {
+      return (
+        <SumsubWidget
+          accessToken={sumsubToken}
+          containerId="sumsub-creator-kyc"
+          onApplicantSubmitted={handleKycSubmitted}
+          onError={() => setTokenError("Verification error. Please try again.")}
+        />
+      );
+    }
+    return null;
+  }
 }
