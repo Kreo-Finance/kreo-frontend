@@ -15,10 +15,10 @@ interface TierMeta {
 }
 
 const TIERS: Record<TierNumber, TierMeta> = {
-  0: { name: "Newcomer",    start: 0,   end: 99,  barColor: "bg-muted-foreground" },
+  0: { name: "Newcomer", start: 0, end: 99, barColor: "bg-muted-foreground" },
   1: { name: "Established", start: 100, end: 299, barColor: "bg-creo-teal" },
-  2: { name: "Trusted",     start: 300, end: 599, barColor: "bg-creo-teal" },
-  3: { name: "Elite",       start: 600, end: 999, barColor: "bg-creo-yellow" },
+  2: { name: "Trusted", start: 300, end: 599, barColor: "bg-creo-teal" },
+  3: { name: "Elite", start: 600, end: 999, barColor: "bg-creo-yellow" },
 };
 
 const NEXT_TIER: Record<TierNumber, TierNumber | null> = {
@@ -29,10 +29,10 @@ const NEXT_TIER: Record<TierNumber, TierNumber | null> = {
 };
 
 const EARN_POINTS = [
-  { label: "Complete current offering",    pts: "+50 pts" },
+  { label: "Complete current offering", pts: "+50 pts" },
   { label: "Each month above floor yield", pts: "+5 pts/mo" },
-  { label: "Zero missed settlements",      pts: "+20 pts" },
-  { label: "Strong investor ROI bonus",    pts: "+15 pts" },
+  { label: "Zero missed settlements", pts: "+20 pts" },
+  { label: "Strong investor ROI bonus", pts: "+15 pts" },
 ];
 
 const ELITE_UNLOCKS = [
@@ -50,14 +50,15 @@ interface CreoScorePanelProps {
   creatorAddress?: string;
 }
 
-const CreoScorePanel = ({ score = 347, creatorAddress = "" }: CreoScorePanelProps) => {
+const CreoScorePanel = ({
+  score = 347,
+  creatorAddress = "",
+}: CreoScorePanelProps) => {
   const [shareOpen, setShareOpen] = useState(false);
 
   // Determine current tier
   const tier: TierNumber =
-    score >= 600 ? 3 :
-    score >= 300 ? 2 :
-    score >= 100 ? 1 : 0;
+    score >= 600 ? 3 : score >= 300 ? 2 : score >= 100 ? 1 : 0;
 
   const tierMeta = TIERS[tier];
   const nextTierNum = NEXT_TIER[tier];
@@ -70,14 +71,16 @@ const CreoScorePanel = ({ score = 347, creatorAddress = "" }: CreoScorePanelProp
           100,
           Math.round(
             ((score - tierMeta.start) / (tierMeta.end - tierMeta.start + 1)) *
-              100
-          )
+              100,
+          ),
         );
 
   const pointsNeeded = nextTierMeta ? nextTierMeta.start - score : 0;
   const estimatedMonths =
     pointsNeeded > 0
-      ? Math.ceil((pointsNeeded / AVG_POINTS_PER_OFFERING) * AVG_OFFERING_MONTHS)
+      ? Math.ceil(
+          (pointsNeeded / AVG_POINTS_PER_OFFERING) * AVG_OFFERING_MONTHS,
+        )
       : 0;
 
   return (
@@ -158,10 +161,7 @@ const CreoScorePanel = ({ score = 347, creatorAddress = "" }: CreoScorePanelProp
             </p>
             <ul className="space-y-2">
               {EARN_POINTS.map(({ label, pts }) => (
-                <li
-                  key={label}
-                  className="flex items-center justify-between"
-                >
+                <li key={label} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-creo-teal text-sm">✓</span>
                     <span className="font-body text-sm text-foreground">
@@ -216,7 +216,7 @@ const CreoScorePanel = ({ score = 347, creatorAddress = "" }: CreoScorePanelProp
             onClick={() => setShareOpen(true)}
           >
             <Share2 className="h-4 w-4" />
-            <span className="font-body text-sm">Share my CreoScore</span>
+            <span className="font-body text-sm">Share my KreoScore</span>
           </Button>
         </div>
       </motion.div>

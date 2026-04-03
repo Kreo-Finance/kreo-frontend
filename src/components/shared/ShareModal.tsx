@@ -49,7 +49,7 @@ const ShareModal = ({
     : `${window.location.origin}/marketplace`;
 
   const tweetText = encodeURIComponent(
-    `Just hit ${tierName} tier on @KreoFinance 🎯\nCreoScore: ${score} | ${offeringsCount} offering${offeringsCount !== 1 ? "s" : ""} completed\n${settlementRate}% settlement rate | ${totalRaised} raised\nTokenizing creator earnings on Base 🔵\nkreofi.xyz #CreatorEconomy #DeFi #Base`
+    `Just hit ${tierName} tier on @KreoFinance 🎯\nKreoScore: ${score} | ${offeringsCount} offering${offeringsCount !== 1 ? "s" : ""} completed\n${settlementRate}% settlement rate | ${totalRaised} raised\nTokenizing creator earnings on Base 🔵\nkreofi.xyz #CreatorEconomy #DeFi #Base`,
   );
   const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
 
@@ -64,7 +64,7 @@ const ShareModal = ({
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label="Share CreoScore"
+      aria-label="Share KreoScore"
     >
       {/* Backdrop */}
       <div
@@ -85,7 +85,7 @@ const ShareModal = ({
 
         <div className="p-6">
           <h2 className="font-display text-lg font-semibold text-foreground mb-1">
-            Share your CreoScore
+            Share your KreoScore
           </h2>
           <p className="font-body text-sm text-muted-foreground mb-5">
             Show investors your verified on-chain reputation.
@@ -94,7 +94,9 @@ const ShareModal = ({
           {/* Preview card */}
           <div
             className="rounded-xl border border-border overflow-hidden mb-5"
-            style={{ background: "linear-gradient(135deg, #0f172a 60%, #001a4d)" }}
+            style={{
+              background: "linear-gradient(135deg, #0f172a 60%, #001a4d)",
+            }}
           >
             <div className="p-5">
               {/* Top row */}
@@ -102,7 +104,9 @@ const ShareModal = ({
                 <span className="font-display text-sm font-bold text-white/80">
                   Kreo Finance
                 </span>
-                <span className="font-body text-xs text-white/50">kreofi.xyz</span>
+                <span className="font-body text-xs text-white/50">
+                  kreofi.xyz
+                </span>
               </div>
 
               {/* Score + badge */}
@@ -114,7 +118,7 @@ const ShareModal = ({
                   <CreoScoreBadge tier={tier} size="md" />
                 </div>
               </div>
-              <p className="font-body text-sm text-white/50 mb-4">CreoScore</p>
+              <p className="font-body text-sm text-white/50 mb-4">KreoScore</p>
 
               <div className="h-px bg-white/10 mb-4" />
 
@@ -146,7 +150,10 @@ const ShareModal = ({
                   Verified Creator on Kreo Finance · Built on Base
                 </p>
                 <div className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-600">
-                  <span className="text-white font-bold" style={{ fontSize: 8 }}>
+                  <span
+                    className="text-white font-bold"
+                    style={{ fontSize: 8 }}
+                  >
                     B
                   </span>
                 </div>
@@ -198,7 +205,8 @@ const ShareModal = ({
           </div>
 
           <p className="mt-4 font-body text-xs text-muted-foreground text-center">
-            Not financial advice. Past performance does not guarantee future results.
+            Not financial advice. Past performance does not guarantee future
+            results.
           </p>
         </div>
       </div>
