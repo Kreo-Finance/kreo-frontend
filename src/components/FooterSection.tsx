@@ -2,11 +2,16 @@ import { ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { joinWaitlist } from "@/services/waitlist";
+import { Link } from "react-router-dom";
 
 const footerLinks = {
   Protocol: ["Discover", "Features", "Pricing", "Roadmap"],
   Resources: ["Blog", "Documentation", "Help Center", "About"],
-  Legal: ["Terms of Service", "Privacy Policy", "Security"],
+  Legal: [
+    { text: "Terms of Service", href: "/terms-of-service" },
+    { text: "Privacy Policy", href: "/privacy-policy" },
+    // { text: "Security", href: "#" },
+  ],
 };
 
 const XIcon = () => (
@@ -163,16 +168,31 @@ const FooterSection = () => {
                 {title}
               </h4>
               <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {links.map((link) => {
+                  const linkText = typeof link === "string" ? link : link.text;
+                  const linkHref = typeof link === "string" ? "#" : link.href;
+                  const isInternalLink = linkHref.startsWith("/");
+
+                  return (
+                    <li key={linkText}>
+                      {isInternalLink ? (
+                        <Link
+                          to={linkHref}
+                          className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {linkText}
+                        </Link>
+                      ) : (
+                        <a
+                          href={linkHref}
+                          className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {linkText}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

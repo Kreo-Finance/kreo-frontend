@@ -16,6 +16,8 @@ import InvestorEarnings from "./pages/InvestorEarnings.tsx";
 import CreatorOnboarding from "./pages/onboarding/CreatorOnboarding.tsx";
 import InvestorOnboarding from "./pages/onboarding/InvestorOnboarding.tsx";
 import CreatorProfile from "./pages/CreatorProfile.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
+import TermsOfService from "./pages/TermsOfService.tsx";
 
 const App = () => (
   <ThemeProvider>
@@ -27,6 +29,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
 
             {/* Public creator profile */}
             <Route path="/creator/:address" element={<CreatorProfile />} />
@@ -43,7 +47,10 @@ const App = () => (
 
             {/* Onboarding */}
             <Route path="/onboarding/creator" element={<CreatorOnboarding />} />
-            <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
+            <Route
+              path="/onboarding/investor"
+              element={<InvestorOnboarding />}
+            />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
