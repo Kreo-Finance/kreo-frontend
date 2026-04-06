@@ -6,7 +6,12 @@ import { Link } from "react-router-dom";
 
 const footerLinks = {
   Protocol: ["Discover", "Features", "Pricing", "Roadmap"],
-  Resources: ["Blog", "Documentation", "Help Center", "About"],
+  Resources: [
+    { text: "Blog", href: "/blog" },
+    "Documentation",
+    "Help Center",
+    "About",
+  ],
   Legal: [
     { text: "Terms of Service", href: "/terms-of-service" },
     { text: "Privacy Policy", href: "/privacy-policy" },

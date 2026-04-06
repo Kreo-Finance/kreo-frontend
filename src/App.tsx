@@ -18,6 +18,8 @@ import InvestorOnboarding from "./pages/onboarding/InvestorOnboarding.tsx";
 import CreatorProfile from "./pages/CreatorProfile.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
+import Blog from "./pages/Blog.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 
 const App = () => (
   <ThemeProvider>
@@ -31,6 +33,8 @@ const App = () => (
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
 
             {/* Public creator profile */}
             <Route path="/creator/:address" element={<CreatorProfile />} />
