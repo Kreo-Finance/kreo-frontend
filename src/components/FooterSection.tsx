@@ -5,7 +5,7 @@ import { joinWaitlist } from "@/services/waitlist";
 import { Link } from "react-router-dom";
 
 const footerLinks = {
-  Protocol: ["Discover", "Features", "Pricing", "Roadmap"],
+  Protocol: ["Discover", "Features", { text: "Pricing", href: "/pricing" }, "Roadmap"],
   Resources: [
     { text: "Blog", href: "/blog" },
     "Documentation",

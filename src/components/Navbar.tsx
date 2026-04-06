@@ -19,6 +19,7 @@ import {
 
 const navLinks = [
   { label: "Marketplace", href: "/marketplace" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Creator Dashboard", href: "/creator/dashboard" },
   { label: "Portfolio", href: "/investor/portfolio" },
   { label: "Blog", href: "/blog" },
