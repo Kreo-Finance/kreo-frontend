@@ -438,8 +438,8 @@ const TermsOfService = () => {
                   <div className="pt-2 space-y-1.5 text-sm">
                     <p>
                       <span className="text-muted-foreground">Email: </span>
-                      <a href="mailto:hello@kreofinance.xyz" className="text-[hsl(var(--creo-teal))] hover:underline">
-                        hello@kreofinance.xyz
+                      <a href="mailto:hello@kreofi.xyz" className="text-[hsl(var(--creo-teal))] hover:underline">
+                        hello@kreofi.xyz
                       </a>
                     </p>
                     <p>
@@ -450,8 +450,8 @@ const TermsOfService = () => {
                     </p>
                     <p>
                       <span className="text-muted-foreground">Legal notices: </span>
-                      <a href="mailto:legal@kreofinance.xyz" className="text-[hsl(var(--creo-teal))] hover:underline">
-                        legal@kreofinance.xyz
+                      <a href="mailto:legal@kreofi.xyz" className="text-[hsl(var(--creo-teal))] hover:underline">
+                        legal@kreofi.xyz
                       </a>
                     </p>
                   </div>

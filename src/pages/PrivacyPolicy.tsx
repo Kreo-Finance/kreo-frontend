@@ -419,10 +419,10 @@ const PrivacyPolicy = () => {
                 You may request access to or deletion of your KYC data by
                 contacting us at{" "}
                 <a
-                  href="mailto:hello@kreofinance.xyz"
+                  href="mailto:hello@kreofi.xyz"
                   className="text-[hsl(var(--creo-pink))] hover:underline"
                 >
-                  hello@kreofinance.xyz
+                  hello@kreofi.xyz
                 </a>
                 , subject to our legal retention obligations.
               </Body>
@@ -738,10 +738,10 @@ function ContactCard() {
           <p>
             <span className="text-muted-foreground">Email: </span>
             <a
-              href="mailto:hello@kreofinance.xyz"
+              href="mailto:hello@kreofi.xyz"
               className="text-[hsl(var(--creo-pink))] hover:underline"
             >
-              hello@kreofinance.xyz
+              hello@kreofi.xyz
             </a>
           </p>
           <p>

@@ -200,7 +200,7 @@ const FAQSection = () => {
                     <p className="font-body text-sm text-muted-foreground">
                         Still have questions?{" "}
                         <a
-                            href="mailto:hello@creoprotocol.io"
+                            href="mailto:hello@kreofi.xyz"
                             className="text-creo-pink hover:underline font-medium"
                         >
                             Talk to the team →

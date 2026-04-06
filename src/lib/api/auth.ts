@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BrowserProvider } from 'ethers';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.parabuild.xyz/';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://kreo-backend-hfdh.onrender.com/api/v1/';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -44,7 +44,7 @@ apiClient.interceptors.response.use(
 
 export const authApi = {
   getNonce: async (walletAddress: string): Promise<{ nonce: string }> => {
-    const response = await apiClient.post('/auth/nonce', {
+    const response = await apiClient.post('auth/nonce', {
       wallet_address: walletAddress.toLowerCase(),
     });
     return response.data;
@@ -67,7 +67,7 @@ export const authApi = {
       investor?: { status: string; accreditation_status: string };
     };
   }> => {
-    const response = await apiClient.post('/auth/verify', {
+    const response = await apiClient.post('auth/verify', {
       wallet_address: walletAddress.toLowerCase(),
       signature,
     });
@@ -77,7 +77,7 @@ export const authApi = {
   refreshToken: async (
     refreshToken: string,
   ): Promise<{ access_token: string; refresh_token: string }> => {
-    const response = await apiClient.post('/auth/refresh', {
+    const response = await apiClient.post('auth/refresh', {
       refresh_token: refreshToken,
     });
     return response.data;
@@ -90,7 +90,7 @@ export const authApi = {
   },
 
   getSumsubToken: async (role: 'creator' | 'investor'): Promise<{ token: string }> => {
-    const response = await apiClient.post('/kyc/token', { role });
+    const response = await apiClient.post('kyc/token', { role });
     return response.data;
   },
 
