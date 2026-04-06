@@ -21,6 +21,7 @@ import TermsOfService from "./pages/TermsOfService.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import Pricing from "./pages/Pricing.tsx";
+import ScrollToTop from "./components/ScrollToTop.tsx";
 
 const App = () => (
   <ThemeProvider>
@@ -29,6 +30,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/marketplace" element={<Marketplace />} />

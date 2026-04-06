@@ -3,14 +3,20 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { joinWaitlist } from "@/services/waitlist";
 import { Link } from "react-router-dom";
+import { text } from "stream/consumers";
 
 const footerLinks = {
-  Protocol: ["Discover", "Features", { text: "Pricing", href: "/pricing" }, "Roadmap"],
+  Protocol: [
+    { text: "Marketplace", href: "/marketplace" },
+    { text: "Creator Dashboard", href: "/creator/dashboard" },
+    { text: "Pricing", href: "/pricing" },
+    { text: "Portfolio", href: "/investor/portfolio" },
+  ],
   Resources: [
     { text: "Blog", href: "/blog" },
-    "Documentation",
-    "Help Center",
-    "About",
+    { text: "Documentation", href: "/documentation" },
+    { text: "Help Center", href: "/help-center" },
+    { text: "About", href: "#" },
   ],
   Legal: [
     { text: "Terms of Service", href: "/terms-of-service" },
