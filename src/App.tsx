@@ -21,6 +21,7 @@ import TermsOfService from "./pages/TermsOfService.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import Pricing from "./pages/Pricing.tsx";
+import HelpCenter from "./pages/HelpCenter.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 
 const App = () => (
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/help-center" element={<HelpCenter />} />
 
             {/* Public creator profile */}
             <Route path="/creator/:address" element={<CreatorProfile />} />
