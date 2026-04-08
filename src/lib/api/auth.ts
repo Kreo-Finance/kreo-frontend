@@ -1,17 +1,19 @@
-import axios from 'axios';
-import { BrowserProvider } from 'ethers';
+import axios from "axios";
+import { BrowserProvider } from "ethers";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.parabuild.xyz/';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://kreo-backend-hfdh.onrender.com/api/v1/";
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
 });
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('kreo_access_token');
+    const token = localStorage.getItem("kreo_access_token");
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
@@ -25,17 +27,17 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem('kreo_refresh_token');
+        const refreshToken = localStorage.getItem("kreo_refresh_token");
         if (refreshToken) {
           const res = await authApi.refreshToken(refreshToken);
-          localStorage.setItem('kreo_access_token', res.access_token);
-          localStorage.setItem('kreo_refresh_token', res.refresh_token);
+          localStorage.setItem("kreo_access_token", res.access_token);
+          localStorage.setItem("kreo_refresh_token", res.refresh_token);
           originalRequest.headers.Authorization = `Bearer ${res.access_token}`;
           return apiClient(originalRequest);
         }
       } catch {
         authApi.logout();
-        window.location.href = '/';
+        window.location.href = "/";
       }
     }
     return Promise.reject(error);
@@ -44,13 +46,16 @@ apiClient.interceptors.response.use(
 
 export const authApi = {
   getNonce: async (walletAddress: string): Promise<{ nonce: string }> => {
-    const response = await apiClient.post('auth/nonce', {
+    const response = await apiClient.post("auth/nonce", {
       wallet_address: walletAddress.toLowerCase(),
     });
     return response.data;
   },
 
-  signMessage: async (nonce: string, provider: BrowserProvider): Promise<string> => {
+  signMessage: async (
+    nonce: string,
+    provider: BrowserProvider,
+  ): Promise<string> => {
     const signer = await provider.getSigner();
     return signer.signMessage(nonce);
   },
@@ -67,7 +72,7 @@ export const authApi = {
       investor?: { status: string; accreditation_status: string };
     };
   }> => {
-    const response = await apiClient.post('auth/verify', {
+    const response = await apiClient.post("auth/verify", {
       wallet_address: walletAddress.toLowerCase(),
       signature,
     });
@@ -77,26 +82,30 @@ export const authApi = {
   refreshToken: async (
     refreshToken: string,
   ): Promise<{ access_token: string; refresh_token: string }> => {
-    const response = await apiClient.post('auth/refresh', {
+    const response = await apiClient.post("auth/refresh", {
       refresh_token: refreshToken,
     });
     return response.data;
   },
 
   logout: () => {
-    localStorage.removeItem('kreo_access_token');
-    localStorage.removeItem('kreo_refresh_token');
-    localStorage.removeItem('kreo_wallet_address');
+    localStorage.removeItem("kreo_access_token");
+    localStorage.removeItem("kreo_refresh_token");
+    localStorage.removeItem("kreo_wallet_address");
   },
 
-  getSumsubToken: async (role: 'creator' | 'investor'): Promise<{ token: string }> => {
-    const response = await apiClient.post('kyc/token', { role });
+  getSumsubToken: async (
+    role: "creator" | "investor",
+  ): Promise<{ token: string }> => {
+    const response = await apiClient.post("kyc/token", { role });
     return response.data;
   },
 
-  isAuthenticated: (): boolean => !!localStorage.getItem('kreo_access_token'),
-  getAccessToken: (): string | null => localStorage.getItem('kreo_access_token'),
-  getWalletAddress: (): string | null => localStorage.getItem('kreo_wallet_address'),
+  isAuthenticated: (): boolean => !!localStorage.getItem("kreo_access_token"),
+  getAccessToken: (): string | null =>
+    localStorage.getItem("kreo_access_token"),
+  getWalletAddress: (): string | null =>
+    localStorage.getItem("kreo_wallet_address"),
 };
 
 export { apiClient };
