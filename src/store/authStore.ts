@@ -219,11 +219,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'kreo-auth',
+      version: 1,
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         walletAddress: state.walletAddress,
-        isAuthenticated: state.isAuthenticated,
         selectedRole: state.selectedRole,
         activeRole: state.activeRole,
         creatorKycStatus: state.creatorKycStatus,
