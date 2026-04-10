@@ -20,10 +20,47 @@ import {
 const navLinks = [
   { label: "Marketplace", href: "/marketplace" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Docs", href: "/documentation" },
+  { label: "Blog", href: "/blog" },
   { label: "Creator Dashboard", href: "/creator/dashboard" },
   { label: "Portfolio", href: "/investor/portfolio" },
-  { label: "Blog", href: "/blog" },
 ];
+
+// ─── Logo mark ───────────────────────────────────────────────────────────────
+
+const KreoMark = () => (
+  <svg
+    width="36"
+    height="36"
+    viewBox="0 0 28 28"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="km-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="hsl(168, 72%, 48%)" />
+        <stop offset="100%" stopColor="hsl(340, 82%, 65%)" />
+      </linearGradient>
+      <linearGradient id="km-inner" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
+        <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
+      </linearGradient>
+    </defs>
+    {/* Outer diamond */}
+    <path d="M14 1.5 L26.5 14 L14 26.5 L1.5 14 Z" fill="url(#km-grad)" />
+    {/* Inner diamond facet */}
+    <path d="M14 6.5 L21.5 14 L14 21.5 L6.5 14 Z" fill="url(#km-inner)" />
+    {/* Top-left facet highlight */}
+    <path d="M14 1.5 L6.5 14 L14 14 Z" fill="rgba(255,255,255,0.12)" />
+    {/* K letterform */}
+    <g fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="11.5" y1="9.5" x2="11.5" y2="18.5" />
+      <line x1="11.5" y1="14" x2="16.5" y2="9.5" />
+      <line x1="13" y1="12.4" x2="16.5" y2="18.5" />
+    </g>
+  </svg>
+);
 
 // ─── Logo scramble ───────────────────────────────────────────────────────────
 import { useEffect } from "react";
@@ -314,7 +351,9 @@ const Navbar = () => {
           to="/"
           className="font-display text-3xl font-bold tracking-tight select-none flex-shrink-0"
         >
-          <span className="inline-flex items-center gap-px">
+          <span className="inline-flex items-center gap-2.5">
+            <KreoMark />
+            <span className="inline-flex items-center gap-px">
             {chars.map((char, i) => (
               <motion.span
                 key={`${i}-${landed[i] ? "on" : "off"}`}
@@ -340,6 +379,7 @@ const Navbar = () => {
                 {char}
               </motion.span>
             ))}
+            </span>
           </span>
         </Link>
 

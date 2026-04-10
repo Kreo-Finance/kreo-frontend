@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { joinWaitlist } from "@/services/waitlist";
 import { Link } from "react-router-dom";
-import { text } from "stream/consumers";
-
 const footerLinks = {
   Protocol: [
     { text: "Marketplace", href: "/marketplace" },
