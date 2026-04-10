@@ -1,7 +1,3 @@
-import { ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { joinWaitlist } from "@/services/waitlist";
 import { Link } from "react-router-dom";
 const footerLinks = {
   Protocol: [
@@ -90,89 +86,65 @@ const socials = [
   },
 ];
 
+const KreoMarkFooter = () => (
+  <svg
+    width="72"
+    height="72"
+    viewBox="0 0 28 28"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="fm-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="hsl(168, 72%, 48%)" />
+        <stop offset="100%" stopColor="hsl(340, 82%, 65%)" />
+      </linearGradient>
+      <linearGradient id="fm-inner" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
+        <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
+      </linearGradient>
+    </defs>
+    <path d="M14 1.5 L26.5 14 L14 26.5 L1.5 14 Z" fill="url(#fm-grad)" />
+    <path d="M14 6.5 L21.5 14 L14 21.5 L6.5 14 Z" fill="url(#fm-inner)" />
+    <path d="M14 1.5 L6.5 14 L14 14 Z" fill="rgba(255,255,255,0.12)" />
+    <g fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="11.5" y1="9.5" x2="11.5" y2="18.5" />
+      <line x1="11.5" y1="14" x2="16.5" y2="9.5" />
+      <line x1="13" y1="12.4" x2="16.5" y2="18.5" />
+    </g>
+  </svg>
+);
+
 const FooterSection = () => {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleWaitlistSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await joinWaitlist(email);
-      setSubmitted(true);
-      setEmail("");
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!submitted && !error) return;
-
-    const timeout = setTimeout(() => {
-      setSubmitted(false);
-      setError("");
-      setEmail("");
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [submitted, error]);
   return (
     <footer className="border-t border-border bg-background">
       {/* CTA strip */}
       <div className="h-2 bg-gradient-teal-pink" />
 
       <div className="container mx-auto px-4 py-16">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          {/* Newsletter */}
-          <div className="lg:col-span-1">
-            <h3 className="font-display text-2xl font-bold leading-snug">
-              Join to get the early beta access and other privileges.
-            </h3>
-            <div className="mt-6 flex flex-col gap-2">
-              <form
-                onSubmit={handleWaitlistSubmit}
-                className="flex items-center gap-2"
-              >
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  className="flex-1 rounded-lg border border-border bg-muted px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-creo-pink"
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  className="bg-creo-pink text-primary-foreground hover:opacity-90 h-11 w-11"
-                  disabled={loading}
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
+          {/* Brand lockup */}
+          <div className="lg:col-span-2 flex flex-col justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <KreoMarkFooter />
+                <span
+                  className="font-display font-bold text-gradient-hero leading-none"
+                  style={{ fontSize: "clamp(3rem, 8vw, 5rem)" }}
                 >
-                  {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <ArrowRight className="h-4 w-4" />
-                  )}
-                </Button>
-              </form>
-              {submitted && (
-                <p className="text-sm text-green-600 flex items-center gap-1">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Successfully joined the waitlist!
-                </p>
-              )}
-              {error && <p className="text-sm text-red-600">{error}</p>}
+                  KREO
+                </span>
+              </div>
+              <p className="font-body text-muted-foreground text-center leading-relaxed max-w-xs">
+               Your Earnings. Your Capital.
+              </p>
             </div>
           </div>
 
           {/* Link columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
+            <div key={title} className="lg:col-span-1">
               <h4 className="font-display text-sm font-semibold text-foreground mb-4">
                 {title}
               </h4>
@@ -210,9 +182,6 @@ const FooterSection = () => {
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <div className="flex items-center gap-2">
-            <span className="font-display text-xl font-bold text-gradient-hero">
-              KREO
-            </span>
             <span className="font-body text-sm text-muted-foreground">
               © {new Date().getFullYear()} Kreo Finance. All rights reserved
             </span>

@@ -30,8 +30,8 @@ const navLinks = [
 
 const KreoMark = () => (
   <svg
-    width="36"
-    height="36"
+    width="34"
+    height="34"
     viewBox="0 0 28 28"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -351,7 +351,7 @@ const Navbar = () => {
           to="/"
           className="font-display text-3xl font-bold tracking-tight select-none flex-shrink-0"
         >
-          <span className="inline-flex items-center gap-2.5">
+          <span className="inline-flex items-center gap-1">
             <KreoMark />
             <span className="inline-flex items-center gap-px">
             {chars.map((char, i) => (
