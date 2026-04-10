@@ -6,7 +6,7 @@ const phases = [
     num: "01",
     phase: "Phase 1",
     period: "Q2 2026",
-    title: "Launch on Base",
+    title: "Mainnet Beta Launch",
     description:
       "Smart contracts live on Base testnet. Singapore entity incorporated. Creator and investor onboarding complete. First on-chain raise, capital release, and monthly settlement cycle executed in beta.",
     milestone: "Beta opens July 2026 — accredited investors across all three variance tiers.",
@@ -17,7 +17,7 @@ const phases = [
     num: "02",
     phase: "Phase 2",
     period: "Q3 2026",
-    title: "Mainnet & Token",
+    title: "Insurance Pool & Token Launch",
     description:
       "External audit complete. Base Mainnet deployed with 48-hour governance timelock. $KREO token launched via SAFT round. Staking drives real USDC yield from the insurance pool. RST secondary market on Uniswap V3.",
     milestone: "$KREO staking — insurance pool-backed yield paid in USDC, not promises.",
@@ -28,7 +28,7 @@ const phases = [
     num: "03",
     phase: "Phase 3",
     period: "Q4 2026",
-    title: "Global Scale",
+    title: "Global Scale Through DAO Governance",
     description:
       "KREO DAO assumes full on-chain governance — no admin keys in production. Cross-chain to Ethereum and Solana. Institutional APIs and whitelabel settlement infrastructure. Full retail compliance across all target markets.",
     milestone: "KREO DAO governs the protocol — fee rates, oracle parameters, treasury.",
