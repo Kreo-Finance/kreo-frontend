@@ -236,7 +236,7 @@ const team = [
     initialsColor: "text-creo-pink",
     initialsBg: "bg-creo-pink/10 border-creo-pink/20",
     accentColor: "creo-pink",
-    bio: "4x ETHGlobal winner and Lead Blockchain Engineer with 4 years building across EVM, Solana, Starknet, and Move ecosystems. Founded Kreo Finance after watching a creator friend with $4,200/month in verified AdSense income get rejected by his bank — and realising the capital infrastructure for creators was fundamentally broken. Previously built protocols across yield optimization, hedging, staking, and creator finance verticals. Hackathon wins include SaucerHedge (ETHOnline), BitYield (Starknet Re{solve} champion), and ReVaultron (Hedera).",
+    bio: "4x ETHGlobal winner and Lead Blockchain Engineer with 5+ years building across EVM, Solana, Starknet, and Move ecosystems. Founded Kreo Finance after watching a creator friend with $4,200/month in verified AdSense income get rejected by his bank — and realising the capital infrastructure for creators was fundamentally broken. Previously built protocols across yield optimization, hedging, staking, and creator finance verticals. Hackathon wins include SaucerHedge (ETHOnline), BitYield (Starknet Re{solve} champion), and ReVaultron (Hedera).",
     focus: "Protocol architecture, smart contracts, investor relations, and go-to-market.",
     links: {
       twitter: "https://twitter.com/CodeBlocker52",

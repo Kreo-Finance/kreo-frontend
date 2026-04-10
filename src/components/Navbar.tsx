@@ -29,7 +29,7 @@ const navLinks: NavLink[] = [
   {
     label: "FOR CREATORS",
     dropdown: [
-      { label: "Creator Dashboard", href: "/creator/dashboard" },
+      { label: "Dashboard", href: "/creator/dashboard" },
       { label: "Portfolio", href: "/investor/portfolio" },
     ],
   },
