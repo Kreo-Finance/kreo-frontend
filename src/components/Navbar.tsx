@@ -17,14 +17,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navLinks = [
-  { label: "Marketplace", href: "/marketplace" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Docs", href: "/documentation" },
-  { label: "Blog", href: "/blog" },
-  { label: "Team", href: "/team" },
-  { label: "Creator Dashboard", href: "/creator/dashboard" },
-  { label: "Portfolio", href: "/investor/portfolio" },
+type NavDropdownItem = { label: string; href: string };
+type NavLink =
+  | { label: string; href: string; dropdown?: undefined }
+  | { label: string; href?: undefined; dropdown: NavDropdownItem[] };
+
+const navLinks: NavLink[] = [
+  { label: "MARKETPLACE", href: "/marketplace" },
+  { label: "ROADMAP", href: "/#roadmap" },
+  { label: "TEAM", href: "/team" },
+  {
+    label: "FOR CREATORS",
+    dropdown: [
+      { label: "Creator Dashboard", href: "/creator/dashboard" },
+      { label: "Portfolio", href: "/investor/portfolio" },
+    ],
+  },
+  {
+    label: "RESOURCES",
+    dropdown: [
+      { label: "Blog", href: "/blog" },
+      { label: "Docs", href: "/documentation" },
+      { label: "Pricing", href: "/pricing" },
+    ],
+  },
 ];
 
 // ─── Logo mark ───────────────────────────────────────────────────────────────
@@ -387,7 +403,30 @@ const Navbar = () => {
         {/* Nav links — desktop */}
         <div className="hidden lg:flex items-center gap-8 flex-1 justify-center">
           {navLinks.map((link) =>
-            isHashLink(link.href) ? (
+            link.dropdown ? (
+              <DropdownMenu key={link.label}>
+                <DropdownMenuTrigger className="flex items-center gap-1 font-body text-base font-medium text-muted-foreground transition-all hover:text-foreground hover:translate-y-[-1px] whitespace-nowrap outline-none">
+                  {link.label}
+                  <ChevronDown size={13} className="mt-px" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-48">
+                  {link.dropdown.map((item) => (
+                    <DropdownMenuItem key={item.href} asChild>
+                      <Link
+                        to={item.href}
+                        className={`font-body text-sm cursor-pointer ${
+                          location.pathname === item.href
+                            ? "text-foreground font-semibold"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : isHashLink(link.href) ? (
               <a
                 key={link.label}
                 href={link.href}
@@ -456,6 +495,7 @@ function MobileMenu({
   const { theme, toggleTheme } = useTheme();
   const cta = useNavbarCTA();
   const isHashLink = (href: string) => href.startsWith("/#");
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
 
   return (
     <motion.div
@@ -466,7 +506,45 @@ function MobileMenu({
     >
       <div className="flex flex-col gap-1 px-4 py-4">
         {navLinks.map((link) =>
-          isHashLink(link.href) ? (
+          link.dropdown ? (
+            <div key={link.label}>
+              <button
+                onClick={() => setOpenGroup(openGroup === link.label ? null : link.label)}
+                className="w-full flex items-center justify-between font-body text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg px-3 py-2.5 transition-colors"
+              >
+                {link.label}
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${openGroup === link.label ? "rotate-180" : ""}`}
+                />
+              </button>
+              <AnimatePresence initial={false}>
+                {openGroup === link.label && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden pl-3"
+                  >
+                    {link.dropdown.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        onClick={onClose}
+                        className={`block font-body text-sm rounded-lg px-3 py-2 transition-colors hover:bg-muted ${
+                          location.pathname === item.href
+                            ? "text-foreground font-semibold"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : isHashLink(link.href) ? (
             <a
               key={link.label}
               href={link.href}

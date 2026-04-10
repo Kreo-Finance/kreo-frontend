@@ -10,7 +10,6 @@ const footerLinks = {
     { text: "Blog", href: "/blog" },
     { text: "Documentation", href: "/documentation" },
     { text: "Help Center", href: "/help-center" },
-    { text: "About", href: "#" },
   ],
   Legal: [
     { text: "Terms of Service", href: "/terms-of-service" },
