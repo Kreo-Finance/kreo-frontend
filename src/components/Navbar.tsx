@@ -22,6 +22,7 @@ const navLinks = [
   { label: "Pricing", href: "/pricing" },
   { label: "Docs", href: "/documentation" },
   { label: "Blog", href: "/blog" },
+  { label: "Team", href: "/team" },
   { label: "Creator Dashboard", href: "/creator/dashboard" },
   { label: "Portfolio", href: "/investor/portfolio" },
 ];

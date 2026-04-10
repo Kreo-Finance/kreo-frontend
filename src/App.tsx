@@ -23,6 +23,7 @@ import BlogPost from "./pages/BlogPost.tsx";
 import Pricing from "./pages/Pricing.tsx";
 import HelpCenter from "./pages/HelpCenter.tsx";
 import Documentation from "./pages/Documentation.tsx";
+import Team from "./pages/Team.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 
 const App = () => (
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/documentation" element={<Documentation />} />
+            <Route path="/team" element={<Team />} />
 
             {/* Public creator profile */}
             <Route path="/creator/:address" element={<CreatorProfile />} />
