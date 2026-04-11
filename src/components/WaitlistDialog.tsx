@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useAppKit } from "@reown/appkit/react";
+import { useAppKit, useAppKitState } from "@reown/appkit/react";
 import { useAccount } from "wagmi";
 import { joinWaitlist } from "@/services/waitlist";
 
@@ -25,6 +25,7 @@ const WaitlistDialog = ({ open, onOpenChange }: WaitlistDialogProps) => {
   const [error, setError] = useState("");
 
   const { open: openAppKit } = useAppKit();
+  const { open: isAppKitOpen } = useAppKitState();
   const { address, isConnected } = useAccount();
 
   const truncatedAddress = address
@@ -50,6 +51,7 @@ const WaitlistDialog = ({ open, onOpenChange }: WaitlistDialogProps) => {
   };
 
   const handleOpenChange = (next: boolean) => {
+    if (!next && isAppKitOpen) return;
     onOpenChange(next);
     if (!next) {
       setTimeout(() => {
