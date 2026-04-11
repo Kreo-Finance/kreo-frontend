@@ -1,0 +1,250 @@
+[
+  {
+    "id": 1,
+    "slug": "why-banks-reject-youtubers",
+    "title": "Why Banks Reject YouTubers — And What You Can Do About It",
+    "excerpt": "You have a million subscribers, consistent monthly revenue, and brand deals lined up for the next year. So why does every bank still say no?",
+    "date": "2026-03-28",
+    "readTime": "6 min read",
+    "category": "Creator Finance",
+    "author": {
+      "name": "Kreo Team",
+      "role": "Protocol"
+    },
+    "gradient": "from-creo-pink to-creo-teal",
+    "accentColor": "text-creo-pink",
+    "coverIcon": "bank",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "You've built a YouTube channel that earns $18,000 a month. You have contracts with three brands for the next six months. Your audience has grown 40% year over year. By any reasonable measure, you're running a successful business."
+      },
+      {
+        "type": "paragraph",
+        "content": "Yet when you walk into a bank and ask for a $50,000 loan to buy camera equipment, hire an editor, and move into a bigger studio — they say no. Sometimes they don't even explain why."
+      },
+      {
+        "type": "heading",
+        "content": "The Core Problem: Banks Are Built for Salaries"
+      },
+      {
+        "type": "paragraph",
+        "content": "Traditional financial institutions were designed around a specific kind of income: a fixed monthly salary from a single employer. Their entire risk model — credit scores, income verification, debt-to-income ratios — assumes that your income next month will be almost identical to your income this month."
+      },
+      {
+        "type": "paragraph",
+        "content": "Creator income doesn't work that way. A brand deal pays $15,000 in January, nothing in February, then $8,000 in March. Ad revenue spikes when a video goes viral. Merchandise sales cluster around launch events. From a bank's perspective, this looks like chaos — even if the annual total is $220,000."
+      },
+      {
+        "type": "heading",
+        "content": "The Three Specific Ways Banks Screen You Out"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Employment verification fails — banks call your 'employer', but you are the employer. Many systems literally cannot process self-employment from creator platforms.",
+          "Income averaging penalises you — banks look at 12–24 months of bank statements and average them. A creator with three exceptional months and nine average ones looks worse than an employee who earns a steady but lower amount.",
+          "Business classification is wrong — most banks don't have a category for 'content creator'. They default to 'freelancer' or 'sole trader', which triggers higher scrutiny and lower approval rates."
+        ]
+      },
+      {
+        "type": "heading",
+        "content": "Why This Matters More Than It Seems"
+      },
+      {
+        "type": "paragraph",
+        "content": "Access to capital isn't just about buying gear. It's about compounding growth. A creator who can invest $50,000 in production quality and team hires at the right moment can 10x their revenue in 18 months. A creator who can't access that capital stays on a slower growth curve — not because they're less talented, but because the financial system wasn't built for them."
+      },
+      {
+        "type": "callout",
+        "content": "The creator economy generates over $250 billion annually, yet the creators powering it have almost no access to the financial tools that traditional business owners take for granted."
+      },
+      {
+        "type": "heading",
+        "content": "What Kreo Does Differently"
+      },
+      {
+        "type": "paragraph",
+        "content": "Kreo Finance was built specifically to solve this problem. Instead of looking at whether your income fits a salary mold, Kreo looks at income consistency — the ratio of variance to average earnings over time. A creator with $18,000/month that fluctuates by 15% scores better than a traditional employee who earns $12,000/month with zero variance."
+      },
+      {
+        "type": "paragraph",
+        "content": "Through on-chain revenue share offerings, creators can access upfront capital from a global pool of investors — without the paperwork, without the employment verification, and without explaining to a bank what a YouTube channel is."
+      },
+      {
+        "type": "paragraph",
+        "content": "The future of creator finance isn't about convincing old institutions to update their spreadsheets. It's about building new infrastructure that was designed for the creator economy from day one."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "slug": "consistent-income-beats-high-income",
+    "title": "Why Consistent Income Beats High Income in Creator Finance",
+    "excerpt": "Two creators. One earns more. The other gets better terms. Understanding the CV model that powers the KreoScore — and why it changes everything.",
+    "date": "2026-04-01",
+    "readTime": "8 min read",
+    "category": "Protocol Deep Dive",
+    "author": {
+      "name": "Kreo Team",
+      "role": "Protocol"
+    },
+    "gradient": "from-creo-teal to-creo-yellow",
+    "accentColor": "text-creo-teal",
+    "coverIcon": "chart",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Meet Rahul and Sarah. Both are full-time content creators. Both earned roughly the same amount last year — around $150,000. But when they applied for a revenue share offering on Kreo, they received very different terms."
+      },
+      {
+        "type": "paragraph",
+        "content": "Sarah got a lower rate and higher capital ceiling. Rahul got a higher rate and a more limited offering. Rahul was understandably confused. He's earned more in peak months than Sarah has. Why is he penalised?"
+      },
+      {
+        "type": "heading",
+        "content": "The Answer: Variance Is Risk"
+      },
+      {
+        "type": "paragraph",
+        "content": "In traditional finance, investors and lenders think about risk in terms of default probability — the chance you simply stop paying. In creator finance, there's a more nuanced risk: income volatility. If your income can swing from $30,000 to $3,000 in a single month, the investor backing you needs to price that uncertainty."
+      },
+      {
+        "type": "paragraph",
+        "content": "This is where the Coefficient of Variation (CV) comes in. CV is a statistical measure of relative variability: the standard deviation of your income divided by the mean. A creator with perfectly flat income has a CV of 0. A creator whose income oscillates wildly has a CV approaching 1 or higher."
+      },
+      {
+        "type": "callout",
+        "content": "CV = Standard Deviation ÷ Mean Income. Lower is better. It measures how much your income fluctuates relative to its average — not how high or low the average is."
+      },
+      {
+        "type": "heading",
+        "content": "Rahul vs Sarah: The Numbers"
+      },
+      {
+        "type": "paragraph",
+        "content": "Rahul is a gaming creator. His channel explodes when he covers a viral game release — he earns $35,000 those months. But between major releases, his income drops to $6,000. His average is $14,500/month, but his CV is 0.68."
+      },
+      {
+        "type": "paragraph",
+        "content": "Sarah is a personal finance creator. She earns $12,000–$14,000 every single month without exception. She has Patreon subscribers, consistent brand partners, and YouTube ad revenue that barely moves. Her average is $13,000/month, but her CV is 0.07."
+      },
+      {
+        "type": "paragraph",
+        "content": "Sarah earns less on average. But from an investor's perspective, Sarah's income stream is far more predictable. The risk of her not being able to fulfil a revenue share commitment is dramatically lower. She gets better terms."
+      },
+      {
+        "type": "heading",
+        "content": "What This Means for Creators Practically"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Diversify your income streams — having Patreon, brand deals, ad revenue, and merchandise means no single source can crater your monthly total.",
+          "Nurture recurring revenue — subscribers, membership tiers, and retainer brand partnerships are worth more to your KreoScore than one-time viral paydays.",
+          "Smooth out your publishing schedule — irregular posting leads to irregular algorithm performance, which leads to irregular ad revenue. Consistency compounds.",
+          "Document everything — consistent income you can't prove doesn't count. Connect all your revenue sources to your Kreo profile."
+        ]
+      },
+      {
+        "type": "heading",
+        "content": "The KreoScore Is Not Just a Number"
+      },
+      {
+        "type": "paragraph",
+        "content": "The KreoScore is a composite signal that combines income consistency (CV), average monthly earnings, growth trajectory, and platform diversification. It's designed to reward the kind of creator who is genuinely building a sustainable business — not just chasing viral moments."
+      },
+      {
+        "type": "paragraph",
+        "content": "For investors, it means they can evaluate creators the same way a credit analyst evaluates a borrower — with data, not vibes. For creators, it means that the boring, consistent, compounding work they do every month has tangible financial value beyond the next brand deal."
+      },
+      {
+        "type": "paragraph",
+        "content": "Consistency isn't just a virtue. On Kreo, it's a financial asset."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "slug": "creator-economy-480b-problem",
+    "title": "The Creator Economy Has a $480B Problem — And It's Not What You Think",
+    "excerpt": "Everyone talks about how big the creator economy is. Nobody talks about where the money actually goes — and how on-chain infrastructure changes the equation.",
+    "date": "2026-04-05",
+    "readTime": "7 min read",
+    "category": "Industry",
+    "author": {
+      "name": "Kreo Team",
+      "role": "Protocol"
+    },
+    "gradient": "from-creo-yellow to-creo-pink",
+    "accentColor": "text-creo-yellow",
+    "coverIcon": "globe",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The creator economy is projected to reach $480 billion by 2027. Every major tech company, every VC fund, and every media outlet has published their version of this statistic. It sounds impressive. It is impressive."
+      },
+      {
+        "type": "paragraph",
+        "content": "But here's the part nobody leads with: the vast majority of that $480 billion does not go to creators."
+      },
+      {
+        "type": "heading",
+        "content": "The Platform Tax"
+      },
+      {
+        "type": "paragraph",
+        "content": "Every platform that enables the creator economy takes a significant cut of the revenue that flows through it. YouTube takes 45% of ad revenue. App stores take 30% of in-app purchases. Patreon takes up to 12% including payment processing. Brand deal agencies typically take 20–25% of contract value."
+      },
+      {
+        "type": "paragraph",
+        "content": "Run the math and you'll find that for every dollar a creator's audience generates, the creator is lucky to see 50 cents. Often it's much less."
+      },
+      {
+        "type": "callout",
+        "content": "Of the $480B creator economy, creators themselves may capture less than half. The rest flows to platforms, intermediaries, and payment processors."
+      },
+      {
+        "type": "heading",
+        "content": "The Capital Access Problem"
+      },
+      {
+        "type": "paragraph",
+        "content": "Even for creators who have solved the revenue problem, there's a second, less-discussed issue: they have almost no access to growth capital. Traditional venture capital doesn't fund solo creators. Banks, as we've written before, can't evaluate creator income. Private equity isn't interested until you're at $10M revenue."
+      },
+      {
+        "type": "paragraph",
+        "content": "This means that the most talented creators in the world are stuck growing at the pace their monthly income allows. They can't hire a team, can't invest in production quality, can't buy the equipment that would let them produce at a professional level — unless they're willing to do another brand deal they don't believe in."
+      },
+      {
+        "type": "heading",
+        "content": "What On-Chain Infrastructure Changes"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Global capital pools — any investor anywhere in the world can back a creator, not just those with access to US or European financial institutions.",
+          "Transparent revenue sharing — smart contracts enforce the terms automatically. No need to trust a platform or an agency to calculate and send your share.",
+          "Programmable payouts — income from any connected platform can be split automatically on-chain, eliminating the friction of manual transfers and reconciliation.",
+          "Composability — creator revenue streams become financial primitives that can be collateralized, indexed, or integrated into DeFi protocols."
+        ]
+      },
+      {
+        "type": "heading",
+        "content": "The Shift That's Coming"
+      },
+      {
+        "type": "paragraph",
+        "content": "The first wave of the creator economy was about distribution — getting your content in front of an audience. YouTube solved this. The second wave was about monetization — turning that audience into income. Patreon, Substack, and brand deals solved this, imperfectly."
+      },
+      {
+        "type": "paragraph",
+        "content": "The third wave is about financial infrastructure — giving creators the same capital access, financial tools, and ownership structures that traditional businesses have. This is the wave that on-chain protocols like Kreo are built to power."
+      },
+      {
+        "type": "paragraph",
+        "content": "The $480 billion figure isn't the problem. The problem is who captures it, who controls access to growth capital, and who decides what the terms are. On-chain infrastructure doesn't just make existing processes more efficient. It restructures who has power in the equation — and for the first time, it gives that power to creators."
+      }
+    ]
+  }
+]

@@ -9,9 +9,9 @@ import { useAccount } from "wagmi";
 import WaitlistDialog from "@/components/WaitlistDialog";
 
 const navLinks = [
-  { label: "Marketplace", href: "/marketplace" },
-  { label: "Creator Dashboard", href: "/creator/dashboard" },
-  { label: "Portfolio", href: "/investor/portfolio" },
+  { label: "ROADMAP", href: "/#roadmap" },
+  { label: "DOCS", href: "/documentation" },
+  { label: "BLOG", href: "/blog" },
 ];
 
 const Navbar = () => {

@@ -13,31 +13,40 @@ import CreatorBond from "./pages/CreatorBond.tsx";
 import Marketplace from "./pages/Marketplace.tsx";
 import InvestorPortfolio from "./pages/InvestorPortfolio.tsx";
 import InvestorEarnings from "./pages/InvestorEarnings.tsx";
+import Documentation from "./pages/Documentation.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
+import Blog from "./pages/Blog.tsx";
+import Pricing from "./pages/Pricing.tsx";
 
 const App = () => (
   <ThemeProvider>
-  <Web3Provider>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/creator/dashboard" element={<CreatorDashboard />} />
-          <Route path="/creator/offerings" element={<CreatorOfferings />} />
-          <Route path="/creator/analytics" element={<CreatorAnalytics />} />
-          <Route path="/creator/bond" element={<CreatorBond />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/investor/portfolio" element={<InvestorPortfolio />} />
-          <Route path="/investor/earnings" element={<InvestorEarnings />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </Web3Provider>
+    <Web3Provider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/documentation" element={<Documentation />} />
+            {/* <Route path="/creator/dashboard" element={<CreatorDashboard />} />
+            <Route path="/creator/offerings" element={<CreatorOfferings />} />
+            <Route path="/creator/analytics" element={<CreatorAnalytics />} /> */}
+            {/* <Route path="/creator/bond" element={<CreatorBond />} />
+            <Route path="/investor/dashboard" element={<InvestorPortfolio />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/investor/portfolio" element={<InvestorPortfolio />} />
+            <Route path="/investor/earnings" element={<InvestorEarnings />} /> */}
+
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </Web3Provider>
   </ThemeProvider>
 );
 
 export default App;
-

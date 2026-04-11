@@ -7,6 +7,7 @@ import ComparisonSection from "@/components/ComparisonSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import FooterSection from "@/components/FooterSection";
 import FAQSection from "@/components/FAQSection";
+import RoadmapSection from "@/components/RoadmapSection";
 
 const Index = () => {
   return (
@@ -17,6 +18,7 @@ const Index = () => {
       <FeaturesSection />
       <HowItWorksSection />
       <ComparisonSection />
+      <RoadmapSection />
       {/* <TestimonialsSection /> */}
       <FAQSection />
       <FooterSection />
