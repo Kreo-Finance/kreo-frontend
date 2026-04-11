@@ -1,10 +1,10 @@
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Loader2, CheckCircle2, Mail } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { joinWaitlist } from "@/services/waitlist";
 import heroCreator from "@/assets/hero-creator.png";
 import heroInvestor from "@/assets/hero-investor.png";
+import WaitlistDialog from "@/components/WaitlistDialog";
 
 const headlines = [
   {
@@ -19,12 +19,6 @@ const headlines = [
     connector: "for Creators",
     accent: "Revenue",
   },
-  // {
-  //   top: "Global, Permissionless",
-  //   highlight: "&",
-  //   connector: "Liquid — Built for",
-  //   accent: "Creators",
-  // },
   {
     top: "A New Paradigm",
     highlight: "of Trust",
@@ -88,37 +82,7 @@ function AnimatedStat({ value, inView }: { value: string; inView: boolean }) {
 const HeroSection = () => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleWaitlistSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await joinWaitlist(email);
-      setSubmitted(true);
-      setEmail("");
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!submitted && !error) return;
-
-    const timeout = setTimeout(() => {
-      setSubmitted(false);
-      setError("");
-      setEmail("");
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [submitted, error]);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   const statsRef = useRef(null);
   const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
@@ -160,7 +124,7 @@ const HeroSection = () => {
         <div className="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-creo-yellow/10 blur-[100px]" />
       </div>
 
-      <div className="container relative mx-auto  flex flex-col items-center px-4 pt-10 lg:pt-12">
+      <div className="container relative mx-auto flex flex-col items-center px-4 pt-10 lg:pt-12">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -199,29 +163,13 @@ const HeroSection = () => {
           </AnimatePresence>
         </div>
 
-        {/* Dot indicators */}
+        {/* Dot indicators placeholder */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
           className="flex items-center gap-2 mt-4 mb-4"
-        >
-          {/* {headlines.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                setDirection(i > index ? 1 : -1);
-                setIndex(i);
-              }}
-              className={`transition-all duration-300 rounded-full ${
-                i === index
-                  ? "w-6 h-2 bg-creo-pink"
-                  : "w-2 h-2 bg-muted-foreground/40 hover:bg-muted-foreground/70"
-              }`}
-              aria-label={`Go to headline ${i + 1}`}
-            />
-          ))} */}
-        </motion.div>
+        />
 
         {/* Subheadline */}
         <motion.p
@@ -234,56 +182,23 @@ const HeroSection = () => {
           real yield backed by verifiable creator revenue — not speculation.
         </motion.p>
 
-        {/* CTA — Waitlist email capture */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-10 w-full max-w-md flex flex-col items-center gap-3"
+          className="mt-10 flex flex-col items-center gap-3"
         >
-          {submitted ? (
-            <div className="flex items-center gap-3 rounded-xl border border-border bg-muted px-6 py-4 text-center">
-              <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-creo-teal" />
-              <p className="font-body text-sm text-foreground">
-                Welcome! You&apos;re on the list!
-              </p>
-            </div>
-          ) : (
-            <>
-              <form
-                onSubmit={handleWaitlistSubmit}
-                className="flex w-full items-center rounded-full border border-border bg-muted p-1.5 pl-5"
-              >
-                <Mail className="mr-3 h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="flex-1 bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none min-w-0"
-                />
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={loading}
-                  className="ml-2 rounded-full bg-gradient-hero px-5 py-2 font-display text-sm font-semibold text-primary-foreground shadow-glow-pink hover:opacity-90 disabled:opacity-60 flex-shrink-0"
-                >
-                  {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      Join Waitlist
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
-            </>
-          )}
-          {error && (
-            <p className="font-body text-xs text-destructive">{error}</p>
-          )}
+          <Button
+            onClick={() => setWaitlistOpen(true)}
+            className="rounded-full bg-gradient-hero px-8 py-6 font-display text-base font-semibold text-primary-foreground shadow-glow-pink hover:opacity-90 flex items-center gap-2"
+          >
+            Join Waitlist
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+          <p className="font-body text-xs text-muted-foreground">
+            No spam, ever. Made for creators.
+          </p>
         </motion.div>
 
         {/* Floating Characters */}
@@ -345,6 +260,8 @@ const HeroSection = () => {
           ))}
         </motion.div>
       </div>
+
+      <WaitlistDialog open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </section>
   );
 };

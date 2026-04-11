@@ -1,29 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Menu,
-  X,
-  Wallet,
-  Mail,
-  Loader2,
-  CheckCircle2,
-  Sun,
-  Moon,
-} from "lucide-react";
+import { Menu, X, Wallet, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { Link, useLocation } from "react-router-dom";
-import { joinWaitlist } from "@/services/waitlist";
 import { useAppKit } from "@reown/appkit/react";
 import { useAccount } from "wagmi";
+import WaitlistDialog from "@/components/WaitlistDialog";
 
 const navLinks = [
   { label: "Marketplace", href: "/marketplace" },
@@ -34,10 +17,6 @@ const navLinks = [
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
 
   const WORD = "KREO";
   const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&!?%";
@@ -110,31 +89,6 @@ const Navbar = () => {
     : "";
 
   const isHashLink = (href: string) => href.startsWith("/#");
-
-  const handleWaitlistSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await joinWaitlist(email);
-      setSubmitted(true);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleWaitlistClose = (open: boolean) => {
-    setWaitlistOpen(open);
-    if (!open) {
-      setTimeout(() => {
-        setEmail("");
-        setSubmitted(false);
-        setError("");
-      }, 300);
-    }
-  };
 
   return (
     <>
@@ -221,31 +175,6 @@ const Navbar = () => {
             >
               Join Waitlist
             </Button>
-
-            {/* {isConnected ? (
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={() => open()}
-                  className="bg-card/40 border border-white/10 backdrop-blur-md font-body text-sm font-semibold text-foreground hover:bg-white/5 flex items-center gap-2 h-10 px-4"
-                >
-                  <div className="h-2 w-2 rounded-full bg-creo-teal animate-pulse" />
-                  {truncatedAddress}
-                </Button>
-                <Link to="/creator/dashboard">
-                  <Button className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-glow-pink px-5 h-10">
-                    Start Creating
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <Button
-                onClick={() => open()}
-                className="bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 flex items-center gap-2 h-10 px-5"
-              >
-                <Wallet size={16} />
-                Connect Wallet
-              </Button>
-            )} */}
           </div>
 
           <button
@@ -336,80 +265,7 @@ const Navbar = () => {
         </AnimatePresence>
       </nav>
 
-      <Dialog open={waitlistOpen} onOpenChange={handleWaitlistClose}>
-        <DialogContent className="sm:max-w-md border-border bg-background">
-          {submitted ? (
-            <div className="flex flex-col items-center gap-4 py-6 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-hero">
-                <CheckCircle2 className="h-7 w-7 text-primary-foreground" />
-              </div>
-              <DialogHeader>
-                <DialogTitle className="font-display text-xl font-bold">
-                  Welcome! You&apos;re on the waitlist!
-                </DialogTitle>
-                <DialogDescription className="font-body text-muted-foreground">
-                  Thanks for joining the KREO waitlist! We&apos;ll keep you
-                  updated on our launch and send you exclusive early access
-                  opportunities. In the meantime, feel free to explore our
-                  website and follow us on social media for the latest news.
-                </DialogDescription>
-              </DialogHeader>
-            </div>
-          ) : (
-            <>
-              <DialogHeader className="space-y-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-hero">
-                  <Mail className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <DialogTitle className="font-display text-xl font-bold">
-                  Join the Waitlist
-                </DialogTitle>
-                <DialogDescription className="font-body text-muted-foreground">
-                  Be among the first to experience KREO — the creator
-                  economy&apos;s investment platform.
-                </DialogDescription>
-              </DialogHeader>
-              <form
-                onSubmit={handleWaitlistSubmit}
-                className="flex flex-col gap-4 pt-2"
-              >
-                <div className="flex flex-col gap-1.5">
-                  <Input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. yourname@gmail.com"
-                    className="font-body h-11 border-border bg-background focus-visible:ring-ring"
-                  />
-                  {error && (
-                    <p className="font-body text-xs text-destructive">
-                      {error}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="h-11 bg-gradient-hero font-body text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60"
-                >
-                  {loading ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Joining…
-                    </span>
-                  ) : (
-                    "Get Early Access"
-                  )}
-                </Button>
-                <p className="text-center font-body text-xs text-muted-foreground">
-                  No spam, ever. made for creators.
-                </p>
-              </form>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <WaitlistDialog open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </>
   );
 };
