@@ -246,8 +246,8 @@ const HeroSection = () => {
         >
           {[
             { value: "$500B+", label: "Creator Economy" },
-            { value: "12-13%", label: "Projected Yield APY" },
-            { value: "3-5%", label: "Platform Fee" },
+            { value: "10-15%", label: "Projected Yield APY" },
+            { value: "3%", label: "Platform Fee" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="font-display text-2xl font-bold text-foreground md:text-3xl">
