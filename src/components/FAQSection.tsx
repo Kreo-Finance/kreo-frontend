@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const faqs = [
     {
@@ -67,6 +67,7 @@ const faqs = [
     },
 ];
 
+// ─── Single FAQ row — open editorial divider style ──────────────────────────
 const FAQItem = ({
     q,
     a,
@@ -80,26 +81,27 @@ const FAQItem = ({
     onToggle: () => void;
     accentColor: string;
 }) => (
-    <div
-        className={`border border-border rounded-xl overflow-hidden transition-colors duration-200 ${isOpen ? "bg-muted/60" : "bg-background hover:bg-muted/30"
-            }`}
-    >
+    <div className="border-b border-border">
         <button
             onClick={onToggle}
-            className="w-full flex items-start justify-between gap-4 px-6 py-5 text-left"
+            className="w-full flex items-start justify-between gap-6 py-6 text-left group"
         >
             <span
-                className={`font-display text-sm font-semibold leading-snug md:text-base transition-colors duration-200 ${isOpen ? accentColor : "text-foreground"
-                    }`}
+                className={`font-display text-base font-semibold leading-snug transition-colors duration-200 ${
+                    isOpen ? accentColor : "text-foreground"
+                }`}
             >
                 {q}
             </span>
-            <span
-                className={`mt-0.5 flex-shrink-0 rounded-full p-1 transition-colors duration-200 ${isOpen ? "bg-creo-pink/10 text-creo-pink" : "bg-muted text-muted-foreground"
-                    }`}
+            <motion.span
+                animate={{ rotate: isOpen ? 45 : 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                className={`mt-0.5 flex-shrink-0 transition-colors duration-200 ${
+                    isOpen ? accentColor : "text-muted-foreground"
+                }`}
             >
-                {isOpen ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-            </span>
+                <Plus className="h-4 w-4" />
+            </motion.span>
         </button>
 
         <AnimatePresence initial={false}>
@@ -109,17 +111,18 @@ const FAQItem = ({
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.25, ease: "easeInOut" }}
+                    style={{ overflow: "hidden" }}
                 >
-                    <div className="px-6 pb-5">
-                        <div className="h-px bg-border mb-4" />
-                        <p className="font-body text-sm leading-relaxed text-muted-foreground">{a}</p>
-                    </div>
+                    <p className="pb-6 font-body text-sm leading-relaxed text-muted-foreground">
+                        {a}
+                    </p>
                 </motion.div>
             )}
         </AnimatePresence>
     </div>
 );
 
+// ─── Main Section ────────────────────────────────────────────────────────────
 const FAQSection = () => {
     const [activeTab, setActiveTab] = useState<"Creators" | "Investors">("Creators");
     const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -127,28 +130,40 @@ const FAQSection = () => {
     const activeGroup = faqs.find((f) => f.category === activeTab)!;
 
     return (
-        <section className="py-24 bg-background">
-            <div className="container mx-auto px-4">
-                {/* Header */}
-                <div className="mb-4 flex items-center justify-center gap-2">
-                    <div className="h-px w-8 bg-creo-pink/40" />
-                    <span className="font-body text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                        Got questions?
-                    </span>
-                    <div className="h-px w-8 bg-creo-pink/40" />
-                </div>
+        <section className="border-t border-border">
 
-                <h2 className="text-center font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+            {/* ── Section header ── */}
+            <motion.div
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="container mx-auto px-4 pt-20 md:pt-28 pb-16 md:pb-20 max-w-4xl text-center"
+            >
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-creo-yellow/30 bg-creo-yellow/[0.08] text-creo-yellow text-xs font-semibold tracking-widest uppercase mb-6">
+                    Got Questions?
+                </div>
+                <h2
+                    className="font-display font-bold leading-[0.95] tracking-tight"
+                    style={{ fontSize: "clamp(3rem, 9vw, 7rem)" }}
+                >
                     FAQ
-                    <span className="text-gradient-hero">s</span>
+                    <span
+                        className="text-transparent bg-clip-text"
+                        style={{ backgroundImage: "var(--gradient-teal-pink)" }}
+                    >
+                        s.
+                    </span>
                 </h2>
-                <p className="mt-4 text-center font-body text-muted-foreground md:text-lg max-w-xl mx-auto">
+                <p className="font-body text-muted-foreground text-lg mt-6 max-w-xl mx-auto">
                     Everything you need to know before your first offering or investment.
                 </p>
+            </motion.div>
 
-                {/* Tab switcher */}
-                <div className="mt-10 flex items-center justify-center">
-                    <div className="inline-flex items-center gap-1 rounded-xl border border-border bg-muted p-1">
+            {/* ── Tab switcher — underline indicator ── */}
+            <div className="border-t border-b border-border py-6">
+                <div className="container mx-auto px-4">
+                    <div className="flex items-center justify-center gap-3">
                         {faqs.map((group) => (
                             <button
                                 key={group.category}
@@ -156,10 +171,11 @@ const FAQSection = () => {
                                     setActiveTab(group.category as "Creators" | "Investors");
                                     setOpenIndex(0);
                                 }}
-                                className={`relative flex items-center gap-2 rounded-lg px-5 py-2.5 font-display text-sm font-semibold transition-all duration-200 ${activeTab === group.category
-                                    ? "bg-background text-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground"
-                                    }`}
+                                className={`relative flex items-center gap-2.5 px-5 py-2.5 rounded-lg border font-display text-sm font-semibold transition-all duration-200 ${
+                                    activeTab === group.category
+                                        ? `${group.color} border-current bg-muted/60`
+                                        : "text-muted-foreground border-border hover:text-foreground hover:bg-muted/60"
+                                }`}
                             >
                                 <span className={`h-2 w-2 rounded-full ${group.dot}`} />
                                 For {group.category}
@@ -167,11 +183,11 @@ const FAQSection = () => {
                         ))}
                     </div>
                 </div>
+            </div>
 
-
-
-                {/* FAQ list */}
-                <div className="mt-8 mx-auto max-w-3xl space-y-3">
+            {/* ── FAQ list ── */}
+            <div className="container mx-auto px-4 pt-2 pb-20 md:pb-28">
+                <div className="mx-auto max-w-3xl">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}
@@ -179,7 +195,6 @@ const FAQSection = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -12 }}
                             transition={{ duration: 0.2 }}
-                            className="space-y-3"
                         >
                             {activeGroup.questions.map((item, i) => (
                                 <FAQItem
@@ -208,6 +223,7 @@ const FAQSection = () => {
                     </p>
                 </div>
             </div>
+
         </section>
     );
 };

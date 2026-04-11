@@ -46,21 +46,21 @@ const colorMap: Record<
     bg: "bg-creo-teal/5",
     border: "border-creo-teal/20",
     glow: "hsl(var(--creo-teal))",
-    numOpacity: "opacity-[0.045]",
+    numOpacity: "opacity-[0.05] dark:opacity-[0.13]",
   },
   "creo-pink": {
     text: "text-creo-pink",
     bg: "bg-creo-pink/5",
     border: "border-creo-pink/20",
     glow: "hsl(var(--creo-pink))",
-    numOpacity: "opacity-[0.045]",
+    numOpacity: "opacity-[0.05] dark:opacity-[0.13]",
   },
   "creo-yellow": {
     text: "text-creo-yellow",
     bg: "bg-creo-yellow/5",
     border: "border-creo-yellow/20",
     glow: "hsl(var(--creo-yellow))",
-    numOpacity: "opacity-[0.045]",
+    numOpacity: "opacity-[0.05] dark:opacity-[0.13]",
   },
 };
 

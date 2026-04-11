@@ -216,7 +216,7 @@ const FeaturesSection = () => {
   const row2 = features.slice(3, 6);
 
   return (
-    <section id="features" className="relative overflow-hidden py-28 sm:py-36">
+    <section id="features" className="relative overflow-hidden border-t border-border py-28 sm:py-36">
       {/* Background blobs */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-1/4 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-creo-pink/[0.04] blur-[120px]" />
@@ -247,7 +247,7 @@ const FeaturesSection = () => {
             }}
             className="mb-6 flex justify-center"
           >
-            <span className="inline-flex items-center gap-2 rounded-full border border-creo-pink/20 bg-creo-pink/[0.06] px-4 py-1.5 text-xs font-medium tracking-wider text-creo-pink uppercase backdrop-blur-sm">
+            <span className="inline-flex items-center gap-2 rounded-full border border-creo-pink/30 bg-creo-pink/[0.08] px-4 py-1.5 text-xs font-semibold tracking-widest text-creo-pink uppercase backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-creo-pink opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-creo-pink" />
@@ -269,7 +269,8 @@ const FeaturesSection = () => {
                 },
               },
             }}
-            className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl"
+            className="font-display font-bold leading-[0.95] tracking-tight"
+            style={{ fontSize: "clamp(3rem, 9vw, 7rem)" }}
           >
             Sell{" "}
             <span className="relative">
@@ -301,7 +302,7 @@ const FeaturesSection = () => {
                 },
               },
             }}
-            className="mx-auto mt-5 max-w-2xl font-body text-base leading-relaxed text-muted-foreground sm:text-lg"
+            className="mx-auto mt-6 max-w-xl font-body text-lg leading-relaxed text-muted-foreground"
           >
             Courses, sponsorships, newsletters — whatever you earn, Kreo turns
             it into investable, on-chain revenue streams.

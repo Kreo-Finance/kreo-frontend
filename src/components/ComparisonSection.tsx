@@ -51,6 +51,8 @@ const layers = [
     color: "text-creo-pink",
     bg: "bg-creo-pink/10",
     border: "border-creo-pink/20",
+    glow: "hsl(var(--creo-pink))",
+    glowPos: "20% 20%",
     title: "Graduated Trust Caps",
     sub: "Offering #1: 50%  ·  #2: 80%  ·  #3+: 100% of model max",
     detail:
@@ -61,6 +63,8 @@ const layers = [
     color: "text-creo-teal",
     bg: "bg-creo-teal/10",
     border: "border-creo-teal/20",
+    glow: "hsl(var(--creo-teal))",
+    glowPos: "80% 20%",
     title: "Payout Verification",
     sub: "Bank payouts verified — not just gross earnings",
     detail:
@@ -71,6 +75,8 @@ const layers = [
     color: "text-creo-yellow",
     bg: "bg-creo-yellow/10",
     border: "border-creo-yellow/20",
+    glow: "hsl(var(--creo-yellow))",
+    glowPos: "50% 20%",
     title: "Social Proof Score ≥ 40",
     sub: "YouTube · Twitter · GitHub · Stripe consistency",
     detail:
@@ -81,6 +87,8 @@ const layers = [
     color: "text-creo-pink",
     bg: "bg-creo-pink/10",
     border: "border-creo-pink/20",
+    glow: "hsl(var(--creo-pink))",
+    glowPos: "20% 80%",
     title: "KYC + Video Verification",
     sub: "Sumsub — live video for raises above $5,000",
     detail:
@@ -91,6 +99,8 @@ const layers = [
     color: "text-creo-teal",
     bg: "bg-creo-teal/10",
     border: "border-creo-teal/20",
+    glow: "hsl(var(--creo-teal))",
+    glowPos: "80% 80%",
     title: "3-Day Capital Release Window",
     sub: "Automated re-checks · Admin freeze gate",
     detail:
@@ -101,6 +111,8 @@ const layers = [
     color: "text-creo-yellow",
     bg: "bg-creo-yellow/10",
     border: "border-creo-yellow/20",
+    glow: "hsl(var(--creo-yellow))",
+    glowPos: "50% 80%",
     title: "Bond + Protocol Default Lock",
     sub: "Abandonment = permanent block until investors recovered",
     detail:
@@ -267,150 +279,204 @@ const CreatorCard = ({
 // ─── Main Section ──────────────────────────────────────────────────────────
 const ComparisonSection = () => {
   return (
-    <section id="moat" className="py-20 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section id="moat" className="border-t border-border">
 
-        {/* ── Section header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-4 flex items-center justify-center gap-2"
+      {/* ── Section header ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="container mx-auto px-4 pt-20 md:pt-28 pb-16 md:pb-20 max-w-4xl text-center"
+      >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-creo-pink/30 bg-creo-pink/[0.08] text-creo-pink text-xs font-semibold tracking-widest uppercase mb-6">
+          Built Different
+        </div>
+        <h2
+          className="font-display font-bold leading-[0.95] tracking-tight"
+          style={{ fontSize: "clamp(3rem, 9vw, 7rem)" }}
         >
-          <div className="h-px w-8 bg-creo-pink/40" />
-          <span className="font-body text-xs font-medium uppercase tracking-widest text-muted-foreground">
-            Built different
+          The intelligence layer{" "}
+          <span
+            className="text-transparent bg-clip-text"
+            style={{ backgroundImage: "var(--gradient-teal-pink)" }}
+          >
+            baked in.
           </span>
-          <div className="h-px w-8 bg-creo-pink/40" />
-        </motion.div>
+        </h2>
+        <p className="font-body text-muted-foreground text-lg mt-6 max-w-xl mx-auto">
+          Every platform uses raw averages. Kreo uses a variance-discounted model
+          that rewards consistency and correctly prices volatility — automatically, on-chain.
+        </p>
+      </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16 text-center"
-        >
-          <h2 className="font-display text-4xl font-bold md:text-5xl">
-            The intelligence layer{" "}
-            <span className="text-gradient-hero">baked in natively</span>
-          </h2>
-          <p className="mt-4 font-body text-muted-foreground max-w-xl mx-auto md:text-lg">
-            Every platform uses raw averages. Kreo uses a variance-discounted model
-            that rewards consistency and correctly prices volatility — automatically, on-chain.
-          </p>
-        </motion.div>
-
-        {/* ══════════════════════════════════════════
-            PART 1 — VARIANCE MODEL
-        ══════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════
+          PART 1 — VARIANCE MODEL
+      ══════════════════════════════════════════ */}
+      <div className="border-t border-b border-border">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-6"
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="container mx-auto px-4 py-12 md:py-16"
         >
-          {/* Same average. Different risk. headline */}
-          <div className="rounded-2xl border border-border bg-background p-6 md:p-8 mb-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
-              <div>
-                <h3 className="font-display text-xl font-bold text-foreground">
-                  Same average. Different risk. Different raise.
-                </h3>
-                <p className="font-body text-sm text-muted-foreground mt-1">
-                  Two creators. Both averaging{" "}
-                  <span className="text-foreground font-medium">$6,000/month</span>.
-                  Every other platform treats them identically. Kreo doesn't.
-                </p>
-              </div>
-              <div className="flex-shrink-0 inline-flex items-center gap-2 rounded-full border border-creo-pink/20 bg-creo-pink/5 px-4 py-2">
-                <span className="h-2 w-2 rounded-full bg-creo-pink animate-pulse" />
-                <span className="font-body text-xs font-medium text-creo-pink">
-                  Variance Model Active
-                </span>
-              </div>
-            </div>
-
-            {/* Two creator cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {creators.map((c) => (
-                <CreatorCard key={c.name} c={c} cardDelay={0} />
-              ))}
-            </div>
-
-          </div>
-        </motion.div>
-
-        {/* ══════════════════════════════════════════
-            PART 2 — FRAUD PREVENTION
-        ══════════════════════════════════════════ */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="rounded-2xl border border-border bg-background p-6 md:p-8"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-8">
+          {/* Header row */}
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-10">
             <div>
-              <h3 className="font-display text-xl font-bold text-foreground">
-                Six layers between your capital and a bad actor
+              <span className="font-body text-xs font-semibold tracking-widest uppercase text-creo-teal">
+                Variance Model
+              </span>
+              <h3
+                className="font-display font-bold leading-none text-foreground mt-3"
+                style={{ fontSize: "clamp(1.8rem, 5vw, 3rem)" }}
+              >
+                Same average.<br className="hidden sm:block" /> Different risk. Different raise.
               </h3>
-              <p className="font-body text-sm text-muted-foreground mt-1">
-                Each layer raises the cost and lowers the expected payoff of fraud — until
-                attempting it is no longer rationally attractive.
+              <div
+                className="h-px w-14 rounded-full mt-4"
+                style={{ background: "hsl(var(--creo-teal))", opacity: 0.6 }}
+              />
+              <p className="font-body text-base text-muted-foreground mt-4 max-w-lg">
+                Two creators. Both averaging{" "}
+                <span className="text-foreground font-medium">$6,000/month</span>.
+                Every other platform treats them identically. Kreo doesn't.
               </p>
             </div>
-            <div className="flex-shrink-0 inline-flex items-center gap-2 rounded-full border border-creo-teal/20 bg-creo-teal/5 px-4 py-2">
-              <ShieldCheck className="h-3.5 w-3.5 text-creo-teal" />
-              <span className="font-body text-xs font-medium text-creo-teal">
-                Fraud Stack Active
+            <div className="flex-shrink-0 inline-flex items-center gap-2 rounded-full border border-creo-pink/20 bg-creo-pink/5 px-4 py-2 self-start">
+              <span className="h-2 w-2 rounded-full bg-creo-pink animate-pulse" />
+              <span className="font-body text-xs font-medium text-creo-pink">
+                Variance Model Active
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {layers.map((layer, i) => {
-              const Icon = layer.icon;
-              return (
-                <motion.div
-                  key={layer.title}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="group rounded-xl border border-border bg-muted/40 p-4 hover:bg-muted/70 transition-colors duration-200"
-                >
-                  {/* Layer number + icon */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div
-                      className={`flex h-9 w-9 items-center justify-center rounded-lg border ${layer.bg} ${layer.border}`}
-                    >
-                      <Icon className={`h-4 w-4 ${layer.color}`} />
-                    </div>
-                    <span className="font-body text-xs text-muted-foreground/50 font-medium">
-                      L{i + 1}
-                    </span>
-                  </div>
+          {/* Two creator cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {creators.map((c) => (
+              <CreatorCard key={c.name} c={c} cardDelay={0} />
+            ))}
+          </div>
+        </motion.div>
+      </div>
 
-                  {/* Title + sub */}
-                  <p className="font-display text-sm font-bold text-foreground">
+      {/* ══════════════════════════════════════════
+          PART 2 — FRAUD PREVENTION HEADER
+      ══════════════════════════════════════════ */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="container mx-auto px-4 pt-16 pb-10 md:pt-20 md:pb-12 max-w-4xl text-center"
+      >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-creo-teal/30 bg-creo-teal/[0.08] text-creo-teal text-xs font-semibold tracking-widest uppercase mb-6">
+          <ShieldCheck className="h-3 w-3" />
+          Fraud Stack Active
+        </div>
+        <h3
+          className="font-display font-bold leading-[0.95] tracking-tight"
+          style={{ fontSize: "clamp(2rem, 6vw, 4.5rem)" }}
+        >
+          Six layers between your capital{" "}
+          <span
+            className="text-transparent bg-clip-text"
+            style={{ backgroundImage: "var(--gradient-teal-pink)" }}
+          >
+            and a bad actor.
+          </span>
+        </h3>
+        <p className="font-body text-muted-foreground text-base mt-5 max-w-xl mx-auto">
+          Each layer raises the cost and lowers the expected payoff of fraud — until
+          attempting it is no longer rationally attractive.
+        </p>
+      </motion.div>
+
+      {/* ══════════════════════════════════════════
+          PART 2 — FRAUD PREVENTION PANELS
+      ══════════════════════════════════════════ */}
+      <div className="border-t border-b border-border grid sm:grid-cols-2 lg:grid-cols-3">
+        {layers.map((layer, i) => {
+          const Icon = layer.icon;
+
+          // Border logic: border-b for non-last rows, border-r for non-last cols
+          const borderClasses = [
+            // Bottom border: mobile (1-col) all except last, sm (2-col) except last 2, lg (3-col) except last 3
+            i < 5 ? "border-b" : "",
+            i >= 4 ? "sm:border-b-0" : "",
+            i >= 3 ? "lg:border-b-0" : "",
+            // Right border at sm (2-col): even-index items
+            i % 2 === 0 ? "sm:border-r" : "sm:border-r-0",
+            // Right border at lg (3-col): non-last-col items
+            i % 3 < 2 ? "lg:border-r" : "lg:border-r-0",
+            "border-border",
+          ].filter(Boolean).join(" ");
+
+          return (
+            <motion.div
+              key={layer.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.07, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className={`group relative overflow-hidden flex flex-col min-h-[300px] p-10 md:p-12 ${borderClasses}`}
+            >
+              {/* Radial glow */}
+              <div
+                className="absolute inset-0 opacity-[0.07] pointer-events-none"
+                style={{
+                  background: `radial-gradient(ellipse at ${layer.glowPos}, ${layer.glow}, transparent 65%)`,
+                }}
+              />
+
+              {/* Watermark number */}
+              <span
+                className="absolute right-5 bottom-4 font-display font-bold select-none pointer-events-none opacity-[0.05] dark:opacity-[0.13] text-foreground"
+                style={{ fontSize: "clamp(5rem, 12vw, 8rem)", lineHeight: 1 }}
+              >
+                L{i + 1}
+              </span>
+
+              {/* Content */}
+              <div className="relative flex flex-col gap-5 h-full">
+                {/* Icon + layer label */}
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl border ${layer.bg} ${layer.border}`}
+                  >
+                    <Icon className={`h-5 w-5 ${layer.color}`} />
+                  </div>
+                  <span className={`font-body text-xs font-semibold tracking-widest uppercase ${layer.color} opacity-60`}>
+                    Layer {i + 1}
+                  </span>
+                </div>
+
+                {/* Title + accent rule */}
+                <div>
+                  <p className="font-display text-xl font-bold text-foreground leading-tight">
                     {layer.title}
                   </p>
-                  <p className={`font-body text-xs font-medium mt-0.5 ${layer.color}`}>
-                    {layer.sub}
-                  </p>
+                  <div
+                    className="h-px w-10 rounded-full mt-3"
+                    style={{ background: layer.glow, opacity: 0.6 }}
+                  />
+                </div>
 
-                  {/* Detail — visible on hover */}
-                  <p className="font-body text-xs text-muted-foreground mt-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-200 max-h-0 group-hover:max-h-24 overflow-hidden transition-all">
-                    {layer.detail}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
+                {/* Subtitle */}
+                <p className={`font-body text-sm font-medium ${layer.color}`}>
+                  {layer.sub}
+                </p>
 
-        </motion.div>
-
+                {/* Detail — visible on hover */}
+                <p className="font-body text-sm text-muted-foreground leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-200 max-h-0 group-hover:max-h-24 overflow-hidden">
+                  {layer.detail}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
+
     </section>
   );
 };

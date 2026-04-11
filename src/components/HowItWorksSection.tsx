@@ -56,17 +56,17 @@ const investorSteps = [
   },
 ];
 
-const colorMap: Record<string, { bg: string; text: string }> = {
-  "creo-pink": { bg: "bg-creo-pink/10", text: "text-creo-pink" },
-  "creo-teal": { bg: "bg-creo-teal/10", text: "text-creo-teal" },
-  "creo-yellow": { bg: "bg-creo-yellow/10", text: "text-creo-yellow" },
+const colorMap: Record<string, { bg: string; text: string; border: string }> = {
+  "creo-pink": { bg: "bg-creo-pink/10", text: "text-creo-pink", border: "border-creo-pink/20" },
+  "creo-teal": { bg: "bg-creo-teal/10", text: "text-creo-teal", border: "border-creo-teal/20" },
+  "creo-yellow": { bg: "bg-creo-yellow/10", text: "text-creo-yellow", border: "border-creo-yellow/20" },
 };
 
 // Delays (seconds) — creators and investors animate in parallel
 const CREATOR_BADGE_DELAY = 0.2;
-const CREATOR_STEP_BASE = 0.55; // step i = base + i * 0.4
+const CREATOR_STEP_BASE = 0.55;
 const INVESTOR_BADGE_DELAY = 0.2;
-const INVESTOR_STEP_BASE = 0.55; // step i = base + i * 0.4
+const INVESTOR_STEP_BASE = 0.55;
 const STEP_STAGGER = 0.4;
 
 interface StepCardProps {
@@ -85,45 +85,51 @@ const StepCard = ({ step, index, baseDelay, inView }: StepCardProps) => {
       initial={{ opacity: 0, y: -28 }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -28 }}
       transition={{ delay, duration: 0.5, ease: "easeOut" }}
-      className="relative flex gap-4"
+      className="relative flex gap-5"
     >
-      {/* Vertical connector */}
+      {/* Vertical connector line — runs from below the number to the next step */}
       {index < 2 && (
         <motion.div
-          className="absolute left-6 top-14 bottom-0 w-px bg-border"
+          className="absolute left-5 top-9 bottom-0 w-px bg-border"
           initial={{ scaleY: 0, originY: 0 }}
           animate={inView ? { scaleY: 1 } : { scaleY: 0 }}
           transition={{ delay: delay + 0.3, duration: 0.4, ease: "easeOut" }}
         />
       )}
 
-      {/* Icon circle */}
-      <motion.div
-        className={`relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${colors.bg}`}
-        initial={{ scale: 0.6, opacity: 0 }}
-        animate={inView ? { scale: 1, opacity: 1 } : { scale: 0.6, opacity: 0 }}
-        transition={{ delay, duration: 0.35, ease: "backOut" }}
-      >
-        <step.icon className={`h-5 w-5 ${colors.text}`} />
-      </motion.div>
+      {/* Large inline step number */}
+      <div className="w-10 flex-shrink-0 flex justify-center">
+        <motion.span
+          className={`font-display text-2xl font-bold ${colors.text} leading-none tabular-nums`}
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.7 }}
+          transition={{ delay, duration: 0.35, ease: "backOut" }}
+        >
+          {step.number}
+        </motion.span>
+      </div>
 
       {/* Content */}
-      <div className="pb-10">
+      <div className="pb-12 flex-1">
+        {/* Icon chip + title */}
         <motion.div
-          className="flex items-center gap-2 mb-1"
+          className="flex items-center gap-3 mb-2.5"
           initial={{ opacity: 0, x: -12 }}
           animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -12 }}
           transition={{ delay: delay + 0.1, duration: 0.4, ease: "easeOut" }}
         >
-          <span className={`font-display text-xs font-bold ${colors.text}`}>
-            {step.number}
-          </span>
-          <h3 className="font-display text-lg font-semibold text-foreground">
+          <div
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${colors.bg} ${colors.border}`}
+          >
+            <step.icon className={`h-4 w-4 ${colors.text}`} />
+          </div>
+          <h3 className="font-display text-lg font-semibold text-foreground leading-tight">
             {step.title}
           </h3>
         </motion.div>
+
         <motion.p
-          className="font-body text-sm text-muted-foreground leading-relaxed max-w-sm"
+          className="font-body text-sm text-muted-foreground leading-relaxed"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: delay + 0.25, duration: 0.4 }}
@@ -140,78 +146,108 @@ const HowItWorksSection = () => {
   const inView = useInView(gridRef, { once: true, margin: "-80px" });
 
   return (
-    <section id="how-it-works" className="py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
-        {/* Section heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16 text-center"
+    <section id="how-it-works" className="border-t border-border">
+
+      {/* ── Section header ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="container mx-auto px-4 pt-20 md:pt-28 pb-16 md:pb-20 max-w-4xl text-center"
+      >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-creo-teal/30 bg-creo-teal/[0.08] text-creo-teal text-xs font-semibold tracking-widest uppercase mb-6">
+          Protocol Flow
+        </div>
+        <h2
+          className="font-display font-bold leading-[0.95] tracking-tight"
+          style={{ fontSize: "clamp(3rem, 9vw, 7rem)" }}
         >
-          <h2 className="font-display text-4xl font-bold md:text-5xl">
-            How it <span className="text-gradient-hero">works</span>
-          </h2>
-          <p className="mt-4 font-body text-lg text-muted-foreground max-w-xl mx-auto">
-            Whether you're a creator seeking capital or an investor chasing real
-            yield — getting started takes minutes.
-          </p>
-        </motion.div>
+          How it{" "}
+          <span
+            className="text-transparent bg-clip-text"
+            style={{ backgroundImage: "var(--gradient-teal-pink)" }}
+          >
+            works.
+          </span>
+        </h2>
+        <p className="font-body text-muted-foreground text-lg mt-6 max-w-xl mx-auto">
+          Whether you're a creator seeking capital or an investor chasing real
+          yield — getting started takes minutes.
+        </p>
+      </motion.div>
 
-        {/* Animated content — triggers when section scrolls into view */}
-        <div ref={gridRef} className="grid gap-16 lg:gap-12 lg:grid-cols-2 max-w-4xl mx-auto">
-          {/* Creator Flow */}
-          <div className="flex flex-col items-center">
-            <motion.div
-              initial={{ opacity: 0, y: -16 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -16 }}
-              transition={{ delay: CREATOR_BADGE_DELAY, duration: 0.45 }}
-              className="mb-8 inline-flex items-center gap-2 rounded-full border border-creo-pink/30 bg-creo-pink/5 px-4 py-2"
-            >
-              <span className="h-2 w-2 rounded-full bg-creo-pink" />
-              <span className="font-display text-sm font-semibold text-creo-pink">
-                For Creators
-              </span>
-            </motion.div>
-            <div className="space-y-0 w-full max-w-sm">
-              {creatorSteps.map((step, i) => (
-                <StepCard
-                  key={step.number}
-                  step={step}
-                  index={i}
-                  baseDelay={CREATOR_STEP_BASE}
-                  inView={inView}
-                />
-              ))}
-            </div>
-          </div>
+      {/* ── Two-panel grid ── */}
+      <div ref={gridRef} className="border-t border-b border-border grid md:grid-cols-2">
 
-          {/* Investor Flow */}
-          <div className="flex flex-col items-center">
-            <motion.div
-              initial={{ opacity: 0, y: -16 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -16 }}
-              transition={{ delay: INVESTOR_BADGE_DELAY, duration: 0.45 }}
-              className="mb-8 inline-flex items-center gap-2 rounded-full border border-creo-teal/30 bg-creo-teal/5 px-4 py-2"
-            >
-              <span className="h-2 w-2 rounded-full bg-creo-teal" />
-              <span className="font-display text-sm font-semibold text-creo-teal">
-                For Investors
-              </span>
-            </motion.div>
-            <div className="space-y-0 w-full max-w-sm">
-              {investorSteps.map((step, i) => (
-                <StepCard
-                  key={step.number}
-                  step={step}
-                  index={i}
-                  baseDelay={INVESTOR_STEP_BASE}
-                  inView={inView}
-                />
-              ))}
-            </div>
+        {/* Creator panel */}
+        <div className="relative overflow-hidden p-10 md:p-14 border-b md:border-b-0 md:border-r border-border">
+          {/* Subtle radial glow */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.06]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 20% 20%, hsl(var(--creo-pink)), transparent 65%)",
+            }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -16 }}
+            transition={{ delay: CREATOR_BADGE_DELAY, duration: 0.45 }}
+            className="mb-10 inline-flex items-center gap-2 rounded-full border border-creo-pink/30 bg-creo-pink/[0.08] px-4 py-2"
+          >
+            <span className="h-2 w-2 rounded-full bg-creo-pink" />
+            <span className="font-display text-sm font-semibold text-creo-pink">
+              For Creators
+            </span>
+          </motion.div>
+          <div className="space-y-0">
+            {creatorSteps.map((step, i) => (
+              <StepCard
+                key={step.number}
+                step={step}
+                index={i}
+                baseDelay={CREATOR_STEP_BASE}
+                inView={inView}
+              />
+            ))}
           </div>
         </div>
+
+        {/* Investor panel */}
+        <div className="relative overflow-hidden p-10 md:p-14">
+          {/* Subtle radial glow */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.06]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 80% 20%, hsl(var(--creo-teal)), transparent 65%)",
+            }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -16 }}
+            transition={{ delay: INVESTOR_BADGE_DELAY, duration: 0.45 }}
+            className="mb-10 inline-flex items-center gap-2 rounded-full border border-creo-teal/30 bg-creo-teal/[0.08] px-4 py-2"
+          >
+            <span className="h-2 w-2 rounded-full bg-creo-teal" />
+            <span className="font-display text-sm font-semibold text-creo-teal">
+              For Investors
+            </span>
+          </motion.div>
+          <div className="space-y-0">
+            {investorSteps.map((step, i) => (
+              <StepCard
+                key={step.number}
+                step={step}
+                index={i}
+                baseDelay={INVESTOR_STEP_BASE}
+                inView={inView}
+              />
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   );
