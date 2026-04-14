@@ -397,6 +397,9 @@ const Navbar = () => {
               </motion.span>
             ))}
             </span>
+            <span className="ml-1 self-start mt-1 rounded px-1.5 py-px text-[10px] font-bold tracking-widest uppercase bg-gradient-hero text-white leading-tight shadow-sm">
+              BETA
+            </span>
           </span>
         </Link>
 
