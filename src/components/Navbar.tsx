@@ -163,6 +163,7 @@ function useNavbarCTA() {
   const handleDisconnect = () => {
     disconnect();
     logout();
+    navigate("/");
   };
 
   // Determine what to render for the primary CTA
