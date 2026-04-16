@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Plus, Coins, Shield, Users, Clock, CheckCircle2 } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
+import WalletGate from "@/components/WalletGate";
 
 const offerings = [
   {
@@ -46,6 +47,7 @@ const CreatorOfferings = () => {
       <DashboardSidebar type="creator" />
 
       <main className="flex-1 pt-16 lg:pt-0">
+        <WalletGate message="Connect your wallet to view and manage your offerings.">
         <div className="p-6 lg:p-8 max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
@@ -138,6 +140,7 @@ const CreatorOfferings = () => {
             ))}
           </div>
         </div>
+        </WalletGate>
       </main>
     </div>
   );
