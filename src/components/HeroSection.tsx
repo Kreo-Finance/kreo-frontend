@@ -19,12 +19,12 @@ const headlines = [
     connector: "for Creators",
     accent: "Revenue",
   },
-  // {
-  //   top: "Global, Permissionless",
-  //   highlight: "&",
-  //   connector: "Liquid — Built for",
-  //   accent: "Creators",
-  // },
+  {
+    top: "The Financial",
+    highlight: "Layer",
+    connector: "for the Creator ",
+    accent: "Economy",
+  },
   {
     top: "A New Paradigm",
     highlight: "of Trust",
@@ -270,7 +270,10 @@ const HeroSection = () => {
             { value: "12-13%", label: "Projected Yield APY" },
             { value: "3-5%", label: "Platform Fee" },
           ].map((stat) => (
-            <div key={stat.label} className="px-8 md:px-12 text-center first:pl-0 last:pr-0">
+            <div
+              key={stat.label}
+              className="px-8 md:px-12 text-center first:pl-0 last:pr-0"
+            >
               <div className="font-display text-2xl font-bold text-foreground md:text-3xl">
                 <AnimatedStat value={stat.value} inView={statsInView} />
               </div>
