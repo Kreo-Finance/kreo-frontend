@@ -163,6 +163,7 @@ function useNavbarCTA() {
   const handleDisconnect = () => {
     disconnect();
     logout();
+    navigate("/");
   };
 
   // Determine what to render for the primary CTA
@@ -361,7 +362,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-white/5">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8 gap-4">
+      <div className="container mx-auto relative flex h-16 items-center justify-between px-4 lg:px-8 gap-4">
 
         {/* Logo */}
         <Link
@@ -397,11 +398,14 @@ const Navbar = () => {
               </motion.span>
             ))}
             </span>
+            <span className="ml-1 self-start mt-1 rounded px-1.5 py-px text-[10px] font-bold tracking-widest uppercase bg-gradient-hero text-white leading-tight shadow-sm">
+              BETA
+            </span>
           </span>
         </Link>
 
         {/* Nav links — desktop */}
-        <div className="hidden lg:flex items-center gap-8 flex-1 justify-center">
+        <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) =>
             link.dropdown ? (
               <DropdownMenu key={link.label}>

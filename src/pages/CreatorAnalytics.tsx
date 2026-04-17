@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { BarChart3, TrendingUp, Star, Shield, ArrowUpRight } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import WalletGate from "@/components/WalletGate";
 
 const monthlyData = [
   { month: "Sep 2025", earnings: 5200 },
@@ -26,6 +27,7 @@ const CreatorAnalytics = () => {
       <DashboardSidebar type="creator" />
 
       <main className="flex-1 pt-16 lg:pt-0">
+        <WalletGate message="Connect your wallet to view your analytics and KreoScore.">
         <div className="p-6 lg:p-8 max-w-6xl mx-auto">
           <h1 className="font-display text-3xl font-bold text-foreground mb-2">Analytics</h1>
           <p className="font-body text-muted-foreground mb-8">Your earnings performance and reputation.</p>
@@ -156,6 +158,7 @@ const CreatorAnalytics = () => {
             </motion.div>
           </div>
         </div>
+        </WalletGate>
       </main>
     </div>
   );

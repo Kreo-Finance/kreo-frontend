@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
 import CreoScorePanel from "@/components/dashboard/CreoScorePanel";
+import WalletGate from "@/components/WalletGate";
 
 const stats = [
   { label: "Total Raised", value: "$12,000", change: "+100%", up: true, icon: DollarSign, color: "text-creo-pink", bg: "bg-creo-pink/10" },
@@ -45,6 +46,7 @@ const CreatorDashboard = () => {
       <DashboardSidebar type="creator" />
 
       <main className="flex-1 pt-16 lg:pt-0">
+        <WalletGate message="Connect your wallet to view your creator dashboard, offerings, and earnings.">
         <div className="p-6 lg:p-8 max-w-6xl mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -167,6 +169,7 @@ const CreatorDashboard = () => {
             </div>
           </motion.div>
         </div>
+        </WalletGate>
       </main>
     </div>
   );

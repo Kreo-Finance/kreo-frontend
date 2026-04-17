@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Shield, Lock, CheckCircle2, AlertTriangle, ArrowRight } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
+import WalletGate from "@/components/WalletGate";
 
 const bondHistory = [
   { offering: "DeFi Course Revenue Share", amount: "$600", status: "Locked", date: "Oct 15, 2025", returnDate: "Apr 15, 2026" },
@@ -13,6 +14,7 @@ const CreatorBond = () => {
       <DashboardSidebar type="creator" />
 
       <main className="flex-1 pt-16 lg:pt-0">
+        <WalletGate message="Connect your wallet to view your commitment bond status.">
         <div className="p-6 lg:p-8 max-w-4xl mx-auto">
           <h1 className="font-display text-3xl font-bold text-foreground mb-2">Commitment Bond</h1>
           <p className="font-body text-muted-foreground mb-8">
@@ -131,6 +133,7 @@ const CreatorBond = () => {
             </table>
           </motion.div>
         </div>
+        </WalletGate>
       </main>
     </div>
   );

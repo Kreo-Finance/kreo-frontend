@@ -159,7 +159,8 @@ export const useAuthStore = create<AuthState>()(
         try {
           const { nonce } = await authApi.getNonce(address);
           const signature = await authApi.signMessage(nonce, provider);
-          const result = await authApi.verifySignature(address, signature);
+          const { data: result } = await authApi.verifySignature(address, signature);
+          
 
           // If wallet changed (new user), clear persisted role so role modal appears
           if (!addressesMatch(get().walletAddress, result.wallet)) {

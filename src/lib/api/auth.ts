@@ -27,14 +27,14 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem("kreo_refresh_token");
-        if (refreshToken) {
-          const res = await authApi.refreshToken(refreshToken);
-          localStorage.setItem("kreo_access_token", res.access_token);
-          localStorage.setItem("kreo_refresh_token", res.refresh_token);
-          originalRequest.headers.Authorization = `Bearer ${res.access_token}`;
-          return apiClient(originalRequest);
-        }
+        // const refreshToken = localStorage.getItem("kreo_refresh_token");
+        // if (refreshToken) {
+        //   const res = await authApi.refreshToken(refreshToken);
+        //   localStorage.setItem("kreo_access_token", res.access_token);
+        //   localStorage.setItem("kreo_refresh_token", res.refresh_token);
+        //   originalRequest.headers.Authorization = `Bearer ${res.access_token}`;
+        //   return apiClient(originalRequest);
+        // }
       } catch {
         authApi.logout();
         window.location.href = "/";
@@ -64,26 +64,23 @@ export const authApi = {
     walletAddress: string,
     signature: string,
   ): Promise<{
-    access_token: string;
-    refresh_token: string;
-    wallet: string;
-    roles?: {
-      creator?: { status: string };
-      investor?: { status: string; accreditation_status: string };
+    success: boolean;
+    message: string;
+    data: {
+      access_token: string;
+      refresh_token: string;
+      token_type: string;
+      expires_in: number;
+      wallet: string;
+      roles?: {
+        creator?: { status: string };
+        investor?: { status: string; accreditation_status: string };
+      };
     };
   }> => {
     const response = await apiClient.post("auth/verify", {
       wallet_address: walletAddress.toLowerCase(),
       signature,
-    });
-    return response.data;
-  },
-
-  refreshToken: async (
-    refreshToken: string,
-  ): Promise<{ access_token: string; refresh_token: string }> => {
-    const response = await apiClient.post("auth/refresh", {
-      refresh_token: refreshToken,
     });
     return response.data;
   },
@@ -97,7 +94,7 @@ export const authApi = {
   getSumsubToken: async (
     role: "creator" | "investor",
   ): Promise<{ token: string }> => {
-    const response = await apiClient.post("kyc/token", { role });
+    const response = await apiClient.post("users/kyc/token", { role });
     return response.data;
   },
 

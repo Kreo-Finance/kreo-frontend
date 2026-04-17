@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Coins, TrendingUp, ShieldCheck, BarChart3,
   Store, Wallet, Settings, LogOut, Menu
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useDisconnect, useAccount } from "wagmi";
+import { useAppKit } from "@reown/appkit/react";
+import { useAuth } from "@/hooks/useAuth";
 
 const creatorLinks = [
   { label: "Overview", href: "/creator/dashboard", icon: LayoutDashboard },
@@ -22,7 +25,24 @@ const investorLinks = [
 
 const SidebarContent = ({ type, onNavigate }: { type: "creator" | "investor", onNavigate?: () => void }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { disconnect } = useDisconnect();
+  const { logout } = useAuth();
+  const { isConnected } = useAccount();
+  const { open } = useAppKit();
   const links = type === "creator" ? creatorLinks : investorLinks;
+
+  const handleDisconnect = () => {
+    disconnect();
+    logout();
+    onNavigate?.();
+    navigate("/");
+  };
+
+  const handleConnect = () => {
+    open();
+    onNavigate?.();
+  };
 
   return (
     <>
@@ -60,10 +80,23 @@ const SidebarContent = ({ type, onNavigate }: { type: "creator" | "investor", on
           <Settings className="h-4 w-4" />
           Settings
         </Link>
-        <button className="flex items-center gap-3 rounded-lg px-3 py-2.5 font-body text-sm text-muted-foreground hover:bg-muted hover:text-foreground w-full">
-          <LogOut className="h-4 w-4" />
-          Disconnect
-        </button>
+        {isConnected ? (
+          <button
+            onClick={handleDisconnect}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 font-body text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors w-full"
+          >
+            <LogOut className="h-4 w-4" />
+            Disconnect
+          </button>
+        ) : (
+          <button
+            onClick={handleConnect}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 font-body text-sm text-creo-pink hover:bg-creo-pink/10 transition-colors w-full font-medium"
+          >
+            <Wallet className="h-4 w-4" />
+            Connect Wallet
+          </button>
+        )}
       </div>
     </>
   );
