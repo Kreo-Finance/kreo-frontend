@@ -31,6 +31,7 @@ const navLinks: NavLink[] = [
     dropdown: [
       { label: "Dashboard", href: "/creator/dashboard" },
       { label: "Portfolio", href: "/investor/portfolio" },
+      { label: "Raise Calculator", href: "/#raise-calculator" },
     ],
   },
   {
@@ -416,16 +417,25 @@ const Navbar = () => {
                 <DropdownMenuContent align="center" className="w-48">
                   {link.dropdown.map((item) => (
                     <DropdownMenuItem key={item.href} asChild>
-                      <Link
-                        to={item.href}
-                        className={`font-body text-sm cursor-pointer ${
-                          location.pathname === item.href
-                            ? "text-foreground font-semibold"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
+                      {isHashLink(item.href) ? (
+                        <a
+                          href={item.href}
+                          className="font-body text-sm cursor-pointer text-muted-foreground"
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.href}
+                          className={`font-body text-sm cursor-pointer ${
+                            location.pathname === item.href
+                              ? "text-foreground font-semibold"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -530,20 +540,31 @@ function MobileMenu({
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden pl-3"
                   >
-                    {link.dropdown.map((item) => (
-                      <Link
-                        key={item.href}
-                        to={item.href}
-                        onClick={onClose}
-                        className={`block font-body text-sm rounded-lg px-3 py-2 transition-colors hover:bg-muted ${
-                          location.pathname === item.href
-                            ? "text-foreground font-semibold"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    {link.dropdown.map((item) =>
+                      isHashLink(item.href) ? (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          onClick={onClose}
+                          className="block font-body text-sm rounded-lg px-3 py-2 transition-colors hover:bg-muted text-muted-foreground hover:text-foreground"
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          onClick={onClose}
+                          className={`block font-body text-sm rounded-lg px-3 py-2 transition-colors hover:bg-muted ${
+                            location.pathname === item.href
+                              ? "text-foreground font-semibold"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
