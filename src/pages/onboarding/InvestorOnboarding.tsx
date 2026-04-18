@@ -66,8 +66,8 @@ export default function InvestorOnboarding() {
     setTokenError(null);
     setSumsubToken(null);
     try {
-      const { token } = await authApi.getSumsubToken("investor");
-      setSumsubToken(token);
+      const { data } = await authApi.getSumsubToken("investor");
+      setSumsubToken(data.accessToken);
     } catch {
       setTokenError("Failed to start verification. Please try again.");
     } finally {

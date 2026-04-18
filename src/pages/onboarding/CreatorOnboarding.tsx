@@ -1,9 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Circle, Loader2, ExternalLink, ArrowRight, RefreshCw } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Loader2,
+  ExternalLink,
+  ArrowRight,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Sun, Moon } from "lucide-react";
@@ -60,8 +73,8 @@ export default function CreatorOnboarding() {
     setTokenError(null);
     setSumsubToken(null);
     try {
-      const { token } = await authApi.getSumsubToken("creator");
-      setSumsubToken(token);
+      const { data } = await authApi.getSumsubToken("creator");
+      setSumsubToken(data.accessToken);
     } catch {
       setTokenError("Failed to start verification. Please try again.");
     } finally {
@@ -74,7 +87,7 @@ export default function CreatorOnboarding() {
     if (activeStep === "kyc" && creatorKycStatus !== "pending") {
       fetchSumsubToken();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStep]);
 
   const handleKycSubmitted = () => {
@@ -114,19 +127,28 @@ export default function CreatorOnboarding() {
       {/* Minimal nav */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 glass-morphism">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
-          <Link to="/" className="font-display text-2xl font-bold text-gradient-hero">
+          <Link
+            to="/"
+            className="font-display text-2xl font-bold text-gradient-hero"
+          >
             KREO
           </Link>
           <div className="flex items-center gap-3">
             {truncated && (
-              <span className="font-mono text-xs text-muted-foreground">{truncated}</span>
+              <span className="font-mono text-xs text-muted-foreground">
+                {truncated}
+              </span>
             )}
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme"
               className="h-8 w-8 rounded-full border border-creo-pink/30 bg-creo-pink/5 flex items-center justify-center text-creo-pink hover:bg-creo-pink/15 transition-colors"
             >
-              {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+              {theme === "dark" ? (
+                <Sun className="h-3.5 w-3.5" />
+              ) : (
+                <Moon className="h-3.5 w-3.5" />
+              )}
             </button>
           </div>
         </div>
@@ -152,7 +174,9 @@ export default function CreatorOnboarding() {
               const active = step.id === activeStep;
               return (
                 <div key={step.id} className="flex items-center gap-2 flex-1">
-                  <div className={`flex items-center gap-1.5 ${active ? "text-foreground" : done ? "text-creo-teal" : "text-muted-foreground"}`}>
+                  <div
+                    className={`flex items-center gap-1.5 ${active ? "text-foreground" : done ? "text-creo-teal" : "text-muted-foreground"}`}
+                  >
                     {done ? (
                       <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
                     ) : (
@@ -163,7 +187,9 @@ export default function CreatorOnboarding() {
                     </span>
                   </div>
                   {idx < STEPS.length - 1 && (
-                    <div className={`flex-1 h-px ${done ? "bg-creo-teal/50" : "bg-border"}`} />
+                    <div
+                      className={`flex-1 h-px ${done ? "bg-creo-teal/50" : "bg-border"}`}
+                    />
                   )}
                 </div>
               );
@@ -181,22 +207,25 @@ export default function CreatorOnboarding() {
               >
                 <Card className="border-white/10 bg-card/40 backdrop-blur-md">
                   <CardHeader>
-                    <CardTitle className="font-display text-lg">Identity Verification</CardTitle>
+                    <CardTitle className="font-display text-lg">
+                      Identity Verification
+                    </CardTitle>
                     <CardDescription className="font-body text-sm">
-                      We use Sumsub to verify your identity. This takes 2–5 minutes and requires a
-                      government-issued ID.
+                      We use Sumsub to verify your identity. This takes 2–5
+                      minutes and requires a government-issued ID.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {creatorKycStatus === "pending" ? (
                       <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-4 text-sm font-body text-amber-400">
-                        Your verification is under review. We'll notify you once it's approved —
-                        usually within 24 hours.
+                        Your verification is under review. We'll notify you once
+                        it's approved — usually within 24 hours.
                       </div>
                     ) : creatorKycStatus === "rejected" ? (
                       <>
                         <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
-                          Verification was rejected. Please try again with a valid government ID.
+                          Verification was rejected. Please try again with a
+                          valid government ID.
                         </div>
                         {renderKycWidget()}
                       </>
@@ -217,10 +246,12 @@ export default function CreatorOnboarding() {
               >
                 <Card className="border-white/10 bg-card/40 backdrop-blur-md">
                   <CardHeader>
-                    <CardTitle className="font-display text-lg">Connect Income Source</CardTitle>
+                    <CardTitle className="font-display text-lg">
+                      Connect Income Source
+                    </CardTitle>
                     <CardDescription className="font-body text-sm">
-                      Connect your revenue stream so investors can evaluate your earning potential.
-                      Only one connection is required.
+                      Connect your revenue stream so investors can evaluate your
+                      earning potential. Only one connection is required.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -231,7 +262,9 @@ export default function CreatorOnboarding() {
                       className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
                     >
                       <span className="flex items-center gap-2">
-                        <span className="text-violet-400 font-bold">stripe</span>
+                        <span className="text-violet-400 font-bold">
+                          stripe
+                        </span>
                         Connect Stripe
                       </span>
                       {incomeLoading ? (
@@ -271,9 +304,12 @@ export default function CreatorOnboarding() {
                 <Card className="border-creo-teal/30 bg-creo-teal/5 backdrop-blur-md text-center">
                   <CardContent className="pt-8 pb-8 space-y-4">
                     <CheckCircle2 className="h-12 w-12 text-creo-teal mx-auto" />
-                    <h2 className="font-display text-xl font-bold">You're all set!</h2>
+                    <h2 className="font-display text-xl font-bold">
+                      You're all set!
+                    </h2>
                     <p className="font-body text-sm text-muted-foreground">
-                      Your creator account is verified and ready. Start creating your first offering.
+                      Your creator account is verified and ready. Start creating
+                      your first offering.
                     </p>
                     <Button
                       onClick={() => navigate("/creator/dashboard")}

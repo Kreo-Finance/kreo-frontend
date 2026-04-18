@@ -93,7 +93,7 @@ export const authApi = {
 
   getSumsubToken: async (
     role: "creator" | "investor",
-  ): Promise<{ token: string }> => {
+  ): Promise<{ data: any }> => {
     const response = await apiClient.post("users/kyc/token", { role });
     return response.data;
   },
