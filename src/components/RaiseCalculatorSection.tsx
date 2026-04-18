@@ -196,13 +196,13 @@ function KreoInputSlider({
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2">
       <div className="flex items-baseline gap-2">
-        <span className="font-body text-base font-bold text-foreground">
+        <span className="font-body text-sm font-bold text-foreground">
           {label}
         </span>
         {hint && (
-          <span className="text-xs font-normal text-muted-foreground/60">
+          <span className="text-[11px] font-normal text-muted-foreground/60">
             {hint}
           </span>
         )}
@@ -212,7 +212,7 @@ function KreoInputSlider({
         className={`
           flex items-center w-full rounded-xl
           border-2 border-border bg-background
-          px-5 py-4 gap-3
+          px-4 py-2.5 gap-3
           transition-all duration-150
           hover:border-${accentColor}/40
           focus-within:border-${accentColor}/70
@@ -220,7 +220,7 @@ function KreoInputSlider({
       >
         {inputPrefix && (
           <span
-            className={`font-body text-xl font-bold text-${accentColor} shrink-0 select-none`}
+            className={`font-body text-base font-bold text-${accentColor} shrink-0 select-none`}
           >
             {inputPrefix}
           </span>
@@ -237,23 +237,23 @@ function KreoInputSlider({
           step={step}
           className={`
             flex-1 min-w-0 bg-transparent border-none outline-none
-            font-display text-2xl font-bold tabular-nums text-right text-foreground
+            font-display text-xl font-bold tabular-nums text-right text-foreground
             [appearance:textfield]
             [&::-webkit-outer-spin-button]:appearance-none
             [&::-webkit-inner-spin-button]:appearance-none
           `}
         />
         {inputSuffix && (
-          <span className="font-body text-base font-bold text-muted-foreground shrink-0 select-none">
+          <span className="font-body text-sm font-bold text-muted-foreground shrink-0 select-none">
             {inputSuffix}
           </span>
         )}
       </div>
 
-      <div className="relative h-8 flex items-center mt-1">
-        <div className="absolute inset-x-0 h-[5px] rounded-full bg-border/50" />
+      <div className="relative h-6 flex items-center mt-0.5">
+        <div className="absolute inset-x-0 h-[4px] rounded-full bg-border/50" />
         <div
-          className="absolute left-0 h-[5px] rounded-full pointer-events-none"
+          className="absolute left-0 h-[4px] rounded-full pointer-events-none"
           style={{
             width: `${pct}%`,
             background: `linear-gradient(to right, ${accentHsl}, ${accentSecondaryHsl})`,
@@ -266,16 +266,16 @@ function KreoInputSlider({
           step={step}
           value={clampedForSlider}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="absolute inset-0 w-full opacity-0 cursor-pointer h-8"
+          className="absolute inset-0 w-full opacity-0 cursor-pointer h-6"
           style={{ zIndex: 2 }}
         />
         <div
-          className="absolute w-5 h-5 rounded-full border-[3px] border-background shadow-md pointer-events-none"
-          style={{ left: `calc(${pct}% - 10px)`, background: accentHsl }}
+          className="absolute w-4 h-4 rounded-full border-[3px] border-background shadow-md pointer-events-none"
+          style={{ left: `calc(${pct}% - 8px)`, background: accentHsl }}
         />
       </div>
 
-      <div className="relative h-9">
+      <div className="relative h-7">
         {ticks.map((tick) => {
           const tickPct =
             ((tick.value - sliderMin) / (sliderMax - sliderMin)) * 100;
@@ -302,10 +302,10 @@ function KreoInputSlider({
                 }}
               />
               <span
-                className={`font-body text-[10px] font-semibold whitespace-nowrap transition-colors ${
+                className={`font-body text-[10px] font-bold whitespace-nowrap transition-colors ${
                   isActive
                     ? `text-${accentColor}`
-                    : "text-muted-foreground/50 group-hover:text-muted-foreground"
+                    : "text-foreground/50 dark:text-white/60 group-hover:text-foreground dark:group-hover:text-white"
                 }`}
               >
                 {tick.label}
@@ -334,29 +334,29 @@ function StatRow({
 }) {
   return (
     <div
-      className={`flex items-center justify-between gap-4 px-4 py-3.5 rounded-xl border-2 border-border bg-background hover:border-${accentColor}/40 transition-colors`}
+      className={`flex items-center justify-between gap-3 px-3 py-2 rounded-xl border-2 border-border bg-background hover:border-${accentColor}/40 transition-colors`}
     >
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
         {Icon && (
           <div
-            className={`w-8 h-8 rounded-lg bg-${accentColor}/10 border border-${accentColor}/20 flex items-center justify-center shrink-0`}
+            className={`w-6 h-6 rounded-md bg-${accentColor}/10 border border-${accentColor}/20 flex items-center justify-center shrink-0`}
           >
-            <Icon className={`h-4 w-4 text-${accentColor}`} />
+            <Icon className={`h-3 w-3 text-${accentColor}`} />
           </div>
         )}
         <div className="min-w-0">
-          <p className="font-body text-[11px] font-bold tracking-widest uppercase text-muted-foreground/60 leading-none mb-1">
+          <p className="font-body text-[11px] font-extrabold tracking-widest uppercase text-foreground/80 leading-none mb-0.5">
             {label}
           </p>
           {sub && (
-            <p className="font-body text-[11px] font-medium text-muted-foreground/50 leading-snug truncate">
+            <p className="font-body text-[10px] font-semibold text-muted-foreground/60 leading-snug truncate">
               {sub}
             </p>
           )}
         </div>
       </div>
       <p
-        className={`font-display text-lg font-bold tabular-nums text-${accentColor} shrink-0`}
+        className={`font-display text-base font-bold tabular-nums text-${accentColor} shrink-0`}
       >
         {value}
       </p>
@@ -398,14 +398,14 @@ export default function RaiseCalculatorSection() {
   return (
     <section id="raise-calculator" className="border-t border-border">
       {/* ── Section header ────────────────────────────────────────────────── */}
-      <FadeIn className="container mx-auto px-4 pt-20 md:pt-28 pb-16 md:pb-20 max-w-4xl text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-creo-teal/40 bg-creo-teal/[0.08] text-creo-teal text-xs font-bold tracking-widest uppercase mb-6">
+      <FadeIn className="container mx-auto px-4 pt-10 md:pt-14 pb-6 md:pb-8 max-w-4xl text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-creo-teal/40 bg-creo-teal/[0.08] text-creo-teal text-xs font-semibold tracking-widest uppercase mb-4">
           <Calculator className="h-3 w-3" />
           Raise Calculator
         </div>
         <h2
           className="font-display font-bold leading-[0.95] tracking-tight"
-          style={{ fontSize: "clamp(3rem, 9vw, 7rem)" }}
+          style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)" }}
         >
           How much can{" "}
           <span
@@ -415,7 +415,7 @@ export default function RaiseCalculatorSection() {
             you raise?
           </span>
         </h2>
-        <p className="font-body font-medium text-muted-foreground text-lg mt-6 max-w-xl mx-auto">
+        <p className="font-body text-muted-foreground text-sm mt-3 max-w-xl mx-auto">
           Get your raise in real-time — every figure is computed from the same
           variance model that runs on-chain.
         </p>
@@ -423,13 +423,13 @@ export default function RaiseCalculatorSection() {
 
       {/* ── Calculator body ───────────────────────────────────────────────── */}
       <div ref={gridRef} className="border-t border-b border-border">
-        <div className="container mx-auto px-4 py-12 md:py-16 max-w-6xl">
+        <div className="container mx-auto px-4 py-6 md:py-8 max-w-6xl">
           {/* Mode tabs */}
           <motion.div
             initial={{ opacity: 0, y: -12 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.45, delay: 0.1 }}
-            className="flex gap-2 p-1.5 rounded-xl border-2 border-border bg-muted/30 w-fit mx-auto mb-10"
+            className="flex gap-2 p-1.5 rounded-xl border-2 border-border bg-muted/30 w-fit mx-auto mb-5"
           >
             {(
               [
@@ -486,7 +486,7 @@ export default function RaiseCalculatorSection() {
                 }}
               />
 
-              <div className="relative p-8 md:p-10 flex flex-col gap-10 h-full">
+              <div className="relative p-5 md:p-6 flex flex-col gap-5 h-full">
                 <KreoInputSlider
                   label="Floor Price"
                   hint="(conservative monthly earnings)"
@@ -622,7 +622,7 @@ export default function RaiseCalculatorSection() {
               initial={{ opacity: 0, x: 24 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.55, delay: 0.3 }}
-              className="flex flex-col gap-3"
+              className="flex flex-col gap-2"
             >
               {/* Hero result card */}
               <div className="relative overflow-hidden rounded-2xl border-2 border-border hover:border-creo-pink/40 bg-background transition-colors">
@@ -633,7 +633,7 @@ export default function RaiseCalculatorSection() {
                       "radial-gradient(ellipse at 80% 20%, hsl(var(--creo-pink)), transparent 65%)",
                   }}
                 />
-                <div className="relative px-7 pt-6 pb-4 flex flex-col gap-1">
+                <div className="relative px-5 pt-4 pb-2 flex flex-col gap-1">
                   <p className="font-body text-[10px] font-bold tracking-widest uppercase text-muted-foreground/70">
                     {mode === "max-raise"
                       ? "Maximum Raise Amount"
@@ -653,7 +653,7 @@ export default function RaiseCalculatorSection() {
                       className="font-display font-bold text-transparent bg-clip-text leading-none"
                       style={{
                         backgroundImage: "var(--gradient-teal-pink)",
-                        fontSize: "clamp(2.8rem, 8vw, 4rem)",
+                        fontSize: "clamp(2rem, 5vw, 2.8rem)",
                       }}
                     >
                       {primaryValue}
@@ -665,7 +665,7 @@ export default function RaiseCalculatorSection() {
                 </div>
 
                 {/* Coverage ratio bar */}
-                <div className="relative px-7 pb-6">
+                <div className="relative px-5 pb-4">
                   <div className="flex justify-between mb-2">
                     <span className="font-body text-[10px] font-bold text-muted-foreground/70 tracking-widest uppercase">
                       Coverage ratio
@@ -707,7 +707,7 @@ export default function RaiseCalculatorSection() {
               </div>
 
               {/* ── Stat rows — horizontal layout fills space cleanly ─── */}
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5">
                 {mode === "max-raise" ? (
                   <>
                     <StatRow
@@ -834,7 +834,7 @@ export default function RaiseCalculatorSection() {
               </AnimatePresence>
 
               {/* Protocol footnote */}
-              <div className="rounded-xl border-2 border-border bg-muted/20 px-5 py-3.5">
+              <div className="rounded-xl border-2 border-border bg-muted/20 px-4 py-2.5">
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-3.5 w-3.5 text-creo-teal" />
@@ -862,7 +862,7 @@ export default function RaiseCalculatorSection() {
 
               <a
                 href="/onboarding/creator"
-                className="flex items-center justify-center gap-2 rounded-xl bg-gradient-hero text-primary-foreground font-body text-sm font-bold py-4 hover:opacity-90 transition-opacity"
+                className="flex items-center justify-center gap-2 rounded-xl bg-gradient-hero text-primary-foreground font-body text-sm font-bold py-3 hover:opacity-90 transition-opacity"
               >
                 Start your raise
                 <ArrowRight className="h-4 w-4" />
@@ -875,7 +875,7 @@ export default function RaiseCalculatorSection() {
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.6, duration: 0.4 }}
-            className="mt-8 text-center font-body text-xs font-medium text-muted-foreground/50"
+            className="mt-4 text-center font-body text-xs font-medium text-muted-foreground/50"
           >
             Estimates only. Actual raise limits are confirmed after
             oracle-verified earnings and KYC.
