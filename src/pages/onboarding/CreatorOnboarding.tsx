@@ -91,8 +91,8 @@ export default function CreatorOnboarding() {
   }, [activeStep]);
 
   const handleKycSubmitted = () => {
-    setCreatorKycStatus("pending");
-    setSumsubToken(null);
+    // Keep widget mounted — waiting for idCheck.onApplicantStatusChanged (GREEN)
+    // which fires right after onApplicantSubmitted in sandbox mode.
   };
 
   const handleConnectStripe = async () => {
@@ -357,6 +357,10 @@ export default function CreatorOnboarding() {
           accessToken={sumsubToken}
           containerId="sumsub-creator-kyc"
           onApplicantSubmitted={handleKycSubmitted}
+          onApplicantApproved={() => {
+                setCreatorKycStatus("approved");
+                setSumsubToken(null);
+              }}
           onError={() => setTokenError("Verification error. Please try again.")}
         />
       );

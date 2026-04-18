@@ -5,6 +5,7 @@ interface SumsubWidgetProps {
   accessToken: string;
   containerId: string;
   onApplicantSubmitted: () => void;
+  onApplicantApproved?: () => void;
   onError?: (error: unknown) => void;
 }
 
@@ -12,6 +13,7 @@ export default function SumsubWidget({
   accessToken,
   containerId,
   onApplicantSubmitted,
+  onApplicantApproved,
   onError,
 }: SumsubWidgetProps) {
   const sdkRef = useRef<{ destroy?: () => void } | null>(null);
@@ -39,8 +41,16 @@ export default function SumsubWidget({
           .withConf({ lang: "en" })
           .withOptions({ addViewportTag: false, adaptIframeHeight: true })
           .onMessage((type: string, payload: unknown) => {
-            if (type === "idCheck.onApplicantSubmitted") {
+            if (type === "idCheck.onApplicantSubmitted" || type === "idCheck.onApplicantResubmitted") {
               onApplicantSubmitted();
+            } else if (type === "idCheck.onApplicantStatusChanged") {
+              const p = payload as { reviewStatus?: string; reviewResult?: { reviewAnswer?: string } };
+              if (
+                p?.reviewResult?.reviewAnswer === "GREEN" ||
+                p?.reviewStatus === "completed"
+              ) {
+                onApplicantApproved?.();
+              }
             } else if (type === "idCheck.onError") {
               console.error("Sumsub error:", payload);
               onError?.(payload);

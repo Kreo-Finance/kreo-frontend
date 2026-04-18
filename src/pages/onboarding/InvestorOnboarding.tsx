@@ -84,10 +84,7 @@ export default function InvestorOnboarding() {
   }, [activeStep]);
 
   const handleKycSubmitted = () => {
-    setInvestorKycStatus("pending");
-    // Bypass accreditation — mark as approved immediately
-    setAccreditationStatus("approved");
-    setSumsubToken(null);
+    // Keep widget mounted — waiting for idCheck.onApplicantStatusChanged (GREEN)
   };
 
   const truncated = walletAddress
@@ -131,6 +128,11 @@ export default function InvestorOnboarding() {
           accessToken={sumsubToken}
           containerId="sumsub-investor-kyc"
           onApplicantSubmitted={handleKycSubmitted}
+          onApplicantApproved={() => {
+                setInvestorKycStatus("approved");
+                setAccreditationStatus("approved");
+                setSumsubToken(null);
+              }}
           onError={() => setTokenError("Verification error. Please try again.")}
         />
       );
