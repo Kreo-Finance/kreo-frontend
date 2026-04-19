@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
@@ -47,6 +47,7 @@ const STEPS: { id: Step; label: string; description: string }[] = [
 
 export default function CreatorOnboarding() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { theme, toggleTheme } = useTheme();
   const {
     walletAddress,
@@ -57,7 +58,7 @@ export default function CreatorOnboarding() {
     setCreatorIncomeConnected,
   } = useAuth({ autoAuthenticate: false });
 
-  const { connect: connectGumroad, connecting: gumroadConnecting } = useGumroad();
+  const { connect: connectGumroad, connecting: gumroadConnecting, fetchSalesData } = useGumroad();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -92,6 +93,17 @@ export default function CreatorOnboarding() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStep]);
+
+  // Handle return from Gumroad OAuth — backend redirects back with ?gumroad=success
+  useEffect(() => {
+    if (searchParams.get("gumroad") === "success") {
+      fetchSalesData().then(() => {
+        setCreatorIncomeConnected(true);
+      });
+      setSearchParams({}, { replace: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleKycSubmitted = () => {
     // Keep widget mounted — waiting for idCheck.onApplicantStatusChanged (GREEN)
