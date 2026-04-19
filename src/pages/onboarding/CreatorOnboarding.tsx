@@ -23,6 +23,7 @@ import { Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
 import SumsubWidget from "@/components/SumsubWidget";
 import { authApi } from "@/lib/api/auth";
+import { useGumroad } from "@/hooks/useGumroad";
 
 type Step = "kyc" | "income" | "done";
 
@@ -55,6 +56,8 @@ export default function CreatorOnboarding() {
     setCreatorKycStatus,
     setCreatorIncomeConnected,
   } = useAuth({ autoAuthenticate: false });
+
+  const { connect: connectGumroad, connecting: gumroadConnecting } = useGumroad();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -115,6 +118,13 @@ export default function CreatorOnboarding() {
       setCreatorIncomeConnected(true);
     } finally {
       setIncomeLoading(false);
+    }
+  };
+
+  const handleConnectGumroad = async () => {
+    const connected = await connectGumroad();
+    if (connected) {
+      setCreatorIncomeConnected(true);
     }
   };
 
@@ -285,6 +295,23 @@ export default function CreatorOnboarding() {
                         Connect AdSense
                       </span>
                       {incomeLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+
+                    <Button
+                      onClick={handleConnectGumroad}
+                      disabled={gumroadConnecting}
+                      variant="outline"
+                      className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-pink-400 font-bold">G</span>
+                        Connect Gumroad
+                      </span>
+                      {gumroadConnecting ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <ExternalLink className="h-4 w-4 text-muted-foreground" />
