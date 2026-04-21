@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 import SumsubWidget from "@/components/SumsubWidget";
 import { authApi } from "@/lib/api/auth";
 import { useGumroad } from "@/hooks/useGumroad";
+import { useYoutube } from "@/hooks/useYoutube";
 
 type Step = "kyc" | "income" | "done";
 
@@ -59,6 +60,7 @@ export default function CreatorOnboarding() {
   } = useAuth({ autoAuthenticate: false });
 
   const { connect: connectGumroad, connecting: gumroadConnecting, fetchSalesData } = useGumroad();
+  const { connect: connectYoutube, connecting: youtubeConnecting } = useYoutube();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -324,6 +326,23 @@ export default function CreatorOnboarding() {
                         Connect Gumroad
                       </span>
                       {gumroadConnecting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+
+                    <Button
+                      onClick={() => connectYoutube()}
+                      disabled={youtubeConnecting}
+                      variant="outline"
+                      className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-red-500 font-bold">▶</span>
+                        Connect YouTube
+                      </span>
+                      {youtubeConnecting ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <ExternalLink className="h-4 w-4 text-muted-foreground" />
