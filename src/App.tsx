@@ -16,6 +16,7 @@ import InvestorEarnings from "./pages/InvestorEarnings.tsx";
 import CreatorOnboarding from "./pages/onboarding/CreatorOnboarding.tsx";
 import InvestorOnboarding from "./pages/onboarding/InvestorOnboarding.tsx";
 import SelectYoutubeChannel from "./pages/onboarding/SelectYoutubeChannel.tsx";
+import GumroadCallback from "./pages/onboarding/GumroadCallback.tsx";
 import CreatorProfile from "./pages/CreatorProfile.tsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
@@ -69,6 +70,10 @@ const App = () => (
             <Route
               path="/onboarding/creator/youtube/channels"
               element={<SelectYoutubeChannel />}
+            />
+            <Route
+              path="/onboarding/creator/gumroad/callback"
+              element={<GumroadCallback />}
             />
 
             {/* Catch-all */}
