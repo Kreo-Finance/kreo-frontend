@@ -107,6 +107,16 @@ export default function CreatorOnboarding() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Handle return from YouTube OAuth — backend currently redirects to /onboarding/creator?channels=...
+  // Forward to the channel selection page until backend is updated to redirect there directly.
+  useEffect(() => {
+    const channelsParam = searchParams.get("channels");
+    if (channelsParam) {
+      navigate(`/onboarding/creator/youtube/channels?channels=${channelsParam}`, { replace: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleKycSubmitted = () => {
     // Keep widget mounted — waiting for idCheck.onApplicantStatusChanged (GREEN)
     // which fires right after onApplicantSubmitted in sandbox mode.
@@ -333,7 +343,7 @@ export default function CreatorOnboarding() {
                     </Button>
 
                     <Button
-                      onClick={connectYoutube}
+                      onClick={() => connectYoutube()}
                       disabled={youtubeConnecting}
                       variant="outline"
                       className="w-full font-body font-semibold border-border hover:bg-accent justify-between"

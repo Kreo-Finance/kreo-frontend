@@ -7,11 +7,22 @@ export function useYoutube() {
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Backend returns 302 → Google OAuth directly, so we do browser navigation
-  // instead of an XHR call (which would fail with CORS on the redirect).
-  const connect = useCallback((): void => {
+  const connect = useCallback(async (): Promise<void> => {
     setConnecting(true);
-    youtubeApi.connect(); // triggers window.location.href — page will navigate away
+    try {
+      await youtubeApi.connect();
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { error?: string; message?: string } } })
+          ?.response?.data?.error ||
+        (err as { response?: { data?: { error?: string; message?: string } } })
+          ?.response?.data?.message ||
+        "Failed to connect YouTube";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setConnecting(false);
+    }
   }, []);
 
   const syncChannel = useCallback(async (channelId: string): Promise<boolean> => {
