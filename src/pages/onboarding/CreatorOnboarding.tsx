@@ -333,7 +333,7 @@ export default function CreatorOnboarding() {
                     </Button>
 
                     <Button
-                      onClick={() => connectYoutube()}
+                      onClick={connectYoutube}
                       disabled={youtubeConnecting}
                       variant="outline"
                       className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
