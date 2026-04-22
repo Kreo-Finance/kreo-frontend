@@ -44,6 +44,7 @@ export default function SelectYoutubeChannel() {
     }
 
     const channelsParam = params.get("channels");
+    console.log("Received channels param:", channelsParam);
     if (channelsParam) {
       try {
         // URLSearchParams.get() already URL-decodes, so just parse the JSON directly
