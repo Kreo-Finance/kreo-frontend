@@ -134,17 +134,6 @@ export default function CreatorOnboarding() {
     }
   };
 
-  const handleConnectAdSense = async () => {
-    setIncomeLoading(true);
-    try {
-      // TODO: redirect to Google AdSense OAuth
-      await new Promise((res) => setTimeout(res, 1500));
-      setCreatorIncomeConnected(true);
-    } finally {
-      setIncomeLoading(false);
-    }
-  };
-
   const handleConnectGumroad = async () => {
     const connected = await connectGumroad();
     if (connected) {
@@ -308,22 +297,7 @@ export default function CreatorOnboarding() {
                       )}
                     </Button>
 
-                    <Button
-                      onClick={handleConnectAdSense}
-                      disabled={incomeLoading}
-                      variant="outline"
-                      className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="text-blue-400 font-bold">G</span>
-                        Connect AdSense
-                      </span>
-                      {incomeLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
+                  
 
                     <Button
                       onClick={handleConnectGumroad}
