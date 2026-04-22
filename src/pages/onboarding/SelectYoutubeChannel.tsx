@@ -48,6 +48,7 @@ export default function SelectYoutubeChannel() {
       try {
         // URLSearchParams.get() already URL-decodes, so just parse the JSON directly
         const parsed = JSON.parse(channelsParam);
+        console.log("Parsed channels:", parsed);
         setChannels(Array.isArray(parsed) ? parsed : []);
       } catch {
         setError("Failed to parse channel data.");
