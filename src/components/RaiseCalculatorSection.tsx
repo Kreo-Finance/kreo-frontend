@@ -552,7 +552,7 @@ export default function RaiseCalculatorSection() {
                       <a href="/onboarding/creator"
                         className="flex items-center justify-center gap-2 w-full rounded-xl py-3 font-body text-sm font-bold text-primary-foreground hover:opacity-90 transition-opacity mt-1"
                         style={{ background: "linear-gradient(to right, hsl(var(--creo-teal)), hsl(var(--creo-pink)))" }}>
-                        Verify my income and start raising
+                        Start Raising
                         <ArrowRight className="h-4 w-4" />
                       </a>
                     </motion.div>
@@ -563,8 +563,8 @@ export default function RaiseCalculatorSection() {
 
             {/* Footer strip */}
             <div className="border-t-2 border-border px-6 py-3 bg-muted/10">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-1.5">
-                <div className="flex items-center gap-1.5">
+              <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-1.5">
+                <div className="flex  items-center gap-1.5">
                   <ShieldCheck className="h-3.5 w-3.5 text-creo-teal/60" />
                   <span className="font-body text-[11px] font-semibold text-muted-foreground/60">1.22× coverage enforced on-chain</span>
                 </div>
