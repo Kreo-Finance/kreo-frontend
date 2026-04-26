@@ -245,7 +245,7 @@ const HeroSection = () => {
           className="mt-12 mb-8 flex flex-wrap items-center justify-center gap-8 md:gap-16"
         >
           {[
-            { value: "$500B+", label: "Creator Economy" },
+            { value: "$250B+", label: "Creator Economy" },
             { value: "10-15%", label: "Projected Yield APY" },
             { value: "3%", label: "Platform Fee" },
           ].map((stat) => (
