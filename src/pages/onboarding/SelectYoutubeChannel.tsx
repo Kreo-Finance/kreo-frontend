@@ -51,6 +51,7 @@ export default function SelectYoutubeChannel() {
         const parsed = JSON.parse(channelsParam);
        setChannels(Array.isArray(parsed) ? parsed : []);
       } catch {
+        
         setError("Failed to parse channel data.");
       }
     }
@@ -58,10 +59,14 @@ export default function SelectYoutubeChannel() {
 
   const handleSelectChannel = async (channelId: string) => {
     setSelectedChannelId(channelId);
-    const success = await syncChannel(channelId);
-    if (success) {
-      setCreatorIncomeConnected(true);
-      navigate("/onboarding/creator");
+    const result = await syncChannel(channelId);
+    if (result.success) {
+      if (result.isMonetized === false) {
+        navigate("/onboarding/creator", { state: { channelNotMonetized: true } });
+      } else {
+        setCreatorIncomeConnected(true);
+        navigate("/onboarding/creator");
+      }
     } else {
       setSelectedChannelId(null);
     }

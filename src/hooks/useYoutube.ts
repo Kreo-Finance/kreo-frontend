@@ -25,26 +25,24 @@ export function useYoutube() {
     }
   }, []);
 
-  const syncChannel = useCallback(async (channelId: string): Promise<boolean> => {
+  const syncChannel = useCallback(async (channelId: string): Promise<{ success: boolean; isMonetized?: boolean; revenue?: number | null }> => {
     setSyncing(true);
     setError(null);
     try {
-      await youtubeApi.syncChannel(channelId);
-      toast.success("YouTube channel connected successfully");
-      return true;
+      const result = await youtubeApi.syncChannel(channelId);
+      const isMonetized = result.data?.isMonetized;
+      const revenue = result.data?.revenue;
+      return { success: true, isMonetized, revenue };
     } catch (err: unknown) {
-      const status = (err as { response?: { status?: number } })?.response?.status;
       const msg =
-        status === 403
-          ? "This channel is not monetized. Only YouTube Partner Program (YPP) channels are supported."
-          : (err as { response?: { data?: { error?: string; message?: string } } })
-              ?.response?.data?.error ||
-            (err as { response?: { data?: { error?: string; message?: string } } })
-              ?.response?.data?.message ||
-            "Failed to sync YouTube channel";
+        (err as { response?: { data?: { error?: string; message?: string } } })
+            ?.response?.data?.error ||
+          (err as { response?: { data?: { error?: string; message?: string } } })
+            ?.response?.data?.message ||
+          "Failed to sync YouTube channel";
       setError(msg);
       toast.error(msg);
-      return false;
+      return { success: false };
     } finally {
       setSyncing(false);
     }

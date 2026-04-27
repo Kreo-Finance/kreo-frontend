@@ -9,6 +9,15 @@ export interface YoutubeChannel {
   likelyMonetized: boolean;
 }
 
+export interface YoutubeChannelSyncResult {
+  success: boolean;
+  message?: string;
+  data?: {
+    channel?: YoutubeChannel;
+    isMonetized?: boolean;
+    revenue?: number | null;
+  };
+}
 
 export const youtubeApi = {
   // Backend returns { success: true, data: { url: "https://accounts.google.com/..." } }
@@ -20,7 +29,7 @@ export const youtubeApi = {
     if (url) window.location.href = url;
   },
 
-  syncChannel: async (channelId: string): Promise<{ success: boolean; [key: string]: unknown }> => {
+  syncChannel: async (channelId: string): Promise<YoutubeChannelSyncResult> => {
     const response = await apiClient.post("youtube/channel/sync", { channelId });
     return response.data;
   },
