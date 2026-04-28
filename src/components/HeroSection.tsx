@@ -134,7 +134,7 @@ const HeroSection = () => {
         >
           <span className="h-2 w-2 rounded-full bg-creo-teal animate-pulse-glow" />
           <span className="font-body text-xs font-medium text-muted-foreground">
-            Built on Base — Mainnet Live Coming Q2 2026
+            Built on Base — Mainnet Live Coming Q3 2026
           </span>
         </motion.div>
 
