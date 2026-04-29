@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
@@ -7,7 +7,6 @@ import {
   Loader2,
   ExternalLink,
   RefreshCw,
-  SendHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +23,6 @@ import { Link } from "react-router-dom";
 import SumsubWidget from "@/components/SumsubWidget";
 import { authApi } from "@/lib/api/auth";
 import { useGumroad } from "@/hooks/useGumroad";
-import { useRegisterCreator } from "@/hooks/useRegisterCreator";
 
 type Step = "kyc" | "income" | "register" | "done";
 
@@ -53,7 +51,11 @@ const STEPS: { id: Step; label: string; description: string }[] = [
 
 export default function CreatorOnboarding() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const channelNotMonetized =
+    (location.state as { channelNotMonetized?: boolean } | null)
+      ?.channelNotMonetized ?? false;
   const { theme, toggleTheme } = useTheme();
   const {
     walletAddress,
@@ -68,8 +70,11 @@ export default function CreatorOnboarding() {
     setCreatorRegistrationRequested,
   } = useAuth({ autoAuthenticate: false });
 
-  const { connect: connectGumroad, connecting: gumroadConnecting, fetchSalesData } = useGumroad();
-  const { register, registering, error: registerError } = useRegisterCreator();
+  const {
+    connect: connectGumroad,
+    connecting: gumroadConnecting,
+    fetchSalesData,
+  } = useGumroad();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -117,6 +122,19 @@ export default function CreatorOnboarding() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Handle return from YouTube OAuth — backend currently redirects to /onboarding/creator?channels=...
+  // Forward to the channel selection page until backend is updated to redirect there directly.
+  useEffect(() => {
+    const channelsParam = searchParams.get("channels");
+    if (channelsParam) {
+      navigate(
+        `/onboarding/creator/youtube/channels?channels=${channelsParam}`,
+        { replace: true },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleKycSubmitted = () => {
     // Keep widget mounted — waiting for idCheck.onApplicantStatusChanged (GREEN)
   };
@@ -139,7 +157,6 @@ export default function CreatorOnboarding() {
       // TODO: redirect to Google AdSense OAuth
       await new Promise((res) => setTimeout(res, 1500));
       setCreatorIncomeConnected(true);
-      setConnectedIncomeSource("adsense");
     } finally {
       setIncomeLoading(false);
     }
@@ -219,7 +236,9 @@ export default function CreatorOnboarding() {
                 (step.id === "kyc" && creatorKycStatus === "approved") ||
                 (step.id === "income" && creatorIncomeConnected) ||
                 (step.id === "register" && creatorRegistrationRequested) ||
-                (step.id === "done" && creatorUnlocked && creatorRegistrationRequested);
+                (step.id === "done" &&
+                  creatorUnlocked &&
+                  creatorRegistrationRequested);
               const active = step.id === activeStep;
               return (
                 <div key={step.id} className="flex items-center gap-2 flex-1">
@@ -304,58 +323,102 @@ export default function CreatorOnboarding() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Button
-                      onClick={handleConnectStripe}
-                      disabled={incomeLoading}
-                      variant="outline"
-                      className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="text-violet-400 font-bold">
-                          stripe
-                        </span>
-                        Connect Stripe
-                      </span>
-                      {incomeLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
+                    {channelNotMonetized ? (
+                      <div className="space-y-4">
+                        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 flex gap-3">
+                          <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+                          <div className="space-y-1">
+                            <p className="font-body text-sm font-semibold text-red-400">
+                              Channel Not Monetized
+                            </p>
+                            <p className="font-body text-sm text-red-400/80">
+                              Sorry, we cannot proceed forward as your channel
+                              is not monetized! Only YouTube Partner Program
+                              (YPP) channels are supported.
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => connectYoutube()}
+                          disabled={youtubeConnecting}
+                          variant="outline"
+                          className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Youtube className="h-4 w-4 text-red-500" />
+                            Connect Another Channel
+                          </span>
+                          {youtubeConnecting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                        <Button
+                          onClick={() => navigate("/")}
+                          variant="ghost"
+                          className="w-full font-body font-semibold text-muted-foreground hover:text-foreground justify-center gap-2"
+                        >
+                          <Home className="h-4 w-4" />
+                          Back to Homepage
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={handleConnectStripe}
+                          disabled={incomeLoading}
+                          variant="outline"
+                          className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="text-violet-400 font-bold">
+                              stripe
+                            </span>
+                            Connect Stripe
+                          </span>
+                          {incomeLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
 
-                    <Button
-                      onClick={handleConnectAdSense}
-                      disabled={incomeLoading}
-                      variant="outline"
-                      className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="text-blue-400 font-bold">G</span>
-                        Connect AdSense
-                      </span>
-                      {incomeLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
+                        <Button
+                          onClick={handleConnectGumroad}
+                          disabled={gumroadConnecting}
+                          variant="outline"
+                          className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="text-pink-400 font-bold">G</span>
+                            Connect Gumroad
+                          </span>
+                          {gumroadConnecting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
 
-                    <Button
-                      onClick={handleConnectGumroad}
-                      disabled={gumroadConnecting}
-                      variant="outline"
-                      className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="text-pink-400 font-bold">G</span>
-                        Connect Gumroad
-                      </span>
-                      {gumroadConnecting ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
+                        <Button
+                          onClick={() => connectYoutube()}
+                          disabled={youtubeConnecting}
+                          variant="outline"
+                          className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="text-red-500 font-bold">▶</span>
+                            Connect YouTube
+                          </span>
+                          {youtubeConnecting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -374,9 +437,9 @@ export default function CreatorOnboarding() {
                       Request Creator Registration
                     </CardTitle>
                     <CardDescription className="font-body text-sm">
-                      Your KYC is approved and income source is connected. Submit
-                      your registration for admin review — they'll register you
-                      on-chain and activate your creator account.
+                      Your KYC is approved and income source is connected.
+                      Submit your registration for admin review — they'll
+                      register you on-chain and activate your creator account.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -400,7 +463,9 @@ export default function CreatorOnboarding() {
 
                     <Button
                       onClick={handleRequestRegistration}
-                      disabled={registering || !connectedIncomeSource || !walletAddress}
+                      disabled={
+                        registering || !connectedIncomeSource || !walletAddress
+                      }
                       className="w-full bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90"
                     >
                       {registering ? (

@@ -596,7 +596,7 @@ const CreatorProfile = () => {
             )}
           </motion.div>
 
-          {/* ── SECTION 5: CreoScore Journey (only for owner) ────────── */}
+          {/* ── SECTION 5: KreoScore Journey (only for owner) ────────── */}
           {isOwner && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -606,7 +606,7 @@ const CreatorProfile = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-display text-lg font-semibold text-foreground">
-                  Your CreoScore Journey
+                  Your KreoScore Journey
                 </h2>
                 <CreoScoreBadge tier={profile.tier} size="md" />
               </div>
@@ -627,7 +627,7 @@ const CreatorProfile = () => {
                     aria-valuenow={progressPct}
                     aria-valuemin={0}
                     aria-valuemax={100}
-                    aria-label={`CreoScore progress toward ${TIER_NAMES[(profile.tier + 1) as TierNumber]}`}
+                    aria-label={`KreoScore progress toward ${TIER_NAMES[(profile.tier + 1) as TierNumber]}`}
                     className="h-2.5 rounded-full bg-muted overflow-hidden mb-2"
                   >
                     <motion.div

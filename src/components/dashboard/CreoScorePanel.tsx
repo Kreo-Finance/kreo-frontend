@@ -94,7 +94,7 @@ const CreoScorePanel = ({
         {/* Title row */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display text-lg font-semibold text-foreground">
-            Your CreoScore
+            Your KreoScore
           </h2>
           <CreoScoreBadge tier={tier} size="md" />
         </div>
