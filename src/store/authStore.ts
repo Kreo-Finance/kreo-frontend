@@ -33,6 +33,10 @@ interface AuthState {
   investorUnlocked: boolean;
   verificationPending: boolean;
 
+  // Creator registration
+  connectedIncomeSource: string | null;
+  creatorRegistrationRequested: boolean;
+
   // Actions
   setTokens: (access: string, refresh: string) => void;
   setWalletAddress: (address: string) => void;
@@ -40,6 +44,8 @@ interface AuthState {
   setActiveRole: (role: ActiveRole) => void;
   setCreatorKycStatus: (status: KycStatus) => void;
   setCreatorIncomeConnected: (connected: boolean) => void;
+  setConnectedIncomeSource: (source: string) => void;
+  setCreatorRegistrationRequested: (requested: boolean) => void;
   setInvestorKycStatus: (status: KycStatus) => void;
   setAccreditationStatus: (status: AccreditationStatus) => void;
   authenticate: (address: string, provider: BrowserProvider) => Promise<void>;
@@ -79,6 +85,8 @@ export const useAuthStore = create<AuthState>()(
       creatorUnlocked: false,
       investorUnlocked: false,
       verificationPending: false,
+      connectedIncomeSource: null,
+      creatorRegistrationRequested: false,
 
       setTokens: (access, refresh) => {
         localStorage.setItem('kreo_access_token', access);
@@ -129,6 +137,11 @@ export const useAuthStore = create<AuthState>()(
         );
         set({ creatorIncomeConnected: connected, ...derived });
       },
+
+      setConnectedIncomeSource: (source) => set({ connectedIncomeSource: source }),
+
+      setCreatorRegistrationRequested: (requested) =>
+        set({ creatorRegistrationRequested: requested }),
 
       setInvestorKycStatus: (status) => {
         const s = get();
@@ -214,6 +227,8 @@ export const useAuthStore = create<AuthState>()(
           creatorUnlocked: false,
           investorUnlocked: false,
           verificationPending: false,
+          connectedIncomeSource: null,
+          creatorRegistrationRequested: false,
         });
         toast.success('Disconnected');
       },
@@ -234,6 +249,8 @@ export const useAuthStore = create<AuthState>()(
         creatorUnlocked: state.creatorUnlocked,
         investorUnlocked: state.investorUnlocked,
         verificationPending: state.verificationPending,
+        connectedIncomeSource: state.connectedIncomeSource,
+        creatorRegistrationRequested: state.creatorRegistrationRequested,
       }),
     },
   ),

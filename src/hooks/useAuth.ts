@@ -83,6 +83,10 @@ export function useAuth({ autoAuthenticate = true }: UseAuthOptions = {}) {
     investorUnlocked: store.investorUnlocked,
     verificationPending: store.verificationPending,
 
+    // Creator registration
+    connectedIncomeSource: store.connectedIncomeSource,
+    creatorRegistrationRequested: store.creatorRegistrationRequested,
+
     // Actions
     authenticate,
     logout: store.logout,
@@ -90,6 +94,8 @@ export function useAuth({ autoAuthenticate = true }: UseAuthOptions = {}) {
     setActiveRole: store.setActiveRole,
     setCreatorKycStatus: store.setCreatorKycStatus,
     setCreatorIncomeConnected: store.setCreatorIncomeConnected,
+    setConnectedIncomeSource: store.setConnectedIncomeSource,
+    setCreatorRegistrationRequested: store.setCreatorRegistrationRequested,
     setInvestorKycStatus: store.setInvestorKycStatus,
     setAccreditationStatus: store.setAccreditationStatus,
   };

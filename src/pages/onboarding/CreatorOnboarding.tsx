@@ -6,8 +6,8 @@ import {
   Circle,
   Loader2,
   ExternalLink,
-  ArrowRight,
   RefreshCw,
+  SendHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,8 +24,9 @@ import { Link } from "react-router-dom";
 import SumsubWidget from "@/components/SumsubWidget";
 import { authApi } from "@/lib/api/auth";
 import { useGumroad } from "@/hooks/useGumroad";
+import { useRegisterCreator } from "@/hooks/useRegisterCreator";
 
-type Step = "kyc" | "income" | "done";
+type Step = "kyc" | "income" | "register" | "done";
 
 const STEPS: { id: Step; label: string; description: string }[] = [
   {
@@ -36,7 +37,12 @@ const STEPS: { id: Step; label: string; description: string }[] = [
   {
     id: "income",
     label: "Income Connection",
-    description: "Connect Stripe or AdSense",
+    description: "Connect your revenue stream",
+  },
+  {
+    id: "register",
+    label: "Registration",
+    description: "Request creator registration",
   },
   {
     id: "done",
@@ -54,11 +60,16 @@ export default function CreatorOnboarding() {
     creatorKycStatus,
     creatorIncomeConnected,
     creatorUnlocked,
+    connectedIncomeSource,
+    creatorRegistrationRequested,
     setCreatorKycStatus,
     setCreatorIncomeConnected,
+    setConnectedIncomeSource,
+    setCreatorRegistrationRequested,
   } = useAuth({ autoAuthenticate: false });
 
   const { connect: connectGumroad, connecting: gumroadConnecting, fetchSalesData } = useGumroad();
+  const { register, registering, error: registerError } = useRegisterCreator();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -70,7 +81,9 @@ export default function CreatorOnboarding() {
       ? "kyc"
       : !creatorIncomeConnected
         ? "income"
-        : "done";
+        : !creatorRegistrationRequested
+          ? "register"
+          : "done";
 
   const fetchSumsubToken = useCallback(async () => {
     setTokenLoading(true);
@@ -86,7 +99,6 @@ export default function CreatorOnboarding() {
     }
   }, []);
 
-  // Auto-fetch token when KYC step is active and not yet pending
   useEffect(() => {
     if (activeStep === "kyc" && creatorKycStatus !== "pending") {
       fetchSumsubToken();
@@ -94,29 +106,28 @@ export default function CreatorOnboarding() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStep]);
 
-  // Handle return from Gumroad OAuth — backend redirects back with ?gumroad=success
   useEffect(() => {
     if (searchParams.get("gumroad") === "success") {
       fetchSalesData().then(() => {
         setCreatorIncomeConnected(true);
+        setConnectedIncomeSource("gumroad");
       });
       setSearchParams({}, { replace: true });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleKycSubmitted = () => {
     // Keep widget mounted — waiting for idCheck.onApplicantStatusChanged (GREEN)
-    // which fires right after onApplicantSubmitted in sandbox mode.
   };
 
   const handleConnectStripe = async () => {
     setIncomeLoading(true);
     try {
       // TODO: redirect to Stripe OAuth
-      // window.location.href = `https://connect.stripe.com/oauth/authorize?...`;
       await new Promise((res) => setTimeout(res, 1500));
       setCreatorIncomeConnected(true);
+      setConnectedIncomeSource("stripe");
     } finally {
       setIncomeLoading(false);
     }
@@ -128,6 +139,7 @@ export default function CreatorOnboarding() {
       // TODO: redirect to Google AdSense OAuth
       await new Promise((res) => setTimeout(res, 1500));
       setCreatorIncomeConnected(true);
+      setConnectedIncomeSource("adsense");
     } finally {
       setIncomeLoading(false);
     }
@@ -137,6 +149,20 @@ export default function CreatorOnboarding() {
     const connected = await connectGumroad();
     if (connected) {
       setCreatorIncomeConnected(true);
+      setConnectedIncomeSource("gumroad");
+    }
+    // If OAuth redirect happens, source is set in the useEffect above
+  };
+
+  const handleRequestRegistration = async () => {
+    if (!walletAddress || !connectedIncomeSource) return;
+    const ok = await register(
+      connectedIncomeSource,
+      walletAddress,
+      creatorKycStatus === "approved",
+    );
+    if (ok) {
+      setCreatorRegistrationRequested(true);
     }
   };
 
@@ -192,7 +218,8 @@ export default function CreatorOnboarding() {
               const done =
                 (step.id === "kyc" && creatorKycStatus === "approved") ||
                 (step.id === "income" && creatorIncomeConnected) ||
-                (step.id === "done" && creatorUnlocked);
+                (step.id === "register" && creatorRegistrationRequested) ||
+                (step.id === "done" && creatorUnlocked && creatorRegistrationRequested);
               const active = step.id === activeStep;
               return (
                 <div key={step.id} className="flex items-center gap-2 flex-1">
@@ -334,6 +361,65 @@ export default function CreatorOnboarding() {
               </motion.div>
             )}
 
+            {activeStep === "register" && (
+              <motion.div
+                key="register"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+              >
+                <Card className="border-white/10 bg-card/40 backdrop-blur-md">
+                  <CardHeader>
+                    <CardTitle className="font-display text-lg">
+                      Request Creator Registration
+                    </CardTitle>
+                    <CardDescription className="font-body text-sm">
+                      Your KYC is approved and income source is connected. Submit
+                      your registration for admin review — they'll register you
+                      on-chain and activate your creator account.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {connectedIncomeSource && (
+                      <div className="rounded-lg bg-creo-teal/5 border border-creo-teal/20 px-4 py-3 text-sm font-body text-creo-teal flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+                        <span>
+                          Income source:{" "}
+                          <span className="font-semibold capitalize">
+                            {connectedIncomeSource}
+                          </span>
+                        </span>
+                      </div>
+                    )}
+
+                    {registerError && (
+                      <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
+                        {registerError}
+                      </div>
+                    )}
+
+                    <Button
+                      onClick={handleRequestRegistration}
+                      disabled={registering || !connectedIncomeSource || !walletAddress}
+                      className="w-full bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90"
+                    >
+                      {registering ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Submitting…
+                        </>
+                      ) : (
+                        <>
+                          <SendHorizontal className="mr-2 h-4 w-4" />
+                          Request Register Now
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
             {activeStep === "done" && (
               <motion.div
                 key="done"
@@ -344,11 +430,12 @@ export default function CreatorOnboarding() {
                   <CardContent className="pt-8 pb-8 space-y-4">
                     <CheckCircle2 className="h-12 w-12 text-creo-teal mx-auto" />
                     <h2 className="font-display text-xl font-bold">
-                      You're all set!
+                      Registration Submitted!
                     </h2>
                     <p className="font-body text-sm text-muted-foreground">
-                      Your creator account is verified and ready. Start creating
-                      your first offering.
+                      Your registration request has been sent to our team. An
+                      admin will review and activate your creator account
+                      on-chain. You'll be notified once it's complete.
                     </p>
                     <Button
                       onClick={() => navigate("/creator/dashboard")}
@@ -397,9 +484,9 @@ export default function CreatorOnboarding() {
           containerId="sumsub-creator-kyc"
           onApplicantSubmitted={handleKycSubmitted}
           onApplicantApproved={() => {
-                setCreatorKycStatus("approved");
-                setSumsubToken(null);
-              }}
+            setCreatorKycStatus("approved");
+            setSumsubToken(null);
+          }}
           onError={() => setTokenError("Verification error. Please try again.")}
         />
       );
