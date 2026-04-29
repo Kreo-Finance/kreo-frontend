@@ -7,6 +7,10 @@ import {
   Loader2,
   ExternalLink,
   RefreshCw,
+  SendHorizontal,
+  AlertCircle,
+  Youtube,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +27,8 @@ import { Link } from "react-router-dom";
 import SumsubWidget from "@/components/SumsubWidget";
 import { authApi } from "@/lib/api/auth";
 import { useGumroad } from "@/hooks/useGumroad";
+import { useYoutube } from "@/hooks/useYoutube";
+import { useRegisterCreator } from "@/hooks/useRegisterCreator";
 
 type Step = "kyc" | "income" | "register" | "done";
 
@@ -75,6 +81,8 @@ export default function CreatorOnboarding() {
     connecting: gumroadConnecting,
     fetchSalesData,
   } = useGumroad();
+  const { connect: connectYoutube, connecting: youtubeConnecting } = useYoutube();
+  const { register, registering, error: registerError } = useRegisterCreator();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
