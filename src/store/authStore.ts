@@ -58,9 +58,10 @@ function derive(
   investorKycStatus: KycStatus,
   accreditationStatus: AccreditationStatus,
   selectedRole: UserRole | null,
+  creatorRegistrationRequested: boolean,
 ) {
   const creatorUnlocked =
-    creatorKycStatus === 'approved' && creatorIncomeConnected;
+    creatorKycStatus === 'approved' && creatorIncomeConnected && creatorRegistrationRequested;
   const investorUnlocked =
     investorKycStatus === 'approved' && accreditationStatus === 'approved';
   const verificationPending = !!selectedRole && !creatorUnlocked && !investorUnlocked;
@@ -108,6 +109,7 @@ export const useAuthStore = create<AuthState>()(
           s.investorKycStatus,
           s.accreditationStatus,
           role,
+          s.creatorRegistrationRequested,
         );
         set({ selectedRole: role, activeRole, ...derived });
       },
@@ -122,6 +124,7 @@ export const useAuthStore = create<AuthState>()(
           s.investorKycStatus,
           s.accreditationStatus,
           s.selectedRole,
+          s.creatorRegistrationRequested,
         );
         set({ creatorKycStatus: status, ...derived });
       },
@@ -134,14 +137,25 @@ export const useAuthStore = create<AuthState>()(
           s.investorKycStatus,
           s.accreditationStatus,
           s.selectedRole,
+          s.creatorRegistrationRequested,
         );
         set({ creatorIncomeConnected: connected, ...derived });
       },
 
       setConnectedIncomeSource: (source) => set({ connectedIncomeSource: source }),
 
-      setCreatorRegistrationRequested: (requested) =>
-        set({ creatorRegistrationRequested: requested }),
+      setCreatorRegistrationRequested: (requested) => {
+        const s = get();
+        const derived = derive(
+          s.creatorKycStatus,
+          s.creatorIncomeConnected,
+          s.investorKycStatus,
+          s.accreditationStatus,
+          s.selectedRole,
+          requested,
+        );
+        set({ creatorRegistrationRequested: requested, ...derived });
+      },
 
       setInvestorKycStatus: (status) => {
         const s = get();
@@ -151,6 +165,7 @@ export const useAuthStore = create<AuthState>()(
           status,
           s.accreditationStatus,
           s.selectedRole,
+          s.creatorRegistrationRequested,
         );
         set({ investorKycStatus: status, ...derived });
       },
@@ -163,6 +178,7 @@ export const useAuthStore = create<AuthState>()(
           s.investorKycStatus,
           status,
           s.selectedRole,
+          s.creatorRegistrationRequested,
         );
         set({ accreditationStatus: status, ...derived });
       },
@@ -175,9 +191,21 @@ export const useAuthStore = create<AuthState>()(
           const { data: result } = await authApi.verifySignature(address, signature);
           
 
-          // If wallet changed (new user), clear persisted role so role modal appears
+          // If wallet changed, wipe all wallet-specific state so the new user starts fresh
           if (!addressesMatch(get().walletAddress, result.wallet)) {
-            set({ selectedRole: null, activeRole: null });
+            set({
+              selectedRole: null,
+              activeRole: null,
+              creatorKycStatus: 'none',
+              creatorIncomeConnected: false,
+              connectedIncomeSource: null,
+              creatorRegistrationRequested: false,
+              investorKycStatus: 'none',
+              accreditationStatus: 'none',
+              creatorUnlocked: false,
+              investorUnlocked: false,
+              verificationPending: false,
+            });
           }
 
           get().setTokens(result.access_token, result.refresh_token);
@@ -211,24 +239,24 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         authApi.logout();
+        // walletAddress is intentionally kept so authenticate() can detect a same-wallet
+        // re-login and preserve the creator onboarding state below.
+        // Creator state (creatorKycStatus, creatorIncomeConnected, connectedIncomeSource,
+        // creatorRegistrationRequested, creatorUnlocked) is also kept — it will be
+        // re-validated from the backend on the next login. A different wallet logging in
+        // will clear it via the wallet-change branch in authenticate().
         set({
           accessToken: null,
           refreshToken: null,
-          walletAddress: null,
           isAuthenticated: false,
           authenticating: false,
           error: null,
           selectedRole: null,
           activeRole: null,
-          creatorKycStatus: 'none',
-          creatorIncomeConnected: false,
           investorKycStatus: 'none',
           accreditationStatus: 'none',
-          creatorUnlocked: false,
           investorUnlocked: false,
           verificationPending: false,
-          connectedIncomeSource: null,
-          creatorRegistrationRequested: false,
         });
         toast.success('Disconnected');
       },
