@@ -510,7 +510,7 @@ export default function CreatorOnboarding() {
                       Your registration has been completed. You can now verify your earnings.
                     </p>
                     <Button
-                      onClick={() => navigate("/creator/analytics")}
+                      onClick={() => navigate("/creator/dashboard")}
                       className="bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90 px-8"
                     >
                       Verify Earnings
