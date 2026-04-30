@@ -504,12 +504,10 @@ export default function CreatorOnboarding() {
                   <CardContent className="pt-8 pb-8 space-y-4">
                     <CheckCircle2 className="h-12 w-12 text-creo-teal mx-auto" />
                     <h2 className="font-display text-xl font-bold">
-                      Registration Submitted!
+                      Registration Done!
                     </h2>
                     <p className="font-body text-sm text-muted-foreground">
-                      Your registration request has been sent to our team. An
-                      admin will review and activate your creator account
-                      on-chain. You'll be notified once it's complete.
+                      Your registration has been completed. You can now verify your earnings.
                     </p>
                     <Button
                       onClick={() => navigate("/creator/analytics")}
