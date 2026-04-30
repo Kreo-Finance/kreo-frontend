@@ -512,10 +512,10 @@ export default function CreatorOnboarding() {
                       on-chain. You'll be notified once it's complete.
                     </p>
                     <Button
-                      onClick={() => navigate("/creator/dashboard")}
+                      onClick={() => navigate("/creator/analytics")}
                       className="bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90 px-8"
                     >
-                      Go to Dashboard
+                      Verify Earnings
                     </Button>
                   </CardContent>
                 </Card>

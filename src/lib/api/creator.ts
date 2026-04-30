@@ -29,7 +29,7 @@ export interface RegisterCreatorResponse {
 
 export const creatorApi = {
   registerCreator: async (payload: RegisterCreatorPayload): Promise<RegisterCreatorResponse> => {
-    const response = await apiClient.post('users/register/creator', payload);
+    const response = await apiClient.post('users/register/creator', payload, { timeout: 40000 });
     return response.data;
   },
 };
