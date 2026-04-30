@@ -27,7 +27,7 @@ function formatError(code: string): string {
 
 export default function SelectYoutubeChannel() {
   const navigate = useNavigate();
-  const { setCreatorIncomeConnected } = useAuth({ autoAuthenticate: false });
+  const { setCreatorIncomeConnected, setConnectedIncomeSource } = useAuth({ autoAuthenticate: false });
   const { syncChannel, syncing } = useYoutube();
 
   const [channels, setChannels] = useState<YoutubeChannel[]>([]);
@@ -65,6 +65,7 @@ export default function SelectYoutubeChannel() {
         navigate("/onboarding/creator", { state: { channelNotMonetized: true } });
       } else {
         setCreatorIncomeConnected(true);
+        setConnectedIncomeSource("youtube");
         navigate("/onboarding/creator");
       }
     } else {

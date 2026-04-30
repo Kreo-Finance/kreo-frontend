@@ -165,6 +165,7 @@ export default function CreatorOnboarding() {
       // TODO: redirect to Google AdSense OAuth
       await new Promise((res) => setTimeout(res, 1500));
       setCreatorIncomeConnected(true);
+      setConnectedIncomeSource("adsense");
     } finally {
       setIncomeLoading(false);
     }

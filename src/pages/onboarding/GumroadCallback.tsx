@@ -51,7 +51,7 @@ function formatCurrency(cents: number): string {
 
 export default function GumroadCallback() {
   const navigate = useNavigate();
-  const { setCreatorIncomeConnected } = useAuth({ autoAuthenticate: false });
+  const { setCreatorIncomeConnected, setConnectedIncomeSource } = useAuth({ autoAuthenticate: false });
   const { fetchSalesData } = useGumroad();
 
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +81,7 @@ export default function GumroadCallback() {
           : [];
         setSalesData(sales);
         setCreatorIncomeConnected(true);
+        setConnectedIncomeSource("gumroad");
       } catch {
         setError("Failed to fetch your sales data. Please try again.");
       } finally {
