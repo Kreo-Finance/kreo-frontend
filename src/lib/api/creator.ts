@@ -27,9 +27,20 @@ export interface RegisterCreatorResponse {
   createdAt: string;
 }
 
+export interface VerifyEarningsResponse {
+  success: boolean;
+  message?: string;
+  [key: string]: unknown;
+}
+
 export const creatorApi = {
   registerCreator: async (payload: RegisterCreatorPayload): Promise<RegisterCreatorResponse> => {
     const response = await apiClient.post('users/register/creator', payload, { timeout: 60000 });
+    return response.data;
+  },
+
+  verifyEarnings: async (): Promise<VerifyEarningsResponse> => {
+    const response = await apiClient.post('users/creator/verify-earnings');
     return response.data;
   },
 };

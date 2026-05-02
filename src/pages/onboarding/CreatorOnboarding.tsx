@@ -29,6 +29,7 @@ import { authApi } from "@/lib/api/auth";
 import { useGumroad } from "@/hooks/useGumroad";
 import { useYoutube } from "@/hooks/useYoutube";
 import { useRegisterCreator } from "@/hooks/useRegisterCreator";
+import { useVerifyEarnings } from "@/hooks/useVerifyEarnings";
 
 type Step = "kyc" | "income" | "register" | "done";
 
@@ -83,6 +84,7 @@ export default function CreatorOnboarding() {
   } = useGumroad();
   const { connect: connectYoutube, connecting: youtubeConnecting } = useYoutube();
   const { register, registering, error: registerError } = useRegisterCreator();
+  const { verifyEarnings, verifying } = useVerifyEarnings();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -510,10 +512,21 @@ export default function CreatorOnboarding() {
                       Your registration has been completed. You can now verify your earnings.
                     </p>
                     <Button
-                      onClick={() => navigate("/creator/dashboard")}
+                      onClick={async () => {
+                        const ok = await verifyEarnings();
+                        if (ok) navigate("/creator/dashboard");
+                      }}
+                      disabled={verifying}
                       className="bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90 px-8"
                     >
-                      Verify Earnings
+                      {verifying ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Verifying…
+                        </>
+                      ) : (
+                        "Verify Earnings"
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
