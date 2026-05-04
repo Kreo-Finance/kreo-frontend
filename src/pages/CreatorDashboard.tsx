@@ -1,39 +1,31 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight, ArrowDownRight, DollarSign, Users, Shield, Star, TrendingUp, Coins } from "lucide-react";
+import {
+  TrendingUp, DollarSign, Shield, Star,
+  AlertCircle, RefreshCw, Wallet,
+} from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
 import CreoScorePanel from "@/components/dashboard/CreoScorePanel";
 import WalletGate from "@/components/WalletGate";
+import { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
+import { formatUsdc, formatBps, VARIANCE_TIER_LABELS } from "@/config/contracts";
+import { Coins } from "lucide-react";
 
-const stats = [
-  { label: "Total Raised", value: "$12,000", change: "+100%", up: true, icon: DollarSign, color: "text-creo-pink", bg: "bg-creo-pink/10" },
-  { label: "Monthly Earnings", value: "$6,200", change: "+3.4%", up: true, icon: TrendingUp, color: "text-creo-teal", bg: "bg-creo-teal/10" },
-  { label: "Active Investors", value: "47", change: "+12", up: true, icon: Users, color: "text-creo-yellow", bg: "bg-creo-yellow/10" },
-  { label: "KreoScore", value: "185", change: "Established", up: true, icon: Star, color: "text-creo-pink", bg: "bg-creo-pink/10" },
-];
+// ── helpers ────────────────────────────────────────────────────────────────
 
-const offerings = [
-  {
-    id: 1,
-    title: "DeFi Course Revenue Share",
-    status: "Active",
-    raised: "$12,000",
-    target: "$12,000",
-    sharePercent: "40%",
-    duration: "6 months",
-    remaining: "4 months",
-    investors: 47,
-    bondStatus: "Locked — $600 USDC",
-  },
-];
+function SkeletonText({ w = "w-20" }: { w?: string }) {
+  return <span className={`inline-block h-4 ${w} rounded bg-muted animate-pulse`} />;
+}
 
-const recentSettlements = [
-  { month: "Feb 2026", earnings: "$5,800", distributed: "$2,320", claimed: "$2,180", pending: "$140" },
-  { month: "Jan 2026", earnings: "$6,200", distributed: "$2,480", claimed: "$2,480", pending: "$0" },
-  { month: "Dec 2025", earnings: "$5,950", distributed: "$2,380", claimed: "$2,380", pending: "$0" },
-];
+const TIER_COLORS: Record<string, string> = {
+  LOW: "text-creo-teal",
+  MEDIUM: "text-creo-yellow",
+  HIGH: "text-destructive",
+};
+
+// ── component ──────────────────────────────────────────────────────────────
 
 const CreatorDashboard = () => {
   const { address, isConnected } = useAccount();
@@ -41,134 +33,214 @@ const CreatorDashboard = () => {
     ? `${address.slice(0, 5)}...${address.slice(-4)}`
     : "Guest";
 
+  const vault = useCreatorVaultData(address as `0x${string}` | undefined);
+
+  const tierLabel = vault.varianceTier !== undefined
+    ? (VARIANCE_TIER_LABELS[vault.varianceTier] ?? "—")
+    : undefined;
+
+  const scoreNum = vault.socialProofScore !== undefined
+    ? Number(vault.socialProofScore)
+    : 0;
+
+  const stats = [
+    {
+      label: "Avg Monthly Earnings",
+      value: vault.isLoading ? null : formatUsdc(vault.avgMonthlyEarnings),
+      sub: vault.isLoading ? null : `${vault.monthsRecorded ?? 0} months recorded`,
+      icon: TrendingUp,
+      color: "text-creo-teal",
+      bg: "bg-creo-teal/10",
+    },
+    {
+      label: "Conservative Floor",
+      value: vault.isLoading ? null : formatUsdc(vault.conservativeFloor),
+      sub: vault.isLoading ? null : tierLabel ? (
+        <span className={`font-semibold ${TIER_COLORS[tierLabel] ?? ""}`}>
+          {tierLabel} variance
+        </span>
+      ) : "—",
+      icon: DollarSign,
+      color: "text-creo-pink",
+      bg: "bg-creo-pink/10",
+    },
+    {
+      label: "Bond Deposit",
+      value: vault.isLoading ? null : formatUsdc(vault.bondDeposit),
+      sub: vault.isLoading ? null : `Rate: ${formatBps(vault.bondRateBps)}`,
+      icon: Shield,
+      color: "text-creo-yellow",
+      bg: "bg-creo-yellow/10",
+    },
+    {
+      label: "KreoScore",
+      value: vault.isLoading ? null : scoreNum > 0 ? String(scoreNum) : "—",
+      sub: vault.isLoading ? null : `${vault.offeringCompletions ?? 0} offering${(vault.offeringCompletions ?? 0) !== 1 ? "s" : ""} completed`,
+      icon: Star,
+      color: "text-creo-pink",
+      bg: "bg-creo-pink/10",
+    },
+  ];
+
   return (
     <div className="flex min-h-screen bg-background">
       <DashboardSidebar type="creator" />
 
       <main className="flex-1 pt-16 lg:pt-0">
         <WalletGate message="Connect your wallet to view your creator dashboard, offerings, and earnings.">
-        <div className="p-6 lg:p-8 max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <div>
-              <h1 className="font-display text-3xl font-bold text-foreground">Welcome back, {displayName}</h1>
-              <p className="font-body text-muted-foreground mt-1">Here's how your offerings are performing.</p>
+          <div className="p-6 lg:p-8 max-w-6xl mx-auto">
+
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+              <div>
+                <h1 className="font-display text-3xl font-bold text-foreground">
+                  Welcome back, {displayName}
+                </h1>
+                <p className="font-body text-muted-foreground mt-1">
+                  Here's how your offerings are performing.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => vault.refetch()}
+                  disabled={vault.isLoading}
+                  className="text-muted-foreground hover:text-foreground"
+                  title="Refresh on-chain data"
+                >
+                  <RefreshCw className={`h-4 w-4 ${vault.isLoading ? "animate-spin" : ""}`} />
+                </Button>
+                <Link to="/creator/offerings">
+                  <Button className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
+                    <Coins className="h-4 w-4 mr-2" />
+                    New Offering
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <Link to="/creator/offerings">
-              <Button className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
-                <Coins className="h-4 w-4 mr-2" />
-                New Offering
-              </Button>
-            </Link>
-          </div>
 
-          {/* Stats Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-            {stats.map((stat, i) => (
+            {/* Error banner */}
+            {vault.isError && (
+              <div className="mb-6 flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-body text-destructive">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                Failed to load on-chain data. Check your network or{" "}
+                <button
+                  className="underline"
+                  onClick={() => vault.refetch()}
+                >
+                  retry
+                </button>.
+              </div>
+            )}
+
+            {/* Wallet Balances */}
+            {(vault.ethBalance || vault.usdcBalance) && (
               <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="rounded-xl border border-border bg-card p-5"
+                className="mb-6 flex flex-wrap gap-4"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${stat.bg}`}>
-                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                {vault.ethBalance && (
+                  <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5">
+                    <Wallet className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-body text-xs text-muted-foreground">ETH</span>
+                    <span className="font-mono text-sm font-semibold text-foreground">
+                      {Number(vault.ethBalance.formatted).toFixed(4)}
+                    </span>
                   </div>
-                  <span className={`flex items-center gap-1 font-body text-xs font-medium ${stat.up ? "text-creo-teal" : "text-destructive"}`}>
-                    {stat.up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                    {stat.change}
-                  </span>
-                </div>
-                <p className="font-display text-2xl font-bold text-foreground">{stat.value}</p>
-                <p className="font-body text-xs text-muted-foreground mt-1">{stat.label}</p>
+                )}
+                {vault.usdcBalance && (
+                  <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5">
+                    <Wallet className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-body text-xs text-muted-foreground">USDC</span>
+                    <span className="font-mono text-sm font-semibold text-foreground">
+                      {Number(vault.usdcBalance.formatted).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                )}
               </motion.div>
-            ))}
-          </div>
+            )}
 
-          {/* Active Offering */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="rounded-xl border border-border bg-card p-6 mb-8"
-          >
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">Active Offering</h2>
-            {offerings.map((o) => (
-              <div key={o.id} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div>
-                  <p className="font-body text-xs text-muted-foreground">Offering</p>
-                  <p className="font-display text-sm font-semibold text-foreground">{o.title}</p>
-                  <span className="inline-flex items-center gap-1 mt-1 rounded-full bg-creo-teal/10 px-2 py-0.5 font-body text-xs font-medium text-creo-teal">
-                    <span className="h-1.5 w-1.5 rounded-full bg-creo-teal" />
-                    {o.status}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-body text-xs text-muted-foreground">Raised / Target</p>
-                  <p className="font-display text-sm font-bold text-foreground">{o.raised} / {o.target}</p>
-                  <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-gradient-hero rounded-full" style={{ width: "100%" }} />
+            {/* Stats Grid */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+              {stats.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="rounded-xl border border-border bg-card p-5"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${stat.bg}`}>
+                      <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                    </div>
                   </div>
+                  <p className="font-display text-2xl font-bold text-foreground">
+                    {stat.value === null ? <SkeletonText w="w-24" /> : stat.value}
+                  </p>
+                  <p className="font-body text-xs text-muted-foreground mt-1">{stat.label}</p>
+                  {stat.sub !== null && (
+                    <p className="font-body text-xs text-muted-foreground mt-0.5">
+                      {stat.sub === null ? <SkeletonText /> : stat.sub}
+                    </p>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Earnings Overview */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="rounded-xl border border-border bg-card p-6 mb-8"
+            >
+              <h2 className="font-display text-lg font-semibold text-foreground mb-4">
+                Earnings Overview
+              </h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <p className="font-body text-xs text-muted-foreground">Last Verified Month</p>
+                  <p className="font-display text-sm font-bold text-foreground mt-1">
+                    {vault.isLoading ? <SkeletonText /> : formatUsdc(vault.lastVerifiedEarnings)}
+                  </p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-muted-foreground">Revenue Share</p>
-                  <p className="font-display text-sm font-bold text-foreground">{o.sharePercent} for {o.duration}</p>
-                  <p className="font-body text-xs text-muted-foreground mt-1">{o.remaining} remaining</p>
+                  <p className="font-body text-xs text-muted-foreground">Conservative Monthly</p>
+                  <p className="font-display text-sm font-bold text-foreground mt-1">
+                    {vault.isLoading ? <SkeletonText /> : formatUsdc(vault.conservativeMonthly)}
+                  </p>
                 </div>
                 <div>
-                  <p className="font-body text-xs text-muted-foreground">Bond Status</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Shield className="h-4 w-4 text-creo-yellow" />
-                    <p className="font-display text-sm font-semibold text-creo-yellow">{o.bondStatus}</p>
-                  </div>
-                  <p className="font-body text-xs text-muted-foreground mt-1">{o.investors} investors</p>
+                  <p className="font-body text-xs text-muted-foreground">Variance Tier</p>
+                  <p className={`font-display text-sm font-bold mt-1 ${tierLabel ? TIER_COLORS[tierLabel] : "text-foreground"}`}>
+                    {vault.isLoading ? <SkeletonText /> : (tierLabel ?? "—")}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-body text-xs text-muted-foreground">Months on Record</p>
+                  <p className="font-display text-sm font-bold text-foreground mt-1">
+                    {vault.isLoading
+                      ? <SkeletonText w="w-8" />
+                      : vault.monthsRecorded !== undefined
+                      ? `${vault.monthsRecorded} / 6`
+                      : "—"}
+                  </p>
                 </div>
               </div>
-            ))}
-          </motion.div>
+            </motion.div>
 
-          {/* CreoScore Panel */}
-          <CreoScorePanel
-            score={185}
-            creatorAddress={isConnected && address ? address : ""}
-          />
-
-          {/* Settlement History */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="rounded-xl border border-border bg-card p-6 mt-8"
-          >
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">Settlement History</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full font-body text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="py-3 px-2 text-left text-muted-foreground font-medium">Month</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Earnings</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Distributed</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Claimed</th>
-                    <th className="py-3 px-2 text-right text-muted-foreground font-medium">Pending</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentSettlements.map((s) => (
-                    <tr key={s.month} className="border-b border-border hover:bg-muted/50">
-                      <td className="py-3 px-2 font-medium text-foreground">{s.month}</td>
-                      <td className="py-3 px-2 text-right text-foreground">{s.earnings}</td>
-                      <td className="py-3 px-2 text-right text-creo-teal">{s.distributed}</td>
-                      <td className="py-3 px-2 text-right text-muted-foreground">{s.claimed}</td>
-                      <td className="py-3 px-2 text-right text-creo-yellow">{s.pending}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
-        </div>
+            {/* CreoScore Panel */}
+            <CreoScorePanel
+              score={scoreNum}
+              creatorAddress={isConnected && address ? address : ""}
+            />
+          </div>
         </WalletGate>
       </main>
     </div>
