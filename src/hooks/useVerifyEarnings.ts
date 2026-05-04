@@ -12,7 +12,7 @@ export function useVerifyEarnings() {
     setVerifying(true);
     setError(null);
     try {
-      const data = await creatorApi.verifyEarnings();
+      const data = await creatorApi.verifyEarnings({});
       setResult(data);
       toast.success('Earnings verified successfully!');
       return true;
