@@ -2,11 +2,13 @@ import { useState, useCallback } from 'react';
 import { creatorApi } from '@/lib/api/creator';
 import type { VerifyEarningsResponse } from '@/lib/api/creator';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/store/authStore';
 
 export function useVerifyEarnings() {
   const [verifying, setVerifying] = useState(false);
   const [result, setResult] = useState<VerifyEarningsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const setCreatorEarningsVerified = useAuthStore((s) => s.setCreatorEarningsVerified);
 
   const verifyEarnings = useCallback(async (): Promise<boolean> => {
     setVerifying(true);
@@ -14,6 +16,8 @@ export function useVerifyEarnings() {
     try {
       const data = await creatorApi.verifyEarnings({});
       setResult(data);
+      // Mark earnings as permanently verified — persists across sessions
+      setCreatorEarningsVerified(true);
       toast.success('Earnings verified successfully!');
       return true;
     } catch (err: unknown) {

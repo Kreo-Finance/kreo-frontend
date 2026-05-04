@@ -36,6 +36,8 @@ interface AuthState {
   // Creator registration
   connectedIncomeSource: string | null;
   creatorRegistrationRequested: boolean;
+  // Set true after verifyEarnings succeeds on-chain — persisted as permanent truth
+  creatorEarningsVerified: boolean;
 
   // Actions
   setTokens: (access: string, refresh: string) => void;
@@ -46,6 +48,7 @@ interface AuthState {
   setCreatorIncomeConnected: (connected: boolean) => void;
   setConnectedIncomeSource: (source: string) => void;
   setCreatorRegistrationRequested: (requested: boolean) => void;
+  setCreatorEarningsVerified: (verified: boolean) => void;
   setInvestorKycStatus: (status: KycStatus) => void;
   setAccreditationStatus: (status: AccreditationStatus) => void;
   authenticate: (address: string, provider: BrowserProvider) => Promise<void>;
@@ -59,9 +62,13 @@ function derive(
   accreditationStatus: AccreditationStatus,
   selectedRole: UserRole | null,
   creatorRegistrationRequested: boolean,
+  creatorEarningsVerified: boolean,
 ) {
+  // On-chain earnings verification is the permanent proof of full onboarding.
+  // It overrides any transient KYC / income / registration state drift from the backend.
   const creatorUnlocked =
-    creatorKycStatus === 'approved' && creatorIncomeConnected && creatorRegistrationRequested;
+    creatorEarningsVerified ||
+    (creatorKycStatus === 'approved' && creatorIncomeConnected && creatorRegistrationRequested);
   const investorUnlocked =
     investorKycStatus === 'approved' && accreditationStatus === 'approved';
   const verificationPending = !!selectedRole && !creatorUnlocked && !investorUnlocked;
@@ -88,6 +95,7 @@ export const useAuthStore = create<AuthState>()(
       verificationPending: false,
       connectedIncomeSource: null,
       creatorRegistrationRequested: false,
+      creatorEarningsVerified: false,
 
       setTokens: (access, refresh) => {
         localStorage.setItem('kreo_access_token', access);
@@ -104,12 +112,9 @@ export const useAuthStore = create<AuthState>()(
         const s = get();
         const activeRole: ActiveRole = role === 'investor' ? 'investor' : 'creator';
         const derived = derive(
-          s.creatorKycStatus,
-          s.creatorIncomeConnected,
-          s.investorKycStatus,
-          s.accreditationStatus,
-          role,
-          s.creatorRegistrationRequested,
+          s.creatorKycStatus, s.creatorIncomeConnected,
+          s.investorKycStatus, s.accreditationStatus,
+          role, s.creatorRegistrationRequested, s.creatorEarningsVerified,
         );
         set({ selectedRole: role, activeRole, ...derived });
       },
@@ -119,12 +124,9 @@ export const useAuthStore = create<AuthState>()(
       setCreatorKycStatus: (status) => {
         const s = get();
         const derived = derive(
-          status,
-          s.creatorIncomeConnected,
-          s.investorKycStatus,
-          s.accreditationStatus,
-          s.selectedRole,
-          s.creatorRegistrationRequested,
+          status, s.creatorIncomeConnected,
+          s.investorKycStatus, s.accreditationStatus,
+          s.selectedRole, s.creatorRegistrationRequested, s.creatorEarningsVerified,
         );
         set({ creatorKycStatus: status, ...derived });
       },
@@ -132,12 +134,9 @@ export const useAuthStore = create<AuthState>()(
       setCreatorIncomeConnected: (connected) => {
         const s = get();
         const derived = derive(
-          s.creatorKycStatus,
-          connected,
-          s.investorKycStatus,
-          s.accreditationStatus,
-          s.selectedRole,
-          s.creatorRegistrationRequested,
+          s.creatorKycStatus, connected,
+          s.investorKycStatus, s.accreditationStatus,
+          s.selectedRole, s.creatorRegistrationRequested, s.creatorEarningsVerified,
         );
         set({ creatorIncomeConnected: connected, ...derived });
       },
@@ -147,25 +146,35 @@ export const useAuthStore = create<AuthState>()(
       setCreatorRegistrationRequested: (requested) => {
         const s = get();
         const derived = derive(
-          s.creatorKycStatus,
-          s.creatorIncomeConnected,
-          s.investorKycStatus,
-          s.accreditationStatus,
-          s.selectedRole,
-          requested,
+          s.creatorKycStatus, s.creatorIncomeConnected,
+          s.investorKycStatus, s.accreditationStatus,
+          s.selectedRole, requested, s.creatorEarningsVerified,
         );
         set({ creatorRegistrationRequested: requested, ...derived });
+      },
+
+      setCreatorEarningsVerified: (verified) => {
+        const s = get();
+        const derived = derive(
+          s.creatorKycStatus, s.creatorIncomeConnected,
+          s.investorKycStatus, s.accreditationStatus,
+          s.selectedRole, s.creatorRegistrationRequested, verified,
+        );
+        // Also lock in the creator role so selectedRole/activeRole are never lost
+        set({
+          creatorEarningsVerified: verified,
+          selectedRole: verified ? 'creator' : s.selectedRole,
+          activeRole: verified ? 'creator' : s.activeRole,
+          ...derived,
+        });
       },
 
       setInvestorKycStatus: (status) => {
         const s = get();
         const derived = derive(
-          s.creatorKycStatus,
-          s.creatorIncomeConnected,
-          status,
-          s.accreditationStatus,
-          s.selectedRole,
-          s.creatorRegistrationRequested,
+          s.creatorKycStatus, s.creatorIncomeConnected,
+          status, s.accreditationStatus,
+          s.selectedRole, s.creatorRegistrationRequested, s.creatorEarningsVerified,
         );
         set({ investorKycStatus: status, ...derived });
       },
@@ -173,12 +182,9 @@ export const useAuthStore = create<AuthState>()(
       setAccreditationStatus: (status) => {
         const s = get();
         const derived = derive(
-          s.creatorKycStatus,
-          s.creatorIncomeConnected,
-          s.investorKycStatus,
-          status,
-          s.selectedRole,
-          s.creatorRegistrationRequested,
+          s.creatorKycStatus, s.creatorIncomeConnected,
+          s.investorKycStatus, status,
+          s.selectedRole, s.creatorRegistrationRequested, s.creatorEarningsVerified,
         );
         set({ accreditationStatus: status, ...derived });
       },
@@ -200,6 +206,7 @@ export const useAuthStore = create<AuthState>()(
               creatorIncomeConnected: false,
               connectedIncomeSource: null,
               creatorRegistrationRequested: false,
+              creatorEarningsVerified: false,
               investorKycStatus: 'none',
               accreditationStatus: 'none',
               creatorUnlocked: false,
@@ -222,6 +229,12 @@ export const useAuthStore = create<AuthState>()(
             get().setAccreditationStatus(
               result.roles.investor.accreditation_status as AccreditationStatus,
             );
+          }
+
+          // If this wallet previously verified earnings on-chain, restore the creator
+          // role immediately — no need to go through onboarding again.
+          if (get().creatorEarningsVerified) {
+            get().setCreatorEarningsVerified(true);
           }
 
           toast.success('Wallet authenticated');
@@ -263,7 +276,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'kreo-auth',
-      version: 1,
+      version: 2,
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
@@ -279,6 +292,7 @@ export const useAuthStore = create<AuthState>()(
         verificationPending: state.verificationPending,
         connectedIncomeSource: state.connectedIncomeSource,
         creatorRegistrationRequested: state.creatorRegistrationRequested,
+        creatorEarningsVerified: state.creatorEarningsVerified,
       }),
     },
   ),
