@@ -17,6 +17,7 @@ export function useVerifyEarnings() {
       toast.success('Earnings verified successfully!');
       return true;
     } catch (err: unknown) {
+      console.error('[verifyEarnings] error:', err);
       const msg =
         (err as { response?: { data?: { error?: string; message?: string } } })
           ?.response?.data?.error ||

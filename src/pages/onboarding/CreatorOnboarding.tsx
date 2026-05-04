@@ -84,7 +84,7 @@ export default function CreatorOnboarding() {
   } = useGumroad();
   const { connect: connectYoutube, connecting: youtubeConnecting } = useYoutube();
   const { register, registering, error: registerError } = useRegisterCreator();
-  const { verifyEarnings, verifying } = useVerifyEarnings();
+  const { verifyEarnings, verifying, error: verifyError } = useVerifyEarnings();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -192,6 +192,11 @@ export default function CreatorOnboarding() {
     if (ok) {
       setCreatorRegistrationRequested(true);
     }
+  };
+
+  const handleVerifyEarnings = async () => {
+    const ok = await verifyEarnings();
+    if (ok) navigate("/creator/dashboard");
   };
 
   const truncated = walletAddress
@@ -511,11 +516,13 @@ export default function CreatorOnboarding() {
                     <p className="font-body text-sm text-muted-foreground">
                       Your registration has been completed. You can now verify your earnings.
                     </p>
+                    {verifyError && (
+                      <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm font-body text-red-400">
+                        {verifyError}
+                      </div>
+                    )}
                     <Button
-                      onClick={async () => {
-                        const ok = await verifyEarnings();
-                        if (ok) navigate("/creator/dashboard");
-                      }}
+                      onClick={handleVerifyEarnings}
                       disabled={verifying}
                       className="bg-gradient-hero font-body font-semibold text-primary-foreground hover:opacity-90 px-8"
                     >
