@@ -39,8 +39,8 @@ export const creatorApi = {
     return response.data;
   },
 
-  verifyEarnings: async (): Promise<VerifyEarningsResponse> => {
-    const response = await apiClient.post('users/creator/verify-earnings');
+  verifyEarnings: async (payload: unknown): Promise<VerifyEarningsResponse> => {
+    const response = await apiClient.post('users/creator/verify-earnings',  payload, { timeout: 120000 });
     return response.data;
   },
 };
