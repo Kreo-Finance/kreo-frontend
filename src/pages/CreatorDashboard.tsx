@@ -149,7 +149,7 @@ const CreatorDashboard = () => {
                     <span className="font-mono text-sm font-semibold text-foreground">
                       {Number(
                         formatUnits(vault.ethBalance.value, vault.ethBalance.decimals)
-                      ).toFixed(2)}
+                      ).toFixed(4)}
                     </span>
                   </div>
                 )}
