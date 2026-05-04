@@ -12,6 +12,7 @@ import WalletGate from "@/components/WalletGate";
 import { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
 import { formatUsdc, formatBps, VARIANCE_TIER_LABELS } from "@/config/contracts";
 import { Coins } from "lucide-react";
+import { formatUnits } from "viem";
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -146,7 +147,9 @@ const CreatorDashboard = () => {
                     <Wallet className="h-4 w-4 text-muted-foreground" />
                     <span className="font-body text-xs text-muted-foreground">ETH</span>
                     <span className="font-mono text-sm font-semibold text-foreground">
-                      {Number(vault.ethBalance.formatted).toFixed(4)}
+                      {Number(
+                        formatUnits(vault.ethBalance.value, vault.ethBalance.decimals)
+                      ).toFixed(4)}
                     </span>
                   </div>
                 )}
