@@ -1,10 +1,27 @@
-import { useReadContracts, useBalance, useChainId } from 'wagmi';
+import { useReadContracts, useReadContract, useBalance, useChainId } from 'wagmi';
 import { CREO_VAULT_ABI } from '@/abi/CreoVault';
 import { getContractAddresses } from '@/config/contracts';
+import { formatUnits } from 'viem';
+
+// Minimal ERC20 ABI for balanceOf
+const ERC20_BALANCE_ABI = [
+  {
+    name: 'balanceOf',
+    type: 'function' as const,
+    stateMutability: 'view' as const,
+    inputs: [{ name: 'account', type: 'address' as const }],
+    outputs: [{ name: '', type: 'uint256' as const }],
+  },
+] as const;
+
+// wagmi v2+ removed the `token` param from useBalance — ERC20 balances
+// must be read via useReadContract with the balanceOf ABI.
+// USDC on Base Sepolia has 6 decimals.
+const USDC_DECIMALS = 6;
 
 /**
  * Batches all CreoVault view reads for a given creator address via multicall.
- * Also fetches ETH and USDC balances. Returns undefined for each field while loading.
+ * Fetches native ETH balance via useBalance and USDC via ERC20 balanceOf.
  */
 export function useCreatorVaultData(creatorAddress?: `0x${string}`) {
   const chainId = useChainId();
@@ -14,7 +31,8 @@ export function useCreatorVaultData(creatorAddress?: `0x${string}`) {
 
   const enabled = !!creatorAddress && !!vaultAddress;
 
-  const { data, isLoading, isError, refetch } = useReadContracts({
+  // ── Vault multicall ──────────────────────────────────────────────────────
+  const { data, isLoading: vaultLoading, isError, refetch } = useReadContracts({
     contracts: enabled
       ? [
           // 0 - conservative floor (USDC6)
@@ -44,43 +62,56 @@ export function useCreatorVaultData(creatorAddress?: `0x${string}`) {
     query: { enabled, staleTime: 30_000 },
   });
 
-  // ETH balance for gas awareness
-  const { data: ethBalance, isLoading: ethBalanceLoading } = useBalance({
+  // ── Native ETH balance (useBalance works correctly for native) ───────────
+  const { data: ethBalanceData, isLoading: ethLoading } = useBalance({
     address: creatorAddress,
     query: { enabled: !!creatorAddress },
   });
 
-  // USDC balance
-  const { data: usdcBalance, isLoading: usdcBalanceLoading } = useBalance({
-    address: creatorAddress,
-    token: usdcAddress,
-    query: { enabled: !!creatorAddress && !!usdcAddress },
+  // ── USDC balance via ERC20 balanceOf ─────────────────────────────────────
+  // wagmi v2+ removed `token` from useBalance; use useReadContract instead.
+  const { data: usdcRaw, isLoading: usdcLoading } = useReadContract({
+    address: usdcAddress,
+    abi: ERC20_BALANCE_ABI,
+    functionName: 'balanceOf',
+    args: creatorAddress ? [creatorAddress] : undefined,
+    query: { enabled: !!creatorAddress && !!usdcAddress, staleTime: 30_000 },
   });
 
+  // Shape the USDC result to match the same interface as ethBalanceData
+  const usdcBalance = usdcRaw !== undefined
+    ? {
+        value: usdcRaw as bigint,
+        decimals: USDC_DECIMALS,
+        symbol: 'USDC',
+        formatted: formatUnits(usdcRaw as bigint, USDC_DECIMALS),
+      }
+    : undefined;
+
   return {
-    // Contract reads
-    conservativeFloor:   data?.[0]?.result  as bigint  | undefined,
-    varianceTier:        data?.[1]?.result  as number  | undefined,
-    bondRateBps:         data?.[2]?.result  as bigint  | undefined,
-    avgMonthlyEarnings:  data?.[3]?.result  as bigint  | undefined,
-    monthsRecorded:      data?.[4]?.result  as number  | undefined,
-    lastVerifiedEarnings:data?.[5]?.result  as bigint  | undefined,
-    bondDeposit:         data?.[6]?.result  as bigint  | undefined,
-    isRegistered:        data?.[7]?.result  as boolean | undefined,
-    conservativeMonthly: data?.[8]?.result  as bigint  | undefined,
-    socialProofScore:    data?.[9]?.result  as bigint  | undefined,
-    offeringCompletions: data?.[10]?.result as number  | undefined,
+    // Vault contract reads
+    conservativeFloor:    data?.[0]?.result  as bigint  | undefined,
+    varianceTier:         data?.[1]?.result  as number  | undefined,
+    bondRateBps:          data?.[2]?.result  as bigint  | undefined,
+    avgMonthlyEarnings:   data?.[3]?.result  as bigint  | undefined,
+    monthsRecorded:       data?.[4]?.result  as number  | undefined,
+    lastVerifiedEarnings: data?.[5]?.result  as bigint  | undefined,
+    bondDeposit:          data?.[6]?.result  as bigint  | undefined,
+    isRegistered:         data?.[7]?.result  as boolean | undefined,
+    conservativeMonthly:  data?.[8]?.result  as bigint  | undefined,
+    socialProofScore:     data?.[9]?.result  as bigint  | undefined,
+    offeringCompletions:  data?.[10]?.result as number  | undefined,
 
     // Balances
-    ethBalance,
-    usdcBalance,
+    ethBalance: ethBalanceData,  // { value, decimals, formatted, symbol }
+    usdcBalance,                 // { value, decimals: 6, formatted, symbol: 'USDC' }
 
     // Status
-    isLoading: isLoading || ethBalanceLoading || usdcBalanceLoading,
+    isLoading: vaultLoading || ethLoading || usdcLoading,
     isError,
     refetch,
 
-    // Helpers
+    // Addresses
     vaultAddress,
     usdcAddress,
     chainId,
