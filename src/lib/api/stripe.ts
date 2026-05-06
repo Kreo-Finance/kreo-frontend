@@ -27,7 +27,7 @@ export const stripeApi = {
   },
 
   syncAccount: async (): Promise<StripeEarnings> => {
-    const response = await apiClient.get("stripe/account/sync");
+    const response = await apiClient.post("stripe/account/sync");
     return response.data;
   },
 };
