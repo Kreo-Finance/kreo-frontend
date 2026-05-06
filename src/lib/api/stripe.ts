@@ -21,7 +21,7 @@ export interface StripeEarnings {
 }
 
 export const stripeApi = {
-  connect: async (): Promise<{ url?: string; [key: string]: unknown }> => {
+  connect: async (): Promise<{ data?: { url?: string } | string; url?: string; [key: string]: unknown }> => {
     const response = await apiClient.get("stripe/connect");
     return response.data;
   },

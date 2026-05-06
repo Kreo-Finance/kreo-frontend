@@ -11,7 +11,12 @@ export function useStripe() {
     setError(null);
     try {
       const res = await stripeApi.connect();
-      const oauthUrl = (res as { data?: string })?.data ?? (res as { url?: string })?.url;
+      // Backend returns { success, data: { url: "..." }, message }
+      const data = (res as { data?: unknown })?.data;
+      const oauthUrl =
+        typeof data === "string"
+          ? data
+          : (data as { url?: string })?.url ?? (res as { url?: string })?.url;
       if (oauthUrl) {
         window.location.href = oauthUrl;
         return false;
