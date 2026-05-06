@@ -28,6 +28,7 @@ import SumsubWidget from "@/components/SumsubWidget";
 import { authApi } from "@/lib/api/auth";
 import { useGumroad } from "@/hooks/useGumroad";
 import { useYoutube } from "@/hooks/useYoutube";
+import { useStripe } from "@/hooks/useStripe";
 import { useRegisterCreator } from "@/hooks/useRegisterCreator";
 import { useVerifyEarnings } from "@/hooks/useVerifyEarnings";
 
@@ -83,13 +84,13 @@ export default function CreatorOnboarding() {
     fetchSalesData,
   } = useGumroad();
   const { connect: connectYoutube, connecting: youtubeConnecting } = useYoutube();
+  const { connect: connectStripe, connecting: stripeConnecting } = useStripe();
   const { register, registering, error: registerError } = useRegisterCreator();
   const { verifyEarnings, verifying, error: verifyError } = useVerifyEarnings();
 
   const [sumsubToken, setSumsubToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
   const [tokenError, setTokenError] = useState<string | null>(null);
-  const [incomeLoading, setIncomeLoading] = useState(false);
 
   const activeStep: Step =
     creatorKycStatus !== "approved"
@@ -150,27 +151,12 @@ export default function CreatorOnboarding() {
   };
 
   const handleConnectStripe = async () => {
-    setIncomeLoading(true);
-    try {
-      // TODO: redirect to Stripe OAuth
-      await new Promise((res) => setTimeout(res, 1500));
+    const connected = await connectStripe();
+    if (connected) {
       setCreatorIncomeConnected(true);
       setConnectedIncomeSource("stripe");
-    } finally {
-      setIncomeLoading(false);
     }
-  };
-
-  const handleConnectAdSense = async () => {
-    setIncomeLoading(true);
-    try {
-      // TODO: redirect to Google AdSense OAuth
-      await new Promise((res) => setTimeout(res, 1500));
-      setCreatorIncomeConnected(true);
-      setConnectedIncomeSource("adsense");
-    } finally {
-      setIncomeLoading(false);
-    }
+    // If OAuth redirect happens, income is set in StripeCallback
   };
 
   const handleConnectGumroad = async () => {
@@ -383,7 +369,7 @@ export default function CreatorOnboarding() {
                       <>
                         <Button
                           onClick={handleConnectStripe}
-                          disabled={incomeLoading}
+                          disabled={stripeConnecting}
                           variant="outline"
                           className="w-full font-body font-semibold border-border hover:bg-accent justify-between"
                         >
@@ -393,7 +379,7 @@ export default function CreatorOnboarding() {
                             </span>
                             Connect Stripe
                           </span>
-                          {incomeLoading ? (
+                          {stripeConnecting ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <ExternalLink className="h-4 w-4 text-muted-foreground" />
