@@ -17,11 +17,12 @@ import {
   useWaitForTransactionReceipt,
   useReadContract,
   useChainId,
+  useSwitchChain,
 } from "wagmi";
 import { parseEventLogs, BaseError, ContractFunctionRevertedError } from "viem";
 import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
-import { getContractAddresses, VARIANCE_TIER_LABELS } from "@/config/contracts";
+import { getContractAddresses, VARIANCE_TIER_LABELS, BASE_SEPOLIA_CHAIN_ID } from "@/config/contracts";
 import { creatorApi } from "@/lib/api/creator";
 import { useMaxFundraiseTarget } from "@/hooks/useRevenueShareData";
 import type { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
@@ -249,6 +250,13 @@ export function CreateOfferingModal({
 }) {
   const chainId = useChainId();
   const contracts = getContractAddresses(chainId);
+  const { switchChainAsync } = useSwitchChain();
+
+  async function ensureChain() {
+    if (chainId !== BASE_SEPOLIA_CHAIN_ID) {
+      await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID });
+    }
+  }
 
   // ── Form state ───────────────────────────────────────────────────────────
   const [sharePercent, setSharePercent] = useState(20);
@@ -403,34 +411,40 @@ export function CreateOfferingModal({
     bondSufficient ? setStep(2) : setStep(1);
   }
 
-  function handleApprove() {
+  async function handleApprove() {
     if (!contracts) return;
+    await ensureChain();
     writeApprove({
       address: contracts.USDC,
       abi: ERC20_ABI,
       functionName: "approve",
       args: [contracts.KREO_VAULT, requiredBond],
+      gas: 100_000n,
     });
   }
 
-  function handleDeposit() {
+  async function handleDeposit() {
     if (!contracts) return;
+    await ensureChain();
     writeDeposit({
       address: contracts.KREO_VAULT,
       abi: CREO_VAULT_ABI,
       functionName: "depositBond",
       args: [requiredBond],
+      gas: 200_000n,
     });
   }
 
-  function handleCreate() {
+  async function handleCreate() {
     if (!contracts) return;
     setPostError("");
+    await ensureChain();
     writeCreate({
       address: contracts.REVENUE_SHARE,
       abi: REVENUE_SHARE_ABI,
       functionName: "createOffering",
       args: [shareBps, BigInt(durationMonths), raiseUsdc6, DEADLINE_SECS],
+      gas: 500_000n,
     });
   }
 
