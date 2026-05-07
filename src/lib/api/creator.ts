@@ -33,6 +33,22 @@ export interface VerifyEarningsResponse {
   [key: string]: unknown;
 }
 
+export interface CreateOfferingPayload {
+  sharePercentage: string;
+  floorPrice: number;
+  raiseTarget: number;
+  duration: number;
+  expiryTime: number;
+  maxRaise: number;
+  bondDeposited: number;
+}
+
+export interface CreateOfferingResponse {
+  success: boolean;
+  offeringId?: string;
+  [key: string]: unknown;
+}
+
 export const creatorApi = {
   registerCreator: async (payload: RegisterCreatorPayload): Promise<RegisterCreatorResponse> => {
     const response = await apiClient.post('users/register/creator', payload, { timeout: 60000 });
@@ -41,6 +57,11 @@ export const creatorApi = {
 
   verifyEarnings: async (payload: Record<string, unknown> = {}): Promise<VerifyEarningsResponse> => {
     const response = await apiClient.post('users/creator/verify-earnings', payload, { timeout: 120000 });
+    return response.data;
+  },
+
+  createOffering: async (payload: CreateOfferingPayload): Promise<CreateOfferingResponse> => {
+    const response = await apiClient.post('users/creator/create-offering', payload, { timeout: 60000 });
     return response.data;
   },
 };

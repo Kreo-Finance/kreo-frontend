@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   TrendingUp, DollarSign, Shield, Star,
@@ -5,12 +6,12 @@ import {
 } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
 import CreoScorePanel from "@/components/dashboard/CreoScorePanel";
 import WalletGate from "@/components/WalletGate";
 import { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
 import { formatUsdc, formatBps, VARIANCE_TIER_LABELS } from "@/config/contracts";
+import { CreateOfferingModal } from "@/components/CreateOfferingModal";
 import { Coins } from "lucide-react";
 import { formatUnits } from "viem";
 
@@ -30,6 +31,8 @@ const TIER_COLORS: Record<string, string> = {
 
 const CreatorDashboard = () => {
   const { address, isConnected } = useAccount();
+  const [offeringModalOpen, setOfferingModalOpen] = useState(false);
+
   const displayName = isConnected && address
     ? `${address.slice(0, 5)}...${address.slice(-4)}`
     : "Guest";
@@ -112,12 +115,13 @@ const CreatorDashboard = () => {
                 >
                   <RefreshCw className={`h-4 w-4 ${vault.isLoading ? "animate-spin" : ""}`} />
                 </Button>
-                <Link to="/creator/offerings">
-                  <Button className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
-                    <Coins className="h-4 w-4 mr-2" />
-                    New Offering
-                  </Button>
-                </Link>
+                <Button
+                  onClick={() => setOfferingModalOpen(true)}
+                  className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90"
+                >
+                  <Coins className="h-4 w-4 mr-2" />
+                  New Offering
+                </Button>
               </div>
             </div>
 
@@ -246,6 +250,16 @@ const CreatorDashboard = () => {
           </div>
         </WalletGate>
       </main>
+
+      {/* Create Offering Modal */}
+      {isConnected && address && (
+        <CreateOfferingModal
+          open={offeringModalOpen}
+          onOpenChange={setOfferingModalOpen}
+          creatorAddress={address}
+          vaultData={vault}
+        />
+      )}
     </div>
   );
 };

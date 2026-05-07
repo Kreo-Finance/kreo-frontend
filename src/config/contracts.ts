@@ -6,15 +6,15 @@ export type SupportedChainId = typeof BASE_SEPOLIA_CHAIN_ID;
 interface ChainContracts {
   KREO_VAULT: `0x${string}`;
   USDC: `0x${string}`;
+  REVENUE_SHARE: `0x${string}`;
 }
 
 // Add new chains here as a new key.
 export const CONTRACT_ADDRESSES: Record<number, ChainContracts> = {
   [BASE_SEPOLIA_CHAIN_ID]: {
-    // Sourced from KREO_VAULT_CONTRACT_ADDRESS in .env (no VITE_ prefix needed at build time)
     KREO_VAULT: '0xb61ad80d492764a0746431D451C739f5119ea5bB',
-    // Circle's official USDC on Base Sepolia
     USDC: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+    REVENUE_SHARE: '0x81E0c75578C89e2f4a8a867d6a2FD56192742F1D',
   },
 };
 
