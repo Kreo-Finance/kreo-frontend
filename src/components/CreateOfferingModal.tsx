@@ -420,6 +420,8 @@ export function CreateOfferingModal({
       functionName: "approve",
       args: [contracts.KREO_VAULT, requiredBond],
       gas: 100_000n,
+      maxFeePerGas: 10_000_000n,
+      maxPriorityFeePerGas: 1_000_000n,
     });
   }
 
@@ -432,6 +434,8 @@ export function CreateOfferingModal({
       functionName: "depositBond",
       args: [requiredBond],
       gas: 200_000n,
+      maxFeePerGas: 10_000_000n,
+      maxPriorityFeePerGas: 1_000_000n,
     });
   }
 
@@ -445,6 +449,8 @@ export function CreateOfferingModal({
       functionName: "createOffering",
       args: [shareBps, BigInt(durationMonths), raiseUsdc6, DEADLINE_SECS],
       gas: 500_000n,
+      maxFeePerGas: 10_000_000n,
+      maxPriorityFeePerGas: 1_000_000n,
     });
   }
 
