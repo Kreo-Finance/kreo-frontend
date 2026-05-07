@@ -23,6 +23,7 @@ import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
 import { getContractAddresses, VARIANCE_TIER_LABELS } from "@/config/contracts";
 import { creatorApi } from "@/lib/api/creator";
+import { useMaxFundraiseTarget } from "@/hooks/useRevenueShareData";
 import type { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -278,19 +279,12 @@ export function CreateOfferingModal({
   const coverageMet = coverageRatio >= COVERAGE_RATIO;
   const retainOk = floorDisplay === 0 || youKeep >= floorDisplay * MIN_RETAIN_PCT;
 
-  // ── On-chain max raise from RevenueShare ──────────────────────────────────
-  const { data: maxRaiseData, isLoading: maxRaiseLoading } = useReadContract({
-    address: contracts?.REVENUE_SHARE,
-    abi: REVENUE_SHARE_ABI,
-    functionName: "getMaxFundraiseTarget",
-    args: contracts ? [creatorAddress, shareBps, BigInt(durationMonths)] : undefined,
-    query: {
-      enabled: !!contracts?.REVENUE_SHARE && !!creatorAddress,
-      staleTime: 15_000,
-    },
-  });
-  const maxRaiseUsdc6 = maxRaiseData ? (maxRaiseData as [bigint, number, bigint])[0] : 0n;
-  const maxRaiseDollars = Number(maxRaiseUsdc6) / 1_000_000;
+  // ── On-chain max raise from RevenueShare (via dedicated hook) ────────────
+  const {
+    maxRaiseDollars,
+    maxRaise: maxRaiseUsdc6,
+    isLoading: maxRaiseLoading,
+  } = useMaxFundraiseTarget(creatorAddress, shareBps, durationMonths);
 
   useEffect(() => {
     if (maxRaiseDollars > 0 && raiseAmount > maxRaiseDollars) {
