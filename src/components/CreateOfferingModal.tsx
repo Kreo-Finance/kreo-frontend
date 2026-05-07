@@ -20,6 +20,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { parseEventLogs, BaseError, ContractFunctionRevertedError } from "viem";
+import { baseSepolia } from "viem/chains";
 import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
 import { getContractAddresses, VARIANCE_TIER_LABELS, BASE_SEPOLIA_CHAIN_ID } from "@/config/contracts";
@@ -393,6 +394,17 @@ export function CreateOfferingModal({
     finalize();
   }, [createSuccess, createReceipt]);
 
+  // Error watcher — surfaces write errors the same way the reference code does
+  useEffect(() => {
+    if (approveWriteError) console.error("[approve]", approveWriteError);
+  }, [approveWriteError]);
+  useEffect(() => {
+    if (depositWriteError) console.error("[deposit]", depositWriteError);
+  }, [depositWriteError]);
+  useEffect(() => {
+    if (createWriteError) console.error("[create]", createWriteError);
+  }, [createWriteError]);
+
   // Reset all state when modal closes
   useEffect(() => {
     if (!open) {
@@ -413,12 +425,16 @@ export function CreateOfferingModal({
 
   async function handleApprove() {
     if (!contracts) return;
-    await ensureChain();
+    try {
+      await ensureChain();
+    } catch { /* proceed even if already on correct chain */ }
     writeApprove({
       address: contracts.USDC,
       abi: ERC20_ABI,
       functionName: "approve",
       args: [contracts.KREO_VAULT, requiredBond],
+      account: creatorAddress,
+      chain: baseSepolia,
       gas: 100_000n,
       maxFeePerGas: 10_000_000n,
       maxPriorityFeePerGas: 1_000_000n,
@@ -427,12 +443,16 @@ export function CreateOfferingModal({
 
   async function handleDeposit() {
     if (!contracts) return;
-    await ensureChain();
+    try {
+      await ensureChain();
+    } catch { /* proceed even if already on correct chain */ }
     writeDeposit({
       address: contracts.KREO_VAULT,
       abi: CREO_VAULT_ABI,
       functionName: "depositBond",
       args: [requiredBond],
+      account: creatorAddress,
+      chain: baseSepolia,
       gas: 200_000n,
       maxFeePerGas: 10_000_000n,
       maxPriorityFeePerGas: 1_000_000n,
@@ -442,12 +462,16 @@ export function CreateOfferingModal({
   async function handleCreate() {
     if (!contracts) return;
     setPostError("");
-    await ensureChain();
+    try {
+      await ensureChain();
+    } catch { /* proceed even if already on correct chain */ }
     writeCreate({
       address: contracts.REVENUE_SHARE,
       abi: REVENUE_SHARE_ABI,
       functionName: "createOffering",
       args: [shareBps, BigInt(durationMonths), raiseUsdc6, DEADLINE_SECS],
+      account: creatorAddress,
+      chain: baseSepolia,
       gas: 500_000n,
       maxFeePerGas: 10_000_000n,
       maxPriorityFeePerGas: 1_000_000n,
