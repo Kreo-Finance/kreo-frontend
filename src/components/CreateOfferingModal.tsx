@@ -16,11 +16,10 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
   useReadContract,
-  useChainId,
+  useAccount,
   useSwitchChain,
 } from "wagmi";
 import { parseEventLogs, BaseError, ContractFunctionRevertedError } from "viem";
-import { baseSepolia } from "viem/chains";
 import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
 import { getContractAddresses, VARIANCE_TIER_LABELS, BASE_SEPOLIA_CHAIN_ID } from "@/config/contracts";
@@ -249,15 +248,9 @@ export function CreateOfferingModal({
   creatorAddress: `0x${string}`;
   vaultData: VaultData;
 }) {
-  const chainId = useChainId();
-  const contracts = getContractAddresses(chainId);
+  const { chainId: walletChainId } = useAccount();
+  const contracts = getContractAddresses(BASE_SEPOLIA_CHAIN_ID);
   const { switchChainAsync } = useSwitchChain();
-
-  async function ensureChain() {
-    if (chainId !== BASE_SEPOLIA_CHAIN_ID) {
-      await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID });
-    }
-  }
 
   // ── Form state ───────────────────────────────────────────────────────────
   const [sharePercent, setSharePercent] = useState(20);
@@ -424,57 +417,57 @@ export function CreateOfferingModal({
   }
 
   async function handleApprove() {
-    if (!contracts) return;
-    try {
-      await ensureChain();
-    } catch { /* proceed even if already on correct chain */ }
+    if (walletChainId !== BASE_SEPOLIA_CHAIN_ID) {
+      try {
+        await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID });
+      } catch {
+        return; // user rejected or switch failed — don't proceed
+      }
+    }
     writeApprove({
-      address: contracts.USDC,
+      address: contracts!.USDC,
       abi: ERC20_ABI,
       functionName: "approve",
-      args: [contracts.KREO_VAULT, requiredBond],
-      account: creatorAddress,
-      chain: baseSepolia,
-      gas: 100_000n,
-      maxFeePerGas: 10_000_000n,
-      maxPriorityFeePerGas: 1_000_000n,
+      args: [contracts!.KREO_VAULT, requiredBond],
+      maxFeePerGas: BigInt(10_000_000_000),      // 10 gwei
+      maxPriorityFeePerGas: BigInt(1_000_000_000), // 1 gwei
     });
   }
 
   async function handleDeposit() {
-    if (!contracts) return;
-    try {
-      await ensureChain();
-    } catch { /* proceed even if already on correct chain */ }
+    if (walletChainId !== BASE_SEPOLIA_CHAIN_ID) {
+      try {
+        await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID });
+      } catch {
+        return;
+      }
+    }
     writeDeposit({
-      address: contracts.KREO_VAULT,
+      address: contracts!.KREO_VAULT,
       abi: CREO_VAULT_ABI,
       functionName: "depositBond",
       args: [requiredBond],
-      account: creatorAddress,
-      chain: baseSepolia,
-      gas: 200_000n,
-      maxFeePerGas: 10_000_000n,
-      maxPriorityFeePerGas: 1_000_000n,
+      maxFeePerGas: BigInt(10_000_000_000),
+      maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
   }
 
   async function handleCreate() {
-    if (!contracts) return;
     setPostError("");
-    try {
-      await ensureChain();
-    } catch { /* proceed even if already on correct chain */ }
+    if (walletChainId !== BASE_SEPOLIA_CHAIN_ID) {
+      try {
+        await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID });
+      } catch {
+        return;
+      }
+    }
     writeCreate({
-      address: contracts.REVENUE_SHARE,
+      address: contracts!.REVENUE_SHARE,
       abi: REVENUE_SHARE_ABI,
       functionName: "createOffering",
       args: [shareBps, BigInt(durationMonths), raiseUsdc6, DEADLINE_SECS],
-      account: creatorAddress,
-      chain: baseSepolia,
-      gas: 500_000n,
-      maxFeePerGas: 10_000_000n,
-      maxPriorityFeePerGas: 1_000_000n,
+      maxFeePerGas: BigInt(10_000_000_000),
+      maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
   }
 

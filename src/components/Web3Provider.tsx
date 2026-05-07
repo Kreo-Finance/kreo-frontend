@@ -37,7 +37,11 @@ createAppKit({
   defaultNetwork: baseSepolia,
   projectId,
   metadata,
-  features: { analytics: true },
+  features: {
+    analytics: false,
+    email: false,
+    socials: false,
+  },
 })
 
 const queryClient = new QueryClient()
