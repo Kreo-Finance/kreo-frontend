@@ -19,7 +19,7 @@ import {
   useAccount,
   useSwitchChain,
 } from "wagmi";
-import { parseEventLogs, BaseError, ContractFunctionRevertedError } from "viem";
+import { parseEventLogs, BaseError, ContractFunctionRevertedError, maxUint256 } from "viem";
 import { baseSepolia } from "viem/chains";
 import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
@@ -296,7 +296,7 @@ export function CreateOfferingModal({
   }, [maxRaiseDollars]);
 
   // ── USDC allowance for KreoVault ──────────────────────────────────────────
-  const { data: allowanceRaw, refetch: refetchAllowance } = useReadContract({
+  const { data: allowanceRaw, refetch: refetchAllowance, isFetching: allowanceFetching } = useReadContract({
     address: contracts?.USDC,
     abi: ERC20_ABI,
     functionName: "allowance",
@@ -316,6 +316,9 @@ export function CreateOfferingModal({
   } = useWriteContract();
   const { isLoading: approveConfirming, isSuccess: approveSuccess } =
     useWaitForTransactionReceipt({ hash: approveTxHash });
+
+  // True while waiting for the on-chain allowance read to confirm after approve tx
+  const awaitingAllowanceConfirm = approveSuccess && !allowanceSufficient;
 
   // ── Tx: depositBond ──────────────────────────────────────────────────────
   const {
@@ -339,9 +342,14 @@ export function CreateOfferingModal({
   const { isLoading: createConfirming, isSuccess: createSuccess, data: createReceipt } =
     useWaitForTransactionReceipt({ hash: createTxHash });
 
-  // After approve confirmed, refetch allowance
+  // After approve confirmed, refetch allowance so allowanceSufficient flips to true
   useEffect(() => {
-    if (approveSuccess) refetchAllowance();
+    if (approveSuccess) {
+      // Poll briefly to pick up the on-chain state after confirmation
+      refetchAllowance();
+      const t = setTimeout(() => refetchAllowance(), 2000);
+      return () => clearTimeout(t);
+    }
   }, [approveSuccess]);
 
   // After deposit confirmed, refetch vault to verify bond on-chain
@@ -430,7 +438,7 @@ export function CreateOfferingModal({
       address: contracts!.USDC,
       abi: ERC20_ABI,
       functionName: "approve",
-      args: [contracts!.KREO_VAULT, requiredBond],
+      args: [contracts!.KREO_VAULT, maxUint256],
       account: creatorAddress,
       chain: baseSepolia,
       gas: BigInt(100_000),
@@ -779,7 +787,7 @@ export function CreateOfferingModal({
                   )}
                 </div>
                 <p className="font-body text-xs text-muted-foreground mb-3 ml-7">
-                  Allow the Kreo Vault to pull {fmtUSD(bondDisplayAmt)} USDC for the bond deposit.
+                  Grant the Kreo Vault a one-time unlimited USDC approval so future bond deposits never fail due to allowance limits.
                 </p>
                 {!allowanceSufficient && !approveSuccess && (
                   walletChainId !== BASE_SEPOLIA_CHAIN_ID ? (
@@ -845,11 +853,20 @@ export function CreateOfferingModal({
                   <Button
                     size="sm"
                     onClick={handleDeposit}
-                    disabled={!isConnected || isDepositing || depositConfirming || (!allowanceSufficient && !approveSuccess)}
+                    disabled={
+                      !isConnected ||
+                      isDepositing ||
+                      depositConfirming ||
+                      !allowanceSufficient ||
+                      awaitingAllowanceConfirm ||
+                      allowanceFetching
+                    }
                     className="ml-7 bg-creo-yellow/10 text-creo-yellow hover:bg-creo-yellow/20 border border-creo-yellow/20"
                   >
                     {isDepositing || depositConfirming ? (
                       <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />Depositing…</>
+                    ) : awaitingAllowanceConfirm || allowanceFetching ? (
+                      <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />Confirming allowance…</>
                     ) : "Deposit Bond"}
                   </Button>
                 )}
