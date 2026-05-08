@@ -432,6 +432,7 @@ export function CreateOfferingModal({
       args: [contracts!.KREO_VAULT, requiredBond],
       account: creatorAddress,
       chain: baseSepolia,
+      gas: BigInt(100_000),
       maxFeePerGas: BigInt(10_000_000_000),
       maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
@@ -452,6 +453,7 @@ export function CreateOfferingModal({
       args: [requiredBond],
       account: creatorAddress,
       chain: baseSepolia,
+      gas: BigInt(200_000),
       maxFeePerGas: BigInt(10_000_000_000),
       maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
@@ -473,6 +475,7 @@ export function CreateOfferingModal({
       args: [shareBps, BigInt(durationMonths), raiseUsdc6, DEADLINE_SECS],
       account: creatorAddress,
       chain: baseSepolia,
+      gas: BigInt(500_000),
       maxFeePerGas: BigInt(10_000_000_000),
       maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
