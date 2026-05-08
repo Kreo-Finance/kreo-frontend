@@ -249,7 +249,7 @@ export function CreateOfferingModal({
   creatorAddress: `0x${string}`;
   vaultData: VaultData;
 }) {
-  const { chainId: walletChainId } = useAccount();
+  const { chainId: walletChainId, isConnected } = useAccount();
   const contracts = getContractAddresses(BASE_SEPOLIA_CHAIN_ID);
   const { switchChainAsync } = useSwitchChain();
 
@@ -426,6 +426,7 @@ export function CreateOfferingModal({
       }
     }
     writeApprove({
+      chainId: BASE_SEPOLIA_CHAIN_ID,
       address: contracts!.USDC,
       abi: ERC20_ABI,
       functionName: "approve",
@@ -447,6 +448,7 @@ export function CreateOfferingModal({
       }
     }
     writeDeposit({
+      chainId: BASE_SEPOLIA_CHAIN_ID,
       address: contracts!.KREO_VAULT,
       abi: CREO_VAULT_ABI,
       functionName: "depositBond",
@@ -780,16 +782,26 @@ export function CreateOfferingModal({
                   Allow the Kreo Vault to pull {fmtUSD(bondDisplayAmt)} USDC for the bond deposit.
                 </p>
                 {!allowanceSufficient && !approveSuccess && (
-                  <Button
-                    size="sm"
-                    onClick={handleApprove}
-                    disabled={isApproving || approveConfirming}
-                    className="ml-7 bg-creo-teal/10 text-creo-teal hover:bg-creo-teal/20 border border-creo-teal/20"
-                  >
-                    {isApproving || approveConfirming ? (
-                      <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />Approving…</>
-                    ) : "Approve USDC"}
-                  </Button>
+                  walletChainId !== BASE_SEPOLIA_CHAIN_ID ? (
+                    <Button
+                      size="sm"
+                      onClick={() => switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID })}
+                      className="ml-7 bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20"
+                    >
+                      Switch to Base Sepolia
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onClick={handleApprove}
+                      disabled={!isConnected || isApproving || approveConfirming}
+                      className="ml-7 bg-creo-teal/10 text-creo-teal hover:bg-creo-teal/20 border border-creo-teal/20"
+                    >
+                      {isApproving || approveConfirming ? (
+                        <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />Approving…</>
+                      ) : "Approve USDC"}
+                    </Button>
+                  )
                 )}
                 {approveWriteError && (
                   <p className="font-body text-xs text-destructive mt-2 ml-7">{extractError(approveWriteError)}</p>
@@ -833,7 +845,7 @@ export function CreateOfferingModal({
                   <Button
                     size="sm"
                     onClick={handleDeposit}
-                    disabled={isDepositing || depositConfirming || (!allowanceSufficient && !approveSuccess)}
+                    disabled={!isConnected || isDepositing || depositConfirming || (!allowanceSufficient && !approveSuccess)}
                     className="ml-7 bg-creo-yellow/10 text-creo-yellow hover:bg-creo-yellow/20 border border-creo-yellow/20"
                   >
                     {isDepositing || depositConfirming ? (
