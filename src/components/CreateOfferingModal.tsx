@@ -20,6 +20,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { parseEventLogs, BaseError, ContractFunctionRevertedError } from "viem";
+import { baseSepolia } from "viem/chains";
 import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
 import { getContractAddresses, VARIANCE_TIER_LABELS, BASE_SEPOLIA_CHAIN_ID } from "@/config/contracts";
@@ -429,8 +430,10 @@ export function CreateOfferingModal({
       abi: ERC20_ABI,
       functionName: "approve",
       args: [contracts!.KREO_VAULT, requiredBond],
-      maxFeePerGas: BigInt(10_000_000_000),      // 10 gwei
-      maxPriorityFeePerGas: BigInt(1_000_000_000), // 1 gwei
+      account: creatorAddress,
+      chain: baseSepolia,
+      maxFeePerGas: BigInt(10_000_000_000),
+      maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
   }
 
@@ -447,6 +450,8 @@ export function CreateOfferingModal({
       abi: CREO_VAULT_ABI,
       functionName: "depositBond",
       args: [requiredBond],
+      account: creatorAddress,
+      chain: baseSepolia,
       maxFeePerGas: BigInt(10_000_000_000),
       maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
@@ -466,6 +471,8 @@ export function CreateOfferingModal({
       abi: REVENUE_SHARE_ABI,
       functionName: "createOffering",
       args: [shareBps, BigInt(durationMonths), raiseUsdc6, DEADLINE_SECS],
+      account: creatorAddress,
+      chain: baseSepolia,
       maxFeePerGas: BigInt(10_000_000_000),
       maxPriorityFeePerGas: BigInt(1_000_000_000),
     });
