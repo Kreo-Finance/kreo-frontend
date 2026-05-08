@@ -19,7 +19,7 @@ import {
   useAccount,
   useSwitchChain,
 } from "wagmi";
-import { parseEventLogs, BaseError, ContractFunctionRevertedError, maxUint256 } from "viem";
+import { parseEventLogs, BaseError, ContractFunctionRevertedError } from "viem";
 import { baseSepolia } from "viem/chains";
 import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
@@ -438,7 +438,7 @@ export function CreateOfferingModal({
       address: contracts!.USDC,
       abi: ERC20_ABI,
       functionName: "approve",
-      args: [contracts!.KREO_VAULT, maxUint256],
+      args: [contracts!.KREO_VAULT, requiredBond],
       account: creatorAddress,
       chain: baseSepolia,
       gas: BigInt(100_000),
