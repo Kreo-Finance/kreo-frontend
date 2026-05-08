@@ -8,7 +8,7 @@ export const projectId = '4342fb30e173a60c65a462d4e2ca74f5'
 
 const BASE_SEPOLIA_RPC =
   (import.meta.env.VITE_RPC_URL as string) ||
-  'https://base-sepolia.g.alchemy.com/v2/Redbml0XPUbqstAj_4947'
+  'https://base-sepolia.g.alchemy.com/v2/LSUaYfipJLIxJkywXH1G0'
 
 export const wagmiAdapter = new WagmiAdapter({
   networks: [baseSepolia],
