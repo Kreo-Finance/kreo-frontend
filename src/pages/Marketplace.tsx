@@ -5,205 +5,20 @@ import {
   Star,
   Shield,
   ChevronDown,
-  User,
+  ExternalLink,
   Users,
   TrendingUp,
   Zap,
+  BarChart3,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 import CreoScoreBadge from "@/components/ui/CreoScoreBadge";
-import { Link } from "react-router-dom";
-
-type TierNumber = 0 | 1 | 2 | 3;
-
-const TIER_MAP: Record<string, TierNumber> = {
-  Newcomer: 0,
-  Established: 1,
-  Trusted: 2,
-  Elite: 3,
-};
-
-const creators = [
-  {
-    id: 1,
-    name: "Rahul Mehta",
-    category: "DeFi Educator",
-    subscribers: "80K",
-    monthlyEarnings: "$6,000",
-    revenueShare: "40%",
-    duration: "6 months",
-    target: "$12,000",
-    raised: "$12,000",
-    progress: 100,
-    yieldEstimate: "12.3%",
-    riskRating: "Green",
-    creoScore: 185,
-    tier: "Established",
-    socialProofScore: 72,
-    bondAmount: "$600",
-    investors: 47,
-    avatar: "RM",
-    color: "creo-pink",
-    status: "Funded",
-  },
-  {
-    id: 2,
-    name: "Sarah Chen",
-    category: "Crypto Newsletter",
-    subscribers: "25K",
-    monthlyEarnings: "$4,500",
-    revenueShare: "35%",
-    duration: "6 months",
-    target: "$8,500",
-    raised: "$6,200",
-    progress: 73,
-    yieldEstimate: "11.8%",
-    riskRating: "Green",
-    creoScore: 120,
-    tier: "Established",
-    socialProofScore: 55,
-    bondAmount: "$425",
-    investors: 31,
-    avatar: "SC",
-    color: "creo-teal",
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "Alex Kim",
-    category: "Solidity Instructor",
-    subscribers: "45K",
-    monthlyEarnings: "$8,200",
-    revenueShare: "30%",
-    duration: "9 months",
-    target: "$25,000",
-    raised: "$18,500",
-    progress: 74,
-    yieldEstimate: "10.5%",
-    riskRating: "Green",
-    creoScore: 310,
-    tier: "Trusted",
-    socialProofScore: 88,
-    bondAmount: "$1,250",
-    investors: 62,
-    avatar: "AK",
-    color: "creo-yellow",
-    status: "Active",
-  },
-  {
-    id: 4,
-    name: "Marcus Johnson",
-    category: "Web3 Podcast",
-    subscribers: "35K",
-    monthlyEarnings: "$5,500",
-    revenueShare: "45%",
-    duration: "6 months",
-    target: "$15,000",
-    raised: "$4,800",
-    progress: 32,
-    yieldEstimate: "13.1%",
-    riskRating: "Yellow",
-    creoScore: 55,
-    tier: "Newcomer",
-    socialProofScore: 30,
-    bondAmount: "$750",
-    investors: 18,
-    avatar: "MJ",
-    color: "creo-pink",
-    status: "Active",
-  },
-  {
-    id: 5,
-    name: "Lisa Wang",
-    category: "DeFi Researcher",
-    subscribers: "60K",
-    monthlyEarnings: "$7,800",
-    revenueShare: "25%",
-    duration: "12 months",
-    target: "$20,000",
-    raised: "$20,000",
-    progress: 100,
-    yieldEstimate: "9.8%",
-    riskRating: "Green",
-    creoScore: 450,
-    tier: "Trusted",
-    socialProofScore: 94,
-    bondAmount: "$1,000",
-    investors: 85,
-    avatar: "LW",
-    color: "creo-teal",
-    status: "Funded",
-  },
-  {
-    id: 6,
-    name: "David Park",
-    category: "Blockchain Dev",
-    subscribers: "18K",
-    monthlyEarnings: "$3,200",
-    revenueShare: "50%",
-    duration: "6 months",
-    target: "$5,000",
-    raised: "$1,500",
-    progress: 30,
-    yieldEstimate: "14.2%",
-    riskRating: "Green",
-    creoScore: 20,
-    tier: "Newcomer",
-    socialProofScore: 18,
-    bondAmount: "$250",
-    investors: 8,
-    avatar: "DP",
-    color: "creo-yellow",
-    status: "Active",
-  },
-  {
-    id: 7,
-    name: "Priya Sharma",
-    category: "Web3 Strategy",
-    subscribers: "120K",
-    monthlyEarnings: "$14,500",
-    revenueShare: "20%",
-    duration: "12 months",
-    target: "$40,000",
-    raised: "$38,200",
-    progress: 96,
-    yieldEstimate: "8.9%",
-    riskRating: "Green",
-    creoScore: 720,
-    tier: "Elite",
-    socialProofScore: 99,
-    bondAmount: "$2,000",
-    investors: 142,
-    avatar: "PS",
-    color: "creo-yellow",
-    status: "Active",
-  },
-  {
-    id: 8,
-    name: "James Rivera",
-    category: "DeFi Protocol Dev",
-    subscribers: "95K",
-    monthlyEarnings: "$11,200",
-    revenueShare: "22%",
-    duration: "9 months",
-    target: "$35,000",
-    raised: "$35,000",
-    progress: 100,
-    yieldEstimate: "9.4%",
-    riskRating: "Green",
-    creoScore: 660,
-    tier: "Elite",
-    socialProofScore: 97,
-    bondAmount: "$1,750",
-    investors: 118,
-    avatar: "JR",
-    color: "creo-pink",
-    status: "Funded",
-  },
-];
+import { useMarketplaceData } from "@/hooks/useMarketplaceData";
+import type { MarketplaceListing } from "@/hooks/useMarketplaceData";
+import { formatUsdc } from "@/config/contracts";
 
 type SortKey = "top" | "newest" | "highest" | "yield";
 
@@ -214,7 +29,10 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "yield", label: "Best Yield" },
 ];
 
-const colorMap: Record<string, { bg: string; text: string; border: string; accent: string }> = {
+const CARD_COLORS = ["creo-pink", "creo-teal", "creo-yellow"] as const;
+type CardColor = (typeof CARD_COLORS)[number];
+
+const colorMap: Record<CardColor, { bg: string; text: string; border: string; accent: string }> = {
   "creo-pink": {
     bg: "bg-creo-pink/10",
     text: "text-creo-pink",
@@ -235,7 +53,19 @@ const colorMap: Record<string, { bg: string; text: string; border: string; accen
   },
 };
 
-// ─── Scroll-triggered fade-in (same pattern as Pricing) ──────────────────────
+function truncateAddress(addr: string): string {
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
+
+function getAvatarInitials(addr: string): string {
+  return addr.slice(2, 4).toUpperCase();
+}
+
+function getCardColor(offeringId: bigint): CardColor {
+  return CARD_COLORS[Number(offeringId) % 3];
+}
+
+// ─── Scroll-triggered fade-in ──────────────────────────────────────────────
 function FadeIn({
   children,
   delay = 0,
@@ -260,79 +90,112 @@ function FadeIn({
   );
 }
 
+// ─── Loading skeleton card ──────────────────────────────────────────────────
+function SkeletonCard() {
+  return (
+    <div className="rounded-2xl border border-border bg-card overflow-hidden animate-pulse">
+      <div className="h-[2px] w-full bg-muted" />
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-xl bg-muted" />
+            <div className="space-y-2">
+              <div className="h-4 w-28 rounded bg-muted" />
+              <div className="h-3 w-20 rounded bg-muted" />
+            </div>
+          </div>
+          <div className="h-6 w-16 rounded-full bg-muted" />
+        </div>
+        <div className="grid grid-cols-3 gap-2 mb-5 p-3 rounded-xl bg-muted/30">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="space-y-1">
+              <div className="h-2 w-12 rounded bg-muted" />
+              <div className="h-4 w-10 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+        <div className="mb-5 space-y-2">
+          <div className="flex justify-between">
+            <div className="h-3 w-20 rounded bg-muted" />
+            <div className="h-3 w-16 rounded bg-muted" />
+          </div>
+          <div className="h-1.5 rounded-full bg-muted" />
+        </div>
+        <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="flex gap-3">
+            <div className="h-3 w-10 rounded bg-muted" />
+            <div className="h-3 w-12 rounded bg-muted" />
+          </div>
+          <div className="h-7 w-24 rounded-lg bg-muted" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const Marketplace = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "funded">("all");
   const [sort, setSort] = useState<SortKey>("top");
   const [sortOpen, setSortOpen] = useState(false);
 
+  const { listings, stats, isLoading, isError } = useMarketplaceData();
+
   const filtered = useMemo(() => {
-    const base = creators.filter((c) => {
+    const base = listings.filter((l) => {
       const matchSearch =
-        c.name.toLowerCase().includes(search.toLowerCase()) ||
-        c.category.toLowerCase().includes(search.toLowerCase());
+        search === "" ||
+        l.creator.toLowerCase().includes(search.toLowerCase()) ||
+        l.statusLabel.toLowerCase().includes(search.toLowerCase());
       const matchFilter =
         filter === "all" ||
-        (filter === "active" && c.status === "Active") ||
-        (filter === "funded" && c.status === "Funded");
+        (filter === "active" && l.status === 0) ||
+        (filter === "funded" && l.status >= 2);
       return matchSearch && matchFilter;
     });
 
     return [...base].sort((a, b) => {
       if (sort === "top") {
-        const tA = TIER_MAP[a.tier] ?? 0;
-        const tB = TIER_MAP[b.tier] ?? 0;
-        if (tB !== tA) return tB - tA;
-        if (b.socialProofScore !== a.socialProofScore)
-          return b.socialProofScore - a.socialProofScore;
-        return a.id - b.id;
+        if (b.scoreTier !== a.scoreTier) return b.scoreTier - a.scoreTier;
+        if (b.kreoScore !== a.kreoScore) return b.kreoScore - a.kreoScore;
+        return Number(a.offeringId - b.offeringId);
       }
-      if (sort === "newest") return b.id - a.id;
-      if (sort === "highest") {
-        const parseAmt = (s: string) =>
-          parseFloat(s.replace(/[$,K]/g, "")) *
-          (s.includes("K") ? 1000 : 1);
-        return parseAmt(b.target) - parseAmt(a.target);
-      }
-      if (sort === "yield") {
-        return parseFloat(b.yieldEstimate) - parseFloat(a.yieldEstimate);
-      }
+      if (sort === "newest") return Number(b.offeringId - a.offeringId);
+      if (sort === "highest") return Number(b.fundraiseTarget - a.fundraiseTarget);
+      if (sort === "yield") return b.yieldEstimate - a.yieldEstimate;
       return 0;
     });
-  }, [search, filter, sort]);
+  }, [listings, search, filter, sort]);
 
-  const eliteCreators =
-    sort === "top" ? filtered.filter((c) => c.tier === "Elite") : [];
-  const restCreators =
-    sort === "top" ? filtered.filter((c) => c.tier !== "Elite") : filtered;
+  const eliteCreators = sort === "top" ? filtered.filter((l) => l.scoreTier === 3) : [];
+  const restCreators = sort === "top" ? filtered.filter((l) => l.scoreTier !== 3) : filtered;
 
-  const currentSortLabel =
-    SORT_OPTIONS.find((o) => o.key === sort)?.label ?? "Sort";
+  const currentSortLabel = SORT_OPTIONS.find((o) => o.key === sort)?.label ?? "Sort";
 
-  // Marketplace stats
-  const totalInvestors = creators.reduce((sum, c) => sum + c.investors, 0);
-  const activeCount = creators.filter((c) => c.status === "Active").length;
-  const fundedCount = creators.filter((c) => c.status === "Funded").length;
+  const renderCard = (l: MarketplaceListing, i: number) => {
+    const color = getCardColor(l.offeringId);
+    const colors = colorMap[color];
+    const avatar = getAvatarInitials(l.creator);
+    const yieldStr = l.yieldEstimate > 0 ? `${l.yieldEstimate.toFixed(1)}%` : "—";
+    const shareStr = `${(Number(l.revenueSharePct) / 100).toFixed(0)}%`;
+    const durationStr = `${Number(l.durationMonths)} mo`;
+    const raisedStr = formatUsdc(l.totalRaised);
+    const targetStr = formatUsdc(l.fundraiseTarget);
+    const bondStr = l.bondDeposit > 0n ? formatUsdc(l.bondDeposit) : "—";
 
-  const renderCard = (c: (typeof creators)[0], i: number) => {
-    const colors = colorMap[c.color];
-    const tierNum = (TIER_MAP[c.tier] ?? 0) as TierNumber;
     return (
       <motion.div
-        key={c.id}
+        key={l.offeringId.toString()}
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
         className="relative rounded-2xl border border-border bg-card overflow-hidden group hover:border-creo-pink/40 transition-all duration-300 hover:shadow-glow-pink flex flex-col"
       >
-        {/* Per-creator color accent bar */}
         <div className={`h-[2px] w-full ${colors.accent} opacity-70`} />
-
-        {/* Subtle radial glow behind card */}
         <div
           className="absolute inset-0 opacity-[0.045] pointer-events-none"
           style={{
-            background: `radial-gradient(ellipse at 15% 0%, hsl(var(--${c.color})), transparent 55%)`,
+            background: `radial-gradient(ellipse at 15% 0%, hsl(var(--${color})), transparent 55%)`,
           }}
         />
 
@@ -343,23 +206,21 @@ const Marketplace = () => {
               <div
                 className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${colors.bg} border ${colors.border}`}
               >
-                <span
-                  className={`font-display text-sm font-bold ${colors.text}`}
-                >
-                  {c.avatar}
+                <span className={`font-display text-sm font-bold ${colors.text}`}>
+                  {avatar}
                 </span>
               </div>
               <div className="min-w-0">
                 <h3 className="font-display text-base font-semibold text-foreground truncate">
-                  {c.name}
+                  {truncateAddress(l.creator)}
                 </h3>
                 <p className="font-body text-xs text-muted-foreground truncate mt-0.5">
-                  {c.category} · {c.subscribers} subs
+                  Offering #{l.offeringId.toString()} · {l.statusLabel}
                 </p>
               </div>
             </div>
             <div className="ml-2 shrink-0">
-              <CreoScoreBadge tier={tierNum} size="sm" />
+              <CreoScoreBadge tier={l.scoreTier} size="sm" />
             </div>
           </div>
 
@@ -369,40 +230,36 @@ const Marketplace = () => {
               <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
                 Yield
               </p>
-              <p className="font-display text-sm font-bold text-creo-teal">
-                {c.yieldEstimate}
-              </p>
+              <p className="font-display text-sm font-bold text-creo-teal">{yieldStr}</p>
             </div>
             <div>
               <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
                 Share
               </p>
-              <p className="font-display text-sm font-bold text-foreground">
-                {c.revenueShare}
-              </p>
+              <p className="font-display text-sm font-bold text-foreground">{shareStr}</p>
             </div>
             <div>
               <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
                 Duration
               </p>
-              <p className="font-display text-sm font-bold text-foreground">
-                {c.duration}
-              </p>
+              <p className="font-display text-sm font-bold text-foreground">{durationStr}</p>
             </div>
           </div>
 
           {/* Progress */}
           <div className="mb-5">
             <div className="flex justify-between font-body text-xs mb-2">
-              <span className="font-semibold text-foreground">{c.raised} raised</span>
+              <span className="font-semibold text-foreground">{raisedStr} raised</span>
               <span className="text-muted-foreground">
-                {c.progress}% of {c.target}
+                {l.progress}% of {targetStr}
               </span>
             </div>
             <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full bg-gradient-hero rounded-full transition-all"
-                style={{ width: `${c.progress}%` }}
+              <motion.div
+                className="h-full bg-gradient-hero rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${l.progress}%` }}
+                transition={{ duration: 1, delay: i * 0.05, ease: "easeOut" }}
               />
             </div>
           </div>
@@ -413,26 +270,30 @@ const Marketplace = () => {
               <div className="flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 text-creo-yellow" />
                 <span className="font-body text-xs text-muted-foreground font-medium">
-                  {c.creoScore}
+                  {l.kreoScore}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Shield className="h-3.5 w-3.5 text-creo-teal" />
                 <span className="font-body text-xs text-muted-foreground font-medium">
-                  {c.bondAmount}
+                  {bondStr}
                 </span>
               </div>
             </div>
-            <Link to={`/creator/${c.id}`}>
+            <a
+              href={`https://sepolia.basescan.org/address/${l.creator}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button
                 size="sm"
                 variant="outline"
                 className="border-creo-pink/40 text-creo-pink hover:bg-creo-pink hover:text-white hover:border-creo-pink font-body text-xs gap-1.5 transition-all"
               >
-                <User className="h-3 w-3" />
-                View Profile
+                <ExternalLink className="h-3 w-3" />
+                Basescan
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       </motion.div>
@@ -445,7 +306,6 @@ const Marketplace = () => {
 
       {/* ── 1. HERO ──────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        {/* Grid mesh */}
         <div
           className="absolute inset-0 opacity-[0.035]"
           style={{
@@ -454,7 +314,6 @@ const Marketplace = () => {
             backgroundSize: "60px 60px",
           }}
         />
-        {/* Glow orb */}
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-gradient-to-r from-[hsl(var(--creo-pink))] to-[hsl(var(--creo-teal))] opacity-[0.12] blur-[100px] pointer-events-none" />
 
         <div className="relative container mx-auto px-4 pt-24 pb-16 md:pt-36 md:pb-24 text-center max-w-4xl">
@@ -491,30 +350,34 @@ const Marketplace = () => {
             {[
               {
                 icon: Users,
-                label: "Total Creators",
-                value: creators.length,
+                label: "Active Creators",
+                value: isLoading ? "—" : stats.uniqueCreators,
                 color: "text-creo-pink",
               },
               {
                 icon: Zap,
-                label: "Active Offerings",
-                value: activeCount,
+                label: "Open Offerings",
+                value: isLoading ? "—" : stats.openOfferings,
                 color: "text-creo-teal",
               },
               {
                 icon: TrendingUp,
-                label: "Fully Funded",
-                value: fundedCount,
+                label: "Total Raised",
+                value: isLoading ? "—" : formatUsdc(stats.totalRaisedUSDC6),
                 color: "text-creo-yellow",
               },
               {
-                icon: Star,
-                label: "Total Investors",
-                value: `${totalInvestors}+`,
+                icon: BarChart3,
+                label: "Total Offerings",
+                value: isLoading ? "—" : stats.totalOfferings,
                 color: "text-creo-pink",
               },
             ].map((stat, i) => (
-              <FadeIn key={stat.label} delay={i * 0.07} className="px-6 py-8 flex flex-col items-center text-center gap-2">
+              <FadeIn
+                key={stat.label}
+                delay={i * 0.07}
+                className="px-6 py-8 flex flex-col items-center text-center gap-2"
+              >
                 <stat.icon className={`h-5 w-5 ${stat.color} mb-1`} />
                 <p className={`font-display text-3xl font-bold ${stat.color}`}>
                   {stat.value}
@@ -538,7 +401,7 @@ const Marketplace = () => {
                 <Search className="h-4 w-4 text-muted-foreground shrink-0" />
                 <input
                   type="text"
-                  placeholder="Search by name or category…"
+                  placeholder="Search by address or status…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="flex-1 bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none"
@@ -556,7 +419,9 @@ const Marketplace = () => {
                   </span>
                   <span className="font-medium">{currentSortLabel}</span>
                   <ChevronDown
-                    className={`h-3.5 w-3.5 text-muted-foreground transition-transform ml-1 ${sortOpen ? "rotate-180" : ""}`}
+                    className={`h-3.5 w-3.5 text-muted-foreground transition-transform ml-1 ${
+                      sortOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
                 {sortOpen && (
@@ -569,9 +434,7 @@ const Marketplace = () => {
                           setSortOpen(false);
                         }}
                         className={`w-full flex items-center justify-between px-4 py-3 font-body text-sm transition-colors hover:bg-muted ${
-                          sort === opt.key
-                            ? "text-creo-pink"
-                            : "text-foreground"
+                          sort === opt.key ? "text-creo-pink" : "text-foreground"
                         }`}
                       >
                         {opt.label}
@@ -599,9 +462,7 @@ const Marketplace = () => {
                       : "rounded-lg border-border hover:border-creo-pink/40"
                   }
                 >
-                  <span className="font-body text-xs capitalize tracking-wide">
-                    {f}
-                  </span>
+                  <span className="font-body text-xs capitalize tracking-wide">{f}</span>
                 </Button>
               ))}
             </div>
@@ -613,48 +474,77 @@ const Marketplace = () => {
       <section className="border-t border-border">
         <div className="container mx-auto px-4 py-12 md:py-16">
 
-          {/* Elite section */}
-          {sort === "top" && eliteCreators.length >= 2 && (
-            <FadeIn className="mb-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px w-8 bg-creo-yellow/40" />
-                <p className="font-body text-xs font-semibold tracking-widest uppercase text-creo-yellow">
-                  Elite Creators
-                </p>
-                <div className="h-px flex-1 bg-creo-yellow/20" />
-              </div>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-10">
-                {eliteCreators.map((c, i) => renderCard(c, i))}
-              </div>
-              {restCreators.length > 0 && (
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-px w-8 bg-border" />
-                  <p className="font-body text-xs font-semibold tracking-widest uppercase text-muted-foreground">
-                    All Creators
-                  </p>
-                  <div className="h-px flex-1 bg-border" />
-                </div>
-              )}
+          {/* Loading skeleton */}
+          {isLoading && (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          )}
+
+          {/* Error state */}
+          {isError && !isLoading && (
+            <FadeIn className="py-24 text-center">
+              <p className="font-body text-muted-foreground text-lg">
+                Failed to load marketplace data.
+              </p>
+              <p className="font-body text-xs text-muted-foreground mt-2">
+                Check your network connection or try again.
+              </p>
             </FadeIn>
           )}
 
-          {/* Main grid */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {(sort === "top" ? restCreators : filtered).map((c, i) =>
-              renderCard(c, i + (sort === "top" ? eliteCreators.length : 0))
-            )}
-          </div>
+          {/* Loaded content */}
+          {!isLoading && !isError && (
+            <>
+              {/* Elite spotlight */}
+              {sort === "top" && eliteCreators.length >= 2 && (
+                <FadeIn className="mb-10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-px w-8 bg-creo-yellow/40" />
+                    <p className="font-body text-xs font-semibold tracking-widest uppercase text-creo-yellow">
+                      Elite Creators
+                    </p>
+                    <div className="h-px flex-1 bg-creo-yellow/20" />
+                  </div>
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-10">
+                    {eliteCreators.map((l, i) => renderCard(l, i))}
+                  </div>
+                  {restCreators.length > 0 && (
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="h-px w-8 bg-border" />
+                      <p className="font-body text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+                        All Creators
+                      </p>
+                      <div className="h-px flex-1 bg-border" />
+                    </div>
+                  )}
+                </FadeIn>
+              )}
 
-          {/* Empty state */}
-          {filtered.length === 0 && (
-            <FadeIn className="py-24 text-center">
-              <p className="font-body text-muted-foreground text-lg">
-                No creators match your search.
-              </p>
-              <p className="font-body text-xs text-muted-foreground mt-2">
-                Try a different name or category.
-              </p>
-            </FadeIn>
+              {/* Main grid */}
+              {filtered.length > 0 ? (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {(sort === "top" ? restCreators : filtered).map((l, i) =>
+                    renderCard(l, i + (sort === "top" ? eliteCreators.length : 0))
+                  )}
+                </div>
+              ) : (
+                <FadeIn className="py-24 text-center">
+                  <p className="font-body text-muted-foreground text-lg">
+                    {listings.length === 0
+                      ? "No offerings found on-chain yet."
+                      : "No creators match your search."}
+                  </p>
+                  <p className="font-body text-xs text-muted-foreground mt-2">
+                    {listings.length === 0
+                      ? "Be the first to create an offering."
+                      : "Try a different search or filter."}
+                  </p>
+                </FadeIn>
+              )}
+            </>
           )}
         </div>
       </section>
