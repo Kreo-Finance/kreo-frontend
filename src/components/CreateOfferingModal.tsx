@@ -25,14 +25,14 @@ import { CREO_VAULT_ABI } from "@/abi/CreoVault";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
 import { getContractAddresses, VARIANCE_TIER_LABELS, BASE_SEPOLIA_CHAIN_ID } from "@/config/contracts";
 import { creatorApi } from "@/lib/api/creator";
-import { useMaxFundraiseTarget } from "@/hooks/useRevenueShareData";
+import { useMaxFundraiseTarget, useRevenueShareData } from "@/hooks/useRevenueShareData";
 import type { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const PROTOCOL_FEE = 0.03;
 const COVERAGE_RATIO = 1.22;
 const MIN_RETAIN_PCT = 0.35;
-const DEADLINE_SECS = BigInt(7 * 24 * 60 * 60); // 7 days
+const DEADLINE_OPTIONS = [7, 10, 14, 21, 30];
 const BASESCAN = (hash: string) => `https://sepolia.basescan.org/tx/${hash}`;
 
 const ERC20_ABI = [
@@ -252,11 +252,13 @@ export function CreateOfferingModal({
   const { chainId: walletChainId, isConnected } = useAccount();
   const contracts = getContractAddresses(BASE_SEPOLIA_CHAIN_ID);
   const { switchChainAsync } = useSwitchChain();
+  const { hasActiveOffering, activeOfferingId } = useRevenueShareData(creatorAddress);
 
   // ── Form state ───────────────────────────────────────────────────────────
   const [sharePercent, setSharePercent] = useState(20);
   const [durationMonths, setDurationMonths] = useState(12);
   const [raiseAmount, setRaiseAmount] = useState(10_000);
+  const [deadlineDays, setDeadlineDays] = useState(7);
   const [step, setStep] = useState(0); // 0=configure, 1=bond, 2=create, 3=success
   const [postError, setPostError] = useState("");
   const [offeringId, setOfferingId] = useState("");
@@ -380,7 +382,7 @@ export function CreateOfferingModal({
           floorPrice: floorDisplay,
           raiseTarget: raiseAmount,
           duration: durationMonths,
-          expiryTime: Math.floor(Date.now() / 1000) + Number(DEADLINE_SECS),
+          expiryTime: Math.floor(Date.now() / 1000) + deadlineDays * 24 * 60 * 60,
           maxRaise: maxRaiseDollars,
           bondDeposited: Number(currentBond) / 1_000_000,
         });
@@ -414,6 +416,7 @@ export function CreateOfferingModal({
       setPostError("");
       setOfferingId("");
       setIsPosting(false);
+      setDeadlineDays(7);
       resetApprove();
       resetDeposit();
       resetCreate();
@@ -482,7 +485,7 @@ export function CreateOfferingModal({
       address: contracts!.REVENUE_SHARE,
       abi: REVENUE_SHARE_ABI,
       functionName: "createOffering",
-      args: [shareBps, BigInt(durationMonths), raiseUsdc6, DEADLINE_SECS],
+      args: [shareBps, BigInt(durationMonths), raiseUsdc6, BigInt(deadlineDays * 24 * 60 * 60)],
       account: creatorAddress,
       chain: baseSepolia,
       gas: BigInt(500_000),
@@ -496,7 +499,8 @@ export function CreateOfferingModal({
     (maxRaiseDollars === 0 || raiseAmount <= maxRaiseDollars) &&
     coverageMet &&
     retainOk &&
-    sharePercent <= 70;
+    sharePercent <= 70 &&
+    !hasActiveOffering;
 
   const bondRatePct = bondRateBps > 0n ? Number(bondRateBps) / 100 : 10;
 
@@ -529,6 +533,17 @@ export function CreateOfferingModal({
             >
               {/* LEFT — inputs */}
               <div className="p-6 flex flex-col gap-5 md:border-r border-border">
+
+                {/* Active offering error */}
+                {hasActiveOffering && (
+                  <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3">
+                    <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                    <p className="font-body text-sm text-destructive">
+                      You already have an active offering (#{activeOfferingId?.toString()}).
+                      Complete or close it before creating a new one.
+                    </p>
+                  </div>
+                )}
 
                 {/* Conservative floor card */}
                 {conservativeFloor > 0n && (
@@ -577,6 +592,29 @@ export function CreateOfferingModal({
                         }`}
                       >
                         {m}m
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Fundraise deadline */}
+                <div className="flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between">
+                    <p className="font-body text-sm font-bold text-foreground">Fundraise Deadline</p>
+                    <span className="font-body text-xs text-muted-foreground">Max 30 days</span>
+                  </div>
+                  <div className="grid grid-cols-5 gap-2">
+                    {DEADLINE_OPTIONS.map((d) => (
+                      <button
+                        key={d} type="button"
+                        onClick={() => setDeadlineDays(d)}
+                        className={`rounded-xl border-2 px-2 py-2.5 font-body text-sm font-bold transition-all ${
+                          deadlineDays === d
+                            ? "border-creo-teal bg-creo-teal/10 text-creo-teal"
+                            : "border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
+                        }`}
+                      >
+                        {d}d
                       </button>
                     ))}
                   </div>
@@ -935,7 +973,7 @@ export function CreateOfferingModal({
                   { l: "Raise Target", v: fmtUSD(raiseAmount) },
                   { l: "Net to You", v: fmtUSD(netCapital) },
                   { l: "Bond on File", v: fmtUSD(Number(currentBond) / 1_000_000) },
-                  { l: "Investors/mo", v: fmtUSD(investorsPerMonth) },
+                  { l: "Deadline", v: `${deadlineDays} days` },
                 ].map(({ l, v }) => (
                   <div key={l}>
                     <p className="font-body text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{l}</p>
@@ -1009,7 +1047,7 @@ export function CreateOfferingModal({
               <div>
                 <h3 className="font-display text-xl font-bold text-foreground">Offering Live!</h3>
                 <p className="font-body text-sm text-muted-foreground mt-1.5">
-                  Your revenue share offering is now open to investors for 7 days.
+                  Your revenue share offering is now open to investors for {deadlineDays} days.
                   {offeringId && <> Offering ID: <span className="font-semibold text-foreground">#{offeringId}</span></>}
                 </p>
               </div>
