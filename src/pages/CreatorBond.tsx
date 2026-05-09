@@ -10,7 +10,7 @@ import { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
 const fmtUsdc = (v: bigint | undefined): string => {
   if (v === undefined) return "—";
   const num = Number(v) / 1_000_000;
-  return `$${num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 // Map bond rate bps → tier name (mirrors contract constants)
