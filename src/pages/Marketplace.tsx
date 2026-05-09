@@ -5,7 +5,7 @@ import {
   Star,
   Shield,
   ChevronDown,
-  ExternalLink,
+  User,
   Users,
   TrendingUp,
   Zap,
@@ -19,6 +19,7 @@ import CreoScoreBadge from "@/components/ui/CreoScoreBadge";
 import { useMarketplaceData } from "@/hooks/useMarketplaceData";
 import type { MarketplaceListing } from "@/hooks/useMarketplaceData";
 import { formatUsdc } from "@/config/contracts";
+import { Link } from "react-router-dom";
 
 type SortKey = "top" | "newest" | "highest" | "yield";
 
@@ -182,6 +183,7 @@ const Marketplace = () => {
     const raisedStr = formatUsdc(l.totalRaised);
     const targetStr = formatUsdc(l.fundraiseTarget);
     const bondStr = l.bondDeposit > 0n ? formatUsdc(l.bondDeposit) : "—";
+    const profilePath = `/creator/${l.creator}`;
 
     return (
       <motion.div
@@ -280,20 +282,16 @@ const Marketplace = () => {
                 </span>
               </div>
             </div>
-            <a
-              href={`https://sepolia.basescan.org/address/${l.creator}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link to={profilePath}>
               <Button
                 size="sm"
                 variant="outline"
                 className="border-creo-pink/40 text-creo-pink hover:bg-creo-pink hover:text-white hover:border-creo-pink font-body text-xs gap-1.5 transition-all"
               >
-                <ExternalLink className="h-3 w-3" />
-                Basescan
+                <User className="h-3 w-3" />
+                View Profile
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </motion.div>
