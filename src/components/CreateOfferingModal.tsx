@@ -569,7 +569,21 @@ export function CreateOfferingModal({
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-center justify-between">
                     <p className="font-body text-sm font-bold text-foreground">Revenue Share</p>
-                    <span className="font-display text-lg font-bold text-creo-pink">{sharePercent}%</span>
+                    <div className="flex items-center gap-0.5">
+                      <input
+                        type="number"
+                        min={1}
+                        max={70}
+                        step={0.5}
+                        value={sharePercent}
+                        onChange={(e) => {
+                          const v = parseFloat(e.target.value);
+                          if (!isNaN(v)) setSharePercent(Math.max(1, Math.min(70, v)));
+                        }}
+                        className="w-14 text-right bg-transparent border-none outline-none font-display text-lg font-bold text-creo-pink [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <span className="font-display text-lg font-bold text-creo-pink">%</span>
+                    </div>
                   </div>
                   <Slider
                     value={sharePercent} min={1} max={70} step={0.5}
@@ -579,7 +593,23 @@ export function CreateOfferingModal({
 
                 {/* Duration pills */}
                 <div className="flex flex-col gap-2.5">
-                  <p className="font-body text-sm font-bold text-foreground">Offering Duration</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-body text-sm font-bold text-foreground">Offering Duration</p>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min={3}
+                        max={12}
+                        value={durationMonths}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value);
+                          if (!isNaN(v)) setDurationMonths(Math.max(3, Math.min(12, v)));
+                        }}
+                        className="w-12 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <span className="font-body text-xs text-muted-foreground">mo (3–12)</span>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-4 gap-2">
                     {DURATION_OPTIONS.map((m) => (
                       <button
@@ -601,7 +631,20 @@ export function CreateOfferingModal({
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-center justify-between">
                     <p className="font-body text-sm font-bold text-foreground">Fundraise Deadline</p>
-                    <span className="font-body text-xs text-muted-foreground">Max 30 days</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min={1}
+                        max={30}
+                        value={deadlineDays}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value);
+                          if (!isNaN(v)) setDeadlineDays(Math.max(1, Math.min(30, v)));
+                        }}
+                        className="w-12 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <span className="font-body text-xs text-muted-foreground">days (1–30)</span>
+                    </div>
                   </div>
                   <div className="grid grid-cols-5 gap-2">
                     {DEADLINE_OPTIONS.map((d) => (
