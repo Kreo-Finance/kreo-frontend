@@ -256,9 +256,9 @@ export function CreateOfferingModal({
 
   // ── Form state ───────────────────────────────────────────────────────────
   const [sharePercent, setSharePercent] = useState(20);
-  const [durationMonths, setDurationMonths] = useState(12);
+  const [durationMonths, setDurationMonths] = useState<number | undefined>(undefined);
   const [raiseAmount, setRaiseAmount] = useState(10_000);
-  const [deadlineDays, setDeadlineDays] = useState(7);
+  const [deadlineDays, setDeadlineDays] = useState<number | undefined>(undefined);
   const [step, setStep] = useState(0); // 0=configure, 1=bond, 2=create, 3=success
   const [postError, setPostError] = useState("");
   const [offeringId, setOfferingId] = useState("");
@@ -279,7 +279,7 @@ export function CreateOfferingModal({
   const investorsPerMonth = floorDisplay * sharePercent / 100;
   const youKeep = floorDisplay - investorsPerMonth;
   const bondDisplayAmt = Number(requiredBond) / 1_000_000;
-  const totalPayout = investorsPerMonth * durationMonths;
+  const totalPayout = investorsPerMonth * (durationMonths ?? 0);
   const coverageRatio = raiseAmount > 0 ? totalPayout / raiseAmount : 0;
   const coverageMet = coverageRatio >= COVERAGE_RATIO;
   const retainOk = floorDisplay === 0 || youKeep >= floorDisplay * MIN_RETAIN_PCT;
@@ -289,7 +289,7 @@ export function CreateOfferingModal({
     maxRaiseDollars,
     maxRaise: maxRaiseUsdc6,
     isLoading: maxRaiseLoading,
-  } = useMaxFundraiseTarget(creatorAddress, shareBps, durationMonths);
+  } = useMaxFundraiseTarget(creatorAddress, shareBps, durationMonths ?? undefined);
 
   useEffect(() => {
     if (maxRaiseDollars > 0 && raiseAmount > maxRaiseDollars) {
@@ -382,7 +382,7 @@ export function CreateOfferingModal({
           floorPrice: floorDisplay,
           raiseTarget: raiseAmount,
           duration: durationMonths,
-          expiryTime: Math.floor(Date.now() / 1000) + deadlineDays * 24 * 60 * 60,
+          expiryTime: Math.floor(Date.now() / 1000) + deadlineDays! * 24 * 60 * 60,
           maxRaise: maxRaiseDollars,
           bondDeposited: Number(currentBond) / 1_000_000,
         });
@@ -416,7 +416,8 @@ export function CreateOfferingModal({
       setPostError("");
       setOfferingId("");
       setIsPosting(false);
-      setDeadlineDays(7);
+      setDurationMonths(undefined);
+      setDeadlineDays(undefined);
       resetApprove();
       resetDeposit();
       resetCreate();
@@ -485,7 +486,7 @@ export function CreateOfferingModal({
       address: contracts!.REVENUE_SHARE,
       abi: REVENUE_SHARE_ABI,
       functionName: "createOffering",
-      args: [shareBps, BigInt(durationMonths), raiseUsdc6, BigInt(deadlineDays * 24 * 60 * 60)],
+      args: [shareBps, BigInt(durationMonths!), raiseUsdc6, BigInt(deadlineDays! * 24 * 60 * 60)],
       account: creatorAddress,
       chain: baseSepolia,
       gas: BigInt(500_000),
@@ -494,12 +495,17 @@ export function CreateOfferingModal({
     });
   }
 
+  const durationValid = durationMonths !== undefined && durationMonths >= 3 && durationMonths <= 60;
+  const deadlineValid = deadlineDays !== undefined && deadlineDays >= 1 && deadlineDays <= 30;
+
   const isViable =
     raiseAmount > 0 &&
     (maxRaiseDollars === 0 || raiseAmount <= maxRaiseDollars) &&
     coverageMet &&
     retainOk &&
     sharePercent <= 70 &&
+    durationValid &&
+    deadlineValid &&
     !hasActiveOffering;
 
   const bondRatePct = bondRateBps > 0n ? Number(bondRateBps) / 100 : 10;
@@ -604,18 +610,16 @@ export function CreateOfferingModal({
                         type="number"
                         min={3}
                         max={60}
-                        value={durationMonths}
+                        placeholder="mo"
+                        value={durationMonths ?? ""}
                         onChange={(e) => {
+                          if (e.target.value === "") { setDurationMonths(undefined); return; }
                           const v = parseInt(e.target.value);
-                          if (!isNaN(v) && v > 0) setDurationMonths(v);
-                        }}
-                        onBlur={(e) => {
-                          const v = parseInt(e.target.value);
-                          setDurationMonths(isNaN(v) ? 3 : Math.max(3, Math.min(60, v)));
+                          if (!isNaN(v)) setDurationMonths(v);
                         }}
                         className="w-14 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
-                      <span className="font-body text-xs text-muted-foreground">mo (3–60)</span>
+                      <span className="font-body text-xs text-muted-foreground">mo</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-5 gap-2">
@@ -633,6 +637,12 @@ export function CreateOfferingModal({
                       </button>
                     ))}
                   </div>
+                  {durationMonths !== undefined && durationMonths < 3 && (
+                    <p className="font-body text-xs text-destructive">Minimum duration is 3 months.</p>
+                  )}
+                  {durationMonths !== undefined && durationMonths > 60 && (
+                    <p className="font-body text-xs text-destructive">Maximum duration is 60 months (5 years).</p>
+                  )}
                 </div>
 
                 {/* Fundraise deadline */}
@@ -644,18 +654,16 @@ export function CreateOfferingModal({
                         type="number"
                         min={1}
                         max={30}
-                        value={deadlineDays}
+                        placeholder="days"
+                        value={deadlineDays ?? ""}
                         onChange={(e) => {
+                          if (e.target.value === "") { setDeadlineDays(undefined); return; }
                           const v = parseInt(e.target.value);
-                          if (!isNaN(v) && v > 0) setDeadlineDays(v);
+                          if (!isNaN(v)) setDeadlineDays(v);
                         }}
-                        onBlur={(e) => {
-                          const v = parseInt(e.target.value);
-                          setDeadlineDays(isNaN(v) ? 1 : Math.max(1, Math.min(30, v)));
-                        }}
-                        className="w-14 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-16 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
-                      <span className="font-body text-xs text-muted-foreground">days (1–30)</span>
+                      <span className="font-body text-xs text-muted-foreground">days</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-5 gap-2">
@@ -673,6 +681,12 @@ export function CreateOfferingModal({
                       </button>
                     ))}
                   </div>
+                  {deadlineDays !== undefined && deadlineDays < 1 && (
+                    <p className="font-body text-xs text-destructive">Minimum deadline is 1 day.</p>
+                  )}
+                  {deadlineDays !== undefined && deadlineDays > 30 && (
+                    <p className="font-body text-xs text-destructive">Maximum deadline is 30 days.</p>
+                  )}
                 </div>
 
                 {/* Raise amount */}
@@ -1024,11 +1038,11 @@ export function CreateOfferingModal({
               <div className="rounded-xl border-2 border-border bg-card p-4 grid grid-cols-2 gap-3">
                 {[
                   { l: "Revenue Share", v: `${sharePercent}%` },
-                  { l: "Duration", v: `${durationMonths} months` },
+                  { l: "Duration", v: durationMonths !== undefined ? `${durationMonths} months` : "—" },
                   { l: "Raise Target", v: fmtUSD(raiseAmount) },
                   { l: "Net to You", v: fmtUSD(netCapital) },
                   { l: "Bond on File", v: fmtUSD(Number(currentBond) / 1_000_000) },
-                  { l: "Deadline", v: `${deadlineDays} days` },
+                  { l: "Deadline", v: deadlineDays !== undefined ? `${deadlineDays} days` : "—" },
                 ].map(({ l, v }) => (
                   <div key={l}>
                     <p className="font-body text-[10px] font-bold tracking-widest uppercase text-muted-foreground">{l}</p>
@@ -1102,7 +1116,7 @@ export function CreateOfferingModal({
               <div>
                 <h3 className="font-display text-xl font-bold text-foreground">Offering Live!</h3>
                 <p className="font-body text-sm text-muted-foreground mt-1.5">
-                  Your revenue share offering is now open to investors for {deadlineDays} days.
+                  Your revenue share offering is now open to investors for {deadlineDays ?? "—"} days.
                   {offeringId && <> Offering ID: <span className="font-semibold text-foreground">#{offeringId}</span></>}
                 </p>
               </div>
@@ -1121,7 +1135,7 @@ export function CreateOfferingModal({
               <div className="grid grid-cols-3 gap-3 w-full">
                 {[
                   { l: "Share", v: `${sharePercent}%` },
-                  { l: "Duration", v: `${durationMonths}mo` },
+                  { l: "Duration", v: durationMonths !== undefined ? `${durationMonths}mo` : "—" },
                   { l: "Target", v: fmtUSD(raiseAmount) },
                 ].map(({ l, v }) => (
                   <div key={l} className="rounded-xl border border-border bg-card p-3 text-left">
