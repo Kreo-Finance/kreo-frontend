@@ -235,7 +235,7 @@ const SHARE_TICKS: Tick[] = [
   { value: 35, label: "35%" }, { value: 50, label: "50%" },
   { value: 70, label: "70%" },
 ];
-const DURATION_OPTIONS = [3, 6, 9, 12];
+const DURATION_OPTIONS = [3, 6, 12, 24, 60];
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type VaultData = ReturnType<typeof useCreatorVaultData>;
@@ -578,7 +578,11 @@ export function CreateOfferingModal({
                         value={sharePercent}
                         onChange={(e) => {
                           const v = parseFloat(e.target.value);
-                          if (!isNaN(v)) setSharePercent(Math.max(1, Math.min(70, v)));
+                          if (!isNaN(v) && v > 0) setSharePercent(v);
+                        }}
+                        onBlur={(e) => {
+                          const v = parseFloat(e.target.value);
+                          setSharePercent(isNaN(v) ? 1 : Math.max(1, Math.min(70, v)));
                         }}
                         className="w-14 text-right bg-transparent border-none outline-none font-display text-lg font-bold text-creo-pink [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
@@ -599,18 +603,22 @@ export function CreateOfferingModal({
                       <input
                         type="number"
                         min={3}
-                        max={12}
+                        max={60}
                         value={durationMonths}
                         onChange={(e) => {
                           const v = parseInt(e.target.value);
-                          if (!isNaN(v)) setDurationMonths(Math.max(3, Math.min(12, v)));
+                          if (!isNaN(v) && v > 0) setDurationMonths(v);
                         }}
-                        className="w-12 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        onBlur={(e) => {
+                          const v = parseInt(e.target.value);
+                          setDurationMonths(isNaN(v) ? 3 : Math.max(3, Math.min(60, v)));
+                        }}
+                        className="w-14 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
-                      <span className="font-body text-xs text-muted-foreground">mo (3–12)</span>
+                      <span className="font-body text-xs text-muted-foreground">mo (3–60)</span>
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-5 gap-2">
                     {DURATION_OPTIONS.map((m) => (
                       <button
                         key={m} type="button"
@@ -639,9 +647,13 @@ export function CreateOfferingModal({
                         value={deadlineDays}
                         onChange={(e) => {
                           const v = parseInt(e.target.value);
-                          if (!isNaN(v)) setDeadlineDays(Math.max(1, Math.min(30, v)));
+                          if (!isNaN(v) && v > 0) setDeadlineDays(v);
                         }}
-                        className="w-12 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        onBlur={(e) => {
+                          const v = parseInt(e.target.value);
+                          setDeadlineDays(isNaN(v) ? 1 : Math.max(1, Math.min(30, v)));
+                        }}
+                        className="w-14 text-right bg-transparent border border-border/60 rounded-lg px-2 py-1 font-display text-sm font-bold text-foreground focus:border-creo-teal/50 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
                       <span className="font-body text-xs text-muted-foreground">days (1–30)</span>
                     </div>
