@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Shield, Clock, AlertCircle, Loader2,
-  ExternalLink, Calendar, RefreshCw, TrendingUp,
+  ExternalLink, Calendar, RefreshCw, TrendingUp, XCircle,
 } from "lucide-react";
 import { Coins } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
@@ -52,6 +52,8 @@ const EXTEND_ERRORS: Record<string, string> = {
   RevenueShare__ExtensionTooLong: "Extension exceeds the 14-day maximum.",
   RevenueShare__OfferingNotFundraising: "Offering is not in fundraising status.",
   RevenueShare__FundraiseClosed: "The fundraise window has already closed.",
+  RevenueShare__OfferingNotFound: "Offering not found on-chain.",
+  RevenueShare__DeadlineNotReached: "Fundraise deadline has not passed yet. Wait until the deadline expires.",
 };
 
 function extractError(err: unknown): string {
@@ -116,6 +118,46 @@ const CreatorOfferings = () => {
     }
   }, [extendSuccess]);
 
+  // ── Close offering tx ──────────────────────────────────────────────────────
+  const {
+    writeContract: writeClose,
+    data: closeTxHash,
+    isPending: isClosing,
+    error: closeWriteError,
+    reset: resetClose,
+  } = useWriteContract();
+  const { isLoading: closeConfirming, isSuccess: closeSuccess } =
+    useWaitForTransactionReceipt({ hash: closeTxHash });
+
+  useEffect(() => {
+    if (closeSuccess) {
+      rsData.refetch();
+      resetClose();
+    }
+  }, [closeSuccess]);
+
+  async function handleClose() {
+    if (!contracts || !activeOfferingId) return;
+    // Pre-flight: offering must be fundraising and deadline must have passed
+    if (offering?.status !== 0) return;
+    if (deadlineIsLive) return;
+    if (walletChainId !== BASE_SEPOLIA_CHAIN_ID) {
+      try { await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID }); } catch { return; }
+    }
+    writeClose({
+      chainId: BASE_SEPOLIA_CHAIN_ID,
+      address: contracts.REVENUE_SHARE,
+      abi: REVENUE_SHARE_ABI,
+      functionName: "closeOffering",
+      args: [activeOfferingId],
+      account: address!,
+      chain: baseSepolia,
+      gas: BigInt(300_000),
+      maxFeePerGas: BigInt(10_000_000_000),
+      maxPriorityFeePerGas: BigInt(1_000_000_000),
+    });
+  }
+
   async function handleExtend() {
     if (!contracts || !activeOfferingId) return;
     if (walletChainId !== BASE_SEPOLIA_CHAIN_ID) {
@@ -155,6 +197,9 @@ const CreatorOfferings = () => {
     offering?.status === 0 &&
     !offering?.deadlineExtended &&
     deadlineIsLive;
+
+  // Can close: status FUNDRAISING and deadline has passed
+  const canClose = offering?.status === 0 && !deadlineIsLive;
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -263,6 +308,46 @@ const CreatorOfferings = () => {
                       </span>
                     )}
                   </div>
+
+                  {/* Close Offering — visible when FUNDRAISING, enabled only after deadline */}
+                  {offering.status === 0 && (
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleClose}
+                        disabled={!canClose || isClosing || closeConfirming}
+                        title={
+                          deadlineIsLive
+                            ? "Available after the fundraise deadline passes"
+                            : "Close the fundraise and begin the 3-day capital release window"
+                        }
+                        className="border-destructive/30 text-destructive hover:bg-destructive/10 font-display disabled:opacity-40"
+                      >
+                        {isClosing || closeConfirming ? (
+                          <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                          {closeConfirming ? "Confirming…" : "Closing…"}</>
+                        ) : (
+                          <><XCircle className="h-3.5 w-3.5 mr-1.5" />Close Offering</>
+                        )}
+                      </Button>
+                      {closeWriteError && (
+                        <p className="font-body text-xs text-destructive text-right max-w-[220px]">
+                          {extractError(closeWriteError)}
+                        </p>
+                      )}
+                      {closeTxHash && (
+                        <a
+                          href={`https://sepolia.basescan.org/tx/${closeTxHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 font-body text-xs text-creo-teal hover:underline"
+                        >
+                          View on Basescan <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Main stats grid */}
