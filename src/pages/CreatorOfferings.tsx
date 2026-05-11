@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Shield, Clock, AlertCircle, Loader2,
-  ExternalLink, Calendar, RefreshCw, TrendingUp, XCircle,
+  ExternalLink, Calendar, RefreshCw, TrendingUp, XCircle, Unlock,
 } from "lucide-react";
 import { Coins } from "lucide-react";
 import DashboardSidebar from "@/components/DashboardSidebar";
@@ -54,6 +54,9 @@ const EXTEND_ERRORS: Record<string, string> = {
   RevenueShare__FundraiseClosed: "The fundraise window has already closed.",
   RevenueShare__OfferingNotFound: "Offering not found on-chain.",
   RevenueShare__DeadlineNotReached: "Fundraise deadline has not passed yet. Wait until the deadline expires.",
+  RevenueShare__OfferingNotPendingRelease: "Offering is not in Pending Release status.",
+  RevenueShare__CapitalReleaseTooEarly: "The 3-day fraud detection window has not passed yet. Please wait.",
+  RevenueShare__CapitalFrozen: "Capital release has been frozen by the protocol. Contact support.",
 };
 
 function extractError(err: unknown): string {
@@ -158,6 +161,45 @@ const CreatorOfferings = () => {
     });
   }
 
+  // ── Release capital tx ─────────────────────────────────────────────────────
+  const {
+    writeContract: writeRelease,
+    data: releaseTxHash,
+    isPending: isReleasing,
+    error: releaseWriteError,
+    reset: resetRelease,
+  } = useWriteContract();
+  const { isLoading: releaseConfirming, isSuccess: releaseSuccess } =
+    useWaitForTransactionReceipt({ hash: releaseTxHash });
+
+  useEffect(() => {
+    if (releaseSuccess) {
+      rsData.refetch();
+      resetRelease();
+    }
+  }, [releaseSuccess]);
+
+  async function handleRelease() {
+    if (!contracts || !activeOfferingId) return;
+    if (offering?.status !== 1) return;
+    if (!releaseWindowOpen) return;
+    if (walletChainId !== BASE_SEPOLIA_CHAIN_ID) {
+      try { await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID }); } catch { return; }
+    }
+    writeRelease({
+      chainId: BASE_SEPOLIA_CHAIN_ID,
+      address: contracts.REVENUE_SHARE,
+      abi: REVENUE_SHARE_ABI,
+      functionName: "releaseCapital",
+      args: [activeOfferingId],
+      account: address!,
+      chain: baseSepolia,
+      gas: BigInt(300_000),
+      maxFeePerGas: BigInt(10_000_000_000),
+      maxPriorityFeePerGas: BigInt(1_000_000_000),
+    });
+  }
+
   async function handleExtend() {
     if (!contracts || !activeOfferingId) return;
     if (walletChainId !== BASE_SEPOLIA_CHAIN_ID) {
@@ -200,6 +242,27 @@ const CreatorOfferings = () => {
 
   // Can close: status FUNDRAISING and deadline has passed
   const canClose = offering?.status === 0 && !deadlineIsLive;
+
+  // Can release: status PENDING_RELEASE and 3-day window has elapsed
+  const releaseWindowOpen =
+    offering?.status === 1 &&
+    offering.capitalReleaseTimestamp !== undefined &&
+    offering.capitalReleaseTimestamp > 0n &&
+    BigInt(Math.floor(Date.now() / 1000)) >= offering.capitalReleaseTimestamp;
+  const canRelease = offering?.status === 1 && releaseWindowOpen;
+
+  const timeUntilRelease = (): string => {
+    const ts = offering?.capitalReleaseTimestamp;
+    if (!ts || ts === 0n) return "—";
+    const remaining = Number(ts) - Math.floor(Date.now() / 1000);
+    if (remaining <= 0) return "Ready";
+    const days = Math.floor(remaining / 86400);
+    const hours = Math.floor((remaining % 86400) / 3600);
+    const mins = Math.floor((remaining % 3600) / 60);
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${mins}m`;
+    return `${mins}m`;
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -524,6 +587,66 @@ const CreatorOfferings = () => {
                       <Calendar className="h-3.5 w-3.5" />
                       Deadline has been extended once — no further extensions allowed.
                     </p>
+                  </div>
+                )}
+
+                {/* Release Capital section — shown when PENDING_RELEASE */}
+                {offering.status === 1 && (
+                  <div className="pt-4 border-t border-border">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div>
+                        <p className="font-body text-sm font-bold text-foreground flex items-center gap-1.5">
+                          <Unlock className="h-3.5 w-3.5 text-creo-teal" />
+                          Capital Release
+                        </p>
+                        {!releaseWindowOpen && offering.capitalReleaseTimestamp > 0n && (
+                          <p className="font-body text-xs text-muted-foreground mt-0.5">
+                            Available in {timeUntilRelease()} · {fmtDeadline(offering.capitalReleaseTimestamp)}
+                          </p>
+                        )}
+                        {releaseWindowOpen && (
+                          <p className="font-body text-xs text-creo-teal mt-0.5">
+                            Fraud window cleared — capital is ready to release.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <Button
+                          size="sm"
+                          onClick={handleRelease}
+                          disabled={!canRelease || isReleasing || releaseConfirming}
+                          title={
+                            !releaseWindowOpen
+                              ? "Wait for the 3-day fraud detection window to pass"
+                              : "Release raised capital to your wallet (3% fee deducted)"
+                          }
+                          className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-40"
+                        >
+                          {isReleasing || releaseConfirming ? (
+                            <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                            {releaseConfirming ? "Confirming…" : "Releasing…"}</>
+                          ) : (
+                            <><Unlock className="h-3.5 w-3.5 mr-1.5" />Release Capital</>
+                          )}
+                        </Button>
+                        {releaseWriteError && (
+                          <p className="font-body text-xs text-destructive text-right max-w-[220px]">
+                            {extractError(releaseWriteError)}
+                          </p>
+                        )}
+                        {releaseTxHash && (
+                          <a
+                            href={`https://sepolia.basescan.org/tx/${releaseTxHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 font-body text-xs text-creo-teal hover:underline"
+                          >
+                            View on Basescan <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
               </motion.div>
