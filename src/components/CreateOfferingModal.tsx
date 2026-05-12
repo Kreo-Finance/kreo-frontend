@@ -69,11 +69,12 @@ const CONTRACT_ERRORS: Record<string, string> = {
   RevenueShare__InsufficientRetainedIncome: "You must retain at least 35% of floor income after the revenue share.",
   RevenueShare__CoverageRatioNotMet: "Coverage ratio is below 1.22×. Increase duration or revenue share, or lower the raise.",
   RevenueShare__BondNotDeposited: "Bond not deposited. Please complete the bond deposit step.",
-  RevenueShare__BondInsufficientForRaise: "Current bond deposit is insufficient for this raise amount.",
+  RevenueShare__BondInsufficientForRaise: "Your existing bond is insufficient for this raise amount. Lower your raise target to match your bond.",
   RevenueShare__InsufficientHistoryForRaise: "At least 6 months of verified earnings history is required.",
   RevenueShare__CreatorPaused: "Your creator account is currently paused.",
   RevenueShare__InvalidDuration: "Offering duration must be between 3 and 12 months.",
   RevenueShare__DeadlineDurationExceedsMax: "Deadline duration exceeds the 30-day maximum.",
+  CreoVault__BondAlreadyDeposited: "A bond is already on file. The vault only allows one bond deposit at a time.",
 };
 
 function extractError(err: unknown): string {
@@ -428,7 +429,9 @@ export function CreateOfferingModal({
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   function handleContinue() {
-    bondSufficient ? setStep(2) : setStep(1);
+    // If any bond exists on-chain, skip the deposit step — the vault rejects
+    // second deposits. Insufficient-bond errors surface on the create tx instead.
+    currentBond > 0n ? setStep(2) : setStep(1);
   }
 
   async function handleApprove() {
@@ -847,6 +850,39 @@ export function CreateOfferingModal({
                 </p>
               </div>
 
+              {/* Bond already on file — skip deposit, go straight to create */}
+              {currentBond > 0n && (
+                <div className="flex flex-col gap-3">
+                  <div className="rounded-xl border border-creo-teal/30 bg-creo-teal/[0.05] px-4 py-3 flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-creo-teal shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-body text-sm font-bold text-foreground">Bond already on file</p>
+                      <p className="font-body text-xs text-muted-foreground mt-0.5">
+                        Your vault has <span className="font-semibold text-foreground">{fmtUSD(Number(currentBond) / 1_000_000)}</span> deposited.
+                        The vault only allows one bond at a time — you can proceed directly to create your offering.
+                        If the existing bond is below the required amount, the create transaction will indicate the shortfall.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setStep(2)}
+                    className="w-full bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90"
+                  >
+                    Create Offering <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => setStep(0)}
+                    className="font-body text-xs text-muted-foreground hover:text-foreground text-center"
+                  >
+                    ← Back to configure
+                  </button>
+                </div>
+              )}
+
+              {/* Normal deposit flow — only shown when no bond exists yet */}
+              {currentBond === 0n && (<>
+
               {/* Bond amount card */}
               <div className="rounded-xl border-2 border-creo-yellow/20 bg-creo-yellow/[0.04] px-4 py-4 flex items-center justify-between">
                 <div>
@@ -1016,6 +1052,7 @@ export function CreateOfferingModal({
               >
                 ← Back to configure
               </button>
+            </>)}
             </motion.div>
           )}
 
@@ -1094,7 +1131,7 @@ export function CreateOfferingModal({
               {!createTxHash && (
                 <button
                   type="button"
-                  onClick={() => setStep(bondSufficient ? 0 : 1)}
+                  onClick={() => setStep(currentBond > 0n ? 0 : 1)}
                   className="font-body text-xs text-muted-foreground hover:text-foreground text-center"
                 >
                   ← Back
