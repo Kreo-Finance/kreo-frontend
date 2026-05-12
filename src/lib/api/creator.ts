@@ -52,8 +52,9 @@ export interface CreateOfferingResponse {
 }
 
 export interface OfferingRecord {
+  _id: string;
   offeringId: string;
-  status: number;
+  status: string;
   sharePercentage: string;
   floorPrice: number;
   raiseTarget: number;
@@ -61,6 +62,13 @@ export interface OfferingRecord {
   expiryTime: number;
   maxRaise: number;
   bondDeposited: number;
+  createdAt: string;
+  [key: string]: unknown;
+}
+
+interface GetOfferingsResponse {
+  success: boolean;
+  data: OfferingRecord[];
   [key: string]: unknown;
 }
 
@@ -81,7 +89,7 @@ export const creatorApi = {
   },
 
   getOfferings: async (): Promise<OfferingRecord[]> => {
-    const response = await apiClient.get('users/creator/offerings', { timeout: 30000 });
-    return response.data;
+    const response = await apiClient.get<GetOfferingsResponse>('users/creator/offerings', { timeout: 30000 });
+    return response.data.data;
   },
 };

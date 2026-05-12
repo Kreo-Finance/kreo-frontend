@@ -56,9 +56,16 @@ export function useMarketplaceData() {
   useEffect(() => {
     creatorApi.getOfferings()
       .then(records => {
+        const seen = new Set<string>();
         const ids = records
           .map(r => { try { return BigInt(r.offeringId); } catch { return null; } })
-          .filter((id): id is bigint => id !== null)
+          .filter((id): id is bigint => {
+            if (id === null) return false;
+            const key = id.toString();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
           .slice(0, MAX_OFFERINGS);
         setBackendIds(ids);
       })
