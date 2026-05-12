@@ -34,6 +34,8 @@ export interface VerifyEarningsResponse {
 }
 
 export interface CreateOfferingPayload {
+  offeringId: string;
+  status: number;
   sharePercentage: string;
   floorPrice: number;
   raiseTarget: number;

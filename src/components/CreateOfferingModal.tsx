@@ -378,6 +378,8 @@ export function CreateOfferingModal({
         setOfferingId(idStr);
 
         await creatorApi.createOffering({
+          offeringId: idStr,
+          status: 0, // Fundraising — always 0 at creation time
           sharePercentage: sharePercent.toFixed(2),
           floorPrice: floorDisplay,
           raiseTarget: raiseAmount,
