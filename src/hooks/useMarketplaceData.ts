@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useReadContracts, useChainId } from 'wagmi';
 import { CREO_VAULT_ABI } from '@/abi/CreoVault';
 import { REVENUE_SHARE_ABI } from '@/abi/RevenueShare';
@@ -6,6 +6,7 @@ import { KREO_SCORE_ABI } from '@/abi/KreoScore';
 import { getContractAddresses } from '@/config/contracts';
 import { OFFERING_STATUS } from './useRevenueShareData';
 import type { OfferingStruct } from './useRevenueShareData';
+import { creatorApi } from '@/lib/api/creator';
 
 // Hard cap: never fetch more than this many offerings in one page load
 const MAX_OFFERINGS = 50;
@@ -48,7 +49,24 @@ export function useMarketplaceData() {
   const chainId = useChainId();
   const contracts = getContractAddresses(chainId);
 
-  // ── Step 1: total offering count ──────────────────────────────────────
+  // ── Backend API: fetch curated offering ID list ───────────────────────
+  const [backendIds, setBackendIds] = useState<bigint[] | null>(null);
+  const [backendLoading, setBackendLoading] = useState(true);
+
+  useEffect(() => {
+    creatorApi.getOfferings()
+      .then(records => {
+        const ids = records
+          .map(r => { try { return BigInt(r.offeringId); } catch { return null; } })
+          .filter((id): id is bigint => id !== null)
+          .slice(0, MAX_OFFERINGS);
+        setBackendIds(ids);
+      })
+      .catch(() => setBackendIds(null))
+      .finally(() => setBackendLoading(false));
+  }, []);
+
+  // ── Step 1: total offering count (stats + chain-scan fallback) ────────
   const { data: s1, isLoading: s1Loading, isError } = useReadContracts({
     contracts: contracts
       ? [{
@@ -68,10 +86,12 @@ export function useMarketplaceData() {
       : 0;
 
   const offeringIds = useMemo((): bigint[] => {
+    // Prefer backend-curated list; fall back to full chain scan when API fails
+    if (backendIds !== null) return backendIds;
     if (!nextOfferingId || nextOfferingId <= 1n) return [];
     const count = Math.min(totalCreated, MAX_OFFERINGS);
     return Array.from({ length: count }, (_, i) => BigInt(i + 1));
-  }, [nextOfferingId, totalCreated]);
+  }, [backendIds, nextOfferingId, totalCreated]);
 
   // ── Step 2: fetch every offering struct ───────────────────────────────
   const { data: s2, isLoading: s2Loading } = useReadContracts({
@@ -242,7 +262,7 @@ export function useMarketplaceData() {
     listings,
     stats,
     uniqueCreators,
-    isLoading: s1Loading || s2Loading || s3Loading || s4Loading,
+    isLoading: backendLoading || s1Loading || s2Loading || s3Loading || s4Loading,
     isError,
   };
 }

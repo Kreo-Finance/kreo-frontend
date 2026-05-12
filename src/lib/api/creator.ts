@@ -51,6 +51,19 @@ export interface CreateOfferingResponse {
   [key: string]: unknown;
 }
 
+export interface OfferingRecord {
+  offeringId: string;
+  status: number;
+  sharePercentage: string;
+  floorPrice: number;
+  raiseTarget: number;
+  duration: number;
+  expiryTime: number;
+  maxRaise: number;
+  bondDeposited: number;
+  [key: string]: unknown;
+}
+
 export const creatorApi = {
   registerCreator: async (payload: RegisterCreatorPayload): Promise<RegisterCreatorResponse> => {
     const response = await apiClient.post('users/register/creator', payload, { timeout: 60000 });
@@ -64,6 +77,11 @@ export const creatorApi = {
 
   createOffering: async (payload: CreateOfferingPayload): Promise<CreateOfferingResponse> => {
     const response = await apiClient.post('users/creator/create-offering', payload, { timeout: 60000 });
+    return response.data;
+  },
+
+  getOfferings: async (): Promise<OfferingRecord[]> => {
+    const response = await apiClient.get('users/creator/offerings', { timeout: 30000 });
     return response.data;
   },
 };
