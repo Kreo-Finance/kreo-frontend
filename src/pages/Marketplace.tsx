@@ -328,9 +328,10 @@ const Marketplace = () => {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-border mt-auto gap-2">
-            <div className="flex items-center gap-2 min-w-0">
-              {l.status === 0 && (
+          <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
+            {/* Left: Buy Tokens or spacer */}
+            <div className="flex-1 flex justify-start">
+              {l.status === 0 ? (
                 <Button
                   size="sm"
                   onClick={() => setBuyModalListing(l)}
@@ -339,32 +340,28 @@ const Marketplace = () => {
                   <Coins className="h-3 w-3" />
                   Buy Tokens
                 </Button>
-              )}
-              <div className="flex items-center gap-2">
-                {/* <div className="flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 text-creo-yellow" />
-                  <span className="font-body text-xs text-muted-foreground font-medium">
-                    {l.kreoScore}
-                  </span>
-                </div> */}
-                <div className="flex items-center gap-1">
-                  <Shield className="h-3.5 w-3.5 text-creo-teal" />
-                  <span className="font-body text-xs text-muted-foreground font-medium">
-                    {bondStr}
-                  </span>
-                </div>
-              </div>
+              ) : <div />}
             </div>
-            <Link to={profilePath}>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-creo-pink/40 text-creo-pink hover:bg-creo-pink hover:text-white hover:border-creo-pink font-body text-xs gap-1.5 transition-all shrink-0"
-              >
-                <User className="h-3 w-3" />
-                View Profile
-              </Button>
-            </Link>
+            {/* Center: Shield + bond */}
+            <div className="flex items-center gap-1 shrink-0">
+              <Shield className="h-3.5 w-3.5 text-creo-teal" />
+              <span className="font-body text-xs text-muted-foreground font-medium">
+                {bondStr}
+              </span>
+            </div>
+            {/* Right: View Profile */}
+            <div className="flex-1 flex justify-end">
+              <Link to={profilePath}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-creo-pink/40 text-creo-pink hover:bg-creo-pink hover:text-white hover:border-creo-pink font-body text-xs gap-1.5 transition-all shrink-0"
+                >
+                  <User className="h-3 w-3" />
+                  View Profile
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </motion.div>
