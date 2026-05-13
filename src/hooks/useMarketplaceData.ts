@@ -27,6 +27,7 @@ export interface MarketplaceListing {
   settledMonths: number;
   status: number;
   statusLabel: string;
+  deadlineExtended: boolean;
   // Computed display values
   progress: number;       // 0-100 %
   yieldEstimate: number;  // % return over duration
@@ -111,7 +112,7 @@ export function useMarketplaceData() {
             args: [id] as [bigint],
           }))
         : [],
-    query: { enabled: !!contracts && offeringIds.length > 0, staleTime: 30_000 },
+    query: { enabled: !!contracts && offeringIds.length > 0, staleTime: 30_000, refetchInterval: 60_000 },
   });
 
   // Filter out zero-address / missing offerings and deduplicate creators
@@ -243,6 +244,7 @@ export function useMarketplaceData() {
           settledMonths: data.settledMonths,
           status: data.status,
           statusLabel: OFFERING_STATUS[data.status] ?? '—',
+          deadlineExtended: data.deadlineExtended ?? false,
           progress,
           yieldEstimate,
           kreoScore,

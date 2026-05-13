@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import {
   Search,
@@ -11,6 +11,7 @@ import {
   Zap,
   BarChart3,
   Coins,
+  Clock,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -136,12 +137,62 @@ function SkeletonCard() {
   );
 }
 
+// ─── Deadline countdown helpers ────────────────────────────────────────────────
+function computeTimeRemaining(deadlineSecs: bigint, nowSecs: number) {
+  const deadline = Number(deadlineSecs);
+  if (deadline === 0) return null;
+  const diff = deadline - nowSecs;
+  if (diff <= 0) return { text: "Expired", urgent: false, expired: true };
+  const days  = Math.floor(diff / 86_400);
+  const hours = Math.floor((diff % 86_400) / 3_600);
+  const mins  = Math.floor((diff % 3_600) / 60);
+  let text: string;
+  if (days > 0)        text = hours > 0 ? `${days}d ${hours}h left` : `${days}d left`;
+  else if (hours > 0)  text = `${hours}h ${mins}m left`;
+  else                 text = `${mins}m left`;
+  return { text, urgent: diff < 86_400 * 2, expired: false };
+}
+
+function TimeRemainingBadge({
+  deadline,
+  extended,
+  nowSecs,
+}: {
+  deadline: bigint;
+  extended: boolean;
+  nowSecs: number;
+}) {
+  const info = computeTimeRemaining(deadline, nowSecs);
+  if (!info) return null;
+  const cls = info.expired
+    ? "bg-muted/40 text-muted-foreground border-border/40"
+    : info.urgent
+    ? "bg-destructive/10 text-destructive border-destructive/20"
+    : "bg-creo-pink/10 text-creo-pink border-creo-pink/20";
+  return (
+    <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-body font-bold whitespace-nowrap ${cls}`}>
+      <Clock className="h-2.5 w-2.5 shrink-0" />
+      {info.text}
+      {extended && !info.expired && (
+        <span className="ml-0.5 text-creo-yellow">↑</span>
+      )}
+    </div>
+  );
+}
+
 const Marketplace = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "funded">("all");
   const [sort, setSort] = useState<SortKey>("top");
   const [sortOpen, setSortOpen] = useState(false);
   const [buyModalListing, setBuyModalListing] = useState<MarketplaceListing | null>(null);
+  const [nowSecs, setNowSecs] = useState(() => Math.floor(Date.now() / 1000));
+
+  // Tick every minute so deadline countdowns stay fresh
+  useEffect(() => {
+    const id = setInterval(() => setNowSecs(Math.floor(Date.now() / 1000)), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   const { listings, stats, isLoading, isError } = useMarketplaceData();
 
@@ -224,8 +275,15 @@ const Marketplace = () => {
                 </p>
               </div>
             </div>
-            <div className="ml-2 shrink-0">
+            <div className="ml-2 shrink-0 flex flex-col items-end gap-1.5">
               <CreoScoreBadge tier={l.scoreTier} size="sm" />
+              {l.status === 0 && l.fundraiseDeadline > 0n && (
+                <TimeRemainingBadge
+                  deadline={l.fundraiseDeadline}
+                  extended={l.deadlineExtended}
+                  nowSecs={nowSecs}
+                />
+              )}
             </div>
           </div>
 
