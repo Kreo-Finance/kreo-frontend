@@ -30,15 +30,14 @@ const navLinks: NavLink[] = [
     label: "FOR CREATORS",
     dropdown: [
       { label: "Dashboard", href: "/creator/dashboard" },
-      { label: "Portfolio", href: "/investor/portfolio" },
       { label: "Raise Calculator", href: "/#raise-calculator" },
     ],
   },
   {
     label: "RESOURCES",
     dropdown: [
-      { label: "Blog", href: "/blog" },
       { label: "Docs", href: "/documentation" },
+      { label: "Blog", href: "/blog" },
       { label: "Pricing", href: "/pricing" },
     ],
   },
