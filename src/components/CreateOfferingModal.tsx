@@ -897,12 +897,12 @@ export function CreateOfferingModal({
 
               {/* Current bond */}
               <div className="rounded-xl border border-border bg-background/40 px-4 py-3 flex items-center justify-between">
-                <div>
+                {/* <div>
                   <p className="font-body text-xs text-muted-foreground">Current Bond on File</p>
                   <p className="font-display text-base font-semibold text-foreground mt-0.5">
                     {fmtUSD(Number(currentBond) / 1_000_000)}
                   </p>
-                </div>
+                </div> */}
                 {currentBond > 0n && (
                   <span className="font-body text-xs font-semibold text-creo-teal px-2 py-0.5 rounded-full bg-creo-teal/10 border border-creo-teal/20">
                     On-chain
