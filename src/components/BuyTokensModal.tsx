@@ -17,6 +17,7 @@ import {
   TrendingUp,
   Zap,
   DollarSign,
+  Clock,
 } from "lucide-react";
 import {
   useWriteContract,
@@ -28,10 +29,10 @@ import {
 import { parseEventLogs, BaseError, ContractFunctionRevertedError } from "viem";
 import { baseSepolia } from "viem/chains";
 import { REVENUE_SHARE_ABI } from "@/abi/RevenueShare";
+import { CREATOR_TOKEN_ABI } from "@/abi/CreatorToken";
 import {
   getContractAddresses,
   BASE_SEPOLIA_CHAIN_ID,
-  formatUsdc,
 } from "@/config/contracts";
 import { investorApi } from "@/lib/api/investor";
 import type { MarketplaceListing } from "@/hooks/useMarketplaceData";
@@ -72,12 +73,16 @@ const ERC20_ABI = [
 // ── Error mapping ──────────────────────────────────────────────────────────────
 const CONTRACT_ERRORS: Record<string, string> = {
   RevenueShare__ZeroAmount: "Investment amount cannot be zero.",
-  RevenueShare__OfferingNotFundraising: "This offering is no longer accepting investments.",
+  RevenueShare__OfferingNotFundraising:
+    "This offering is no longer accepting investments.",
   RevenueShare__OfferingNotFound: "Offering not found on-chain.",
-  RevenueShare__FundraiseClosed: "The fundraise window for this offering has closed.",
-  RevenueShare__CreatorPaused: "This creator's account is currently paused — investments are not accepted.",
+  RevenueShare__FundraiseClosed:
+    "The fundraise window for this offering has closed.",
+  RevenueShare__CreatorPaused:
+    "This creator's account is currently paused — investments are not accepted.",
   RevenueShare__CapitalFrozen: "Capital is currently frozen for this offering.",
-  RevenueShare__TransferFailed: "USDC transfer failed. Check your balance and approval.",
+  RevenueShare__TransferFailed:
+    "USDC transfer failed. Check your balance and approval.",
 };
 
 function extractError(err: unknown): string {
@@ -99,7 +104,10 @@ const fmtUSD = (v: number) =>
     ? `$${(v / 1_000_000).toFixed(2)}M`
     : v >= 1_000
     ? `$${(v / 1_000).toFixed(2)}K`
-    : `$${v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    : `$${v.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
 
 function truncateAddr(addr: string) {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
@@ -132,10 +140,14 @@ function StepDots({ current }: { current: number }) {
             >
               {i < current ? "✓" : i + 1}
             </div>
-            <span className="font-body text-xs font-semibold hidden sm:block">{l}</span>
+            <span className="font-body text-xs font-semibold hidden sm:block">
+              {l}
+            </span>
           </div>
           {i < labels.length - 1 && (
-            <div className={`h-px w-6 ${i < current ? "bg-creo-teal" : "bg-border"}`} />
+            <div
+              className={`h-px w-6 ${i < current ? "bg-creo-teal" : "bg-border"}`}
+            />
           )}
         </div>
       ))}
@@ -193,7 +205,11 @@ export function BuyTokensModal({
   onOpenChange: (open: boolean) => void;
   listing: MarketplaceListing;
 }) {
-  const { address: investorAddress, chainId: walletChainId, isConnected } = useAccount();
+  const {
+    address: investorAddress,
+    chainId: walletChainId,
+    isConnected,
+  } = useAccount();
   const contracts = getContractAddresses(BASE_SEPOLIA_CHAIN_ID);
   const { switchChainAsync } = useSwitchChain();
 
@@ -206,14 +222,17 @@ export function BuyTokensModal({
   const [resultCt, setResultCt] = useState("");
 
   // ── Derived values ──────────────────────────────────────────────────────
-  const usdcAmount = BigInt(Math.round(usdcDollars * 1_000_000)); // 6-dec
-  const remaining = listing.fundraiseTarget > listing.totalRaised
-    ? listing.fundraiseTarget - listing.totalRaised
-    : 0n;
+  const usdcAmount = BigInt(Math.round(usdcDollars * 1_000_000));
+  const remaining =
+    listing.fundraiseTarget > listing.totalRaised
+      ? listing.fundraiseTarget - listing.totalRaised
+      : 0n;
   const remainingDollars = Number(remaining) / 1_000_000;
   const exceedsRemaining = remaining > 0n && usdcAmount > remaining;
   const nowSecs = Math.floor(Date.now() / 1000);
-  const deadlinePassed = Number(listing.fundraiseDeadline) > 0 && nowSecs > Number(listing.fundraiseDeadline);
+  const deadlinePassed =
+    Number(listing.fundraiseDeadline) > 0 &&
+    nowSecs > Number(listing.fundraiseDeadline);
 
   // ── Read RST_PER_USDC constant ─────────────────────────────────────────
   const { data: rstPerUsdc } = useReadContract({
@@ -223,12 +242,22 @@ export function BuyTokensModal({
     args: [],
     query: { enabled: !!contracts, staleTime: Infinity },
   });
-
   const rstPreview =
     rstPerUsdc !== undefined
       ? Number(usdcAmount * (rstPerUsdc as bigint)) / 1e18
       : null;
-  const ctPreview = usdcDollars; // 1 CT per $1
+  const ctPreview = usdcDollars;
+
+  // ── Read isRegistered(creator) from CreatorToken ───────────────────────
+  const { data: isRegisteredData, isLoading: isRegisteredLoading } =
+    useReadContract({
+      address: contracts?.CREATOR_TOKEN,
+      abi: CREATOR_TOKEN_ABI,
+      functionName: "isRegistered",
+      args: [listing.creator],
+      query: { enabled: step === 1 && !!contracts, staleTime: 15_000 },
+    });
+  const creatorRegistered = isRegisteredData === true;
 
   // ── Read USDC allowance ────────────────────────────────────────────────
   const {
@@ -243,7 +272,10 @@ export function BuyTokensModal({
       contracts && investorAddress
         ? [investorAddress, contracts.REVENUE_SHARE]
         : undefined,
-    query: { enabled: step === 1 && !!contracts && !!investorAddress, staleTime: 5_000 },
+    query: {
+      enabled: step === 1 && !!contracts && !!investorAddress,
+      staleTime: 5_000,
+    },
   });
   const allowanceSufficient =
     allowanceRaw !== undefined && (allowanceRaw as bigint) >= usdcAmount;
@@ -254,10 +286,15 @@ export function BuyTokensModal({
     abi: ERC20_ABI,
     functionName: "balanceOf",
     args: investorAddress ? [investorAddress] : undefined,
-    query: { enabled: step === 0 && !!contracts && !!investorAddress, staleTime: 15_000 },
+    query: {
+      enabled: step === 0 && !!contracts && !!investorAddress,
+      staleTime: 15_000,
+    },
   });
   const balanceDollars =
-    usdcBalance !== undefined ? Number(usdcBalance as bigint) / 1_000_000 : null;
+    usdcBalance !== undefined
+      ? Number(usdcBalance as bigint) / 1_000_000
+      : null;
   const exceedsBalance =
     balanceDollars !== null && usdcDollars > balanceDollars;
 
@@ -273,17 +310,6 @@ export function BuyTokensModal({
     useWaitForTransactionReceipt({ hash: approveTxHash });
   const awaitingAllowanceConfirm = approveSuccess && !allowanceSufficient;
 
-  // ── Tx: buyTokens ──────────────────────────────────────────────────────
-  const {
-    writeContract: writeBuy,
-    data: buyTxHash,
-    isPending: isBuying,
-    error: buyWriteError,
-    reset: resetBuy,
-  } = useWriteContract();
-  const { isLoading: buyConfirming, isSuccess: buySuccess, data: buyReceipt } =
-    useWaitForTransactionReceipt({ hash: buyTxHash });
-
   // After approve confirmed, refetch allowance
   useEffect(() => {
     if (approveSuccess) {
@@ -292,6 +318,20 @@ export function BuyTokensModal({
       return () => clearTimeout(t);
     }
   }, [approveSuccess]);
+
+  // ── Tx: buyTokens ──────────────────────────────────────────────────────
+  const {
+    writeContract: writeBuy,
+    data: buyTxHash,
+    isPending: isBuying,
+    error: buyWriteError,
+    reset: resetBuy,
+  } = useWriteContract();
+  const {
+    isLoading: buyConfirming,
+    isSuccess: buySuccess,
+    data: buyReceipt,
+  } = useWaitForTransactionReceipt({ hash: buyTxHash });
 
   // After buyTokens confirmed, post to API → success screen
   useEffect(() => {
@@ -325,7 +365,9 @@ export function BuyTokensModal({
         setStep(3);
       } catch (err) {
         setPostError(
-          err instanceof Error ? err.message : "Investment recorded on-chain but failed to sync with backend."
+          err instanceof Error
+            ? err.message
+            : "Investment recorded on-chain but failed to sync with backend."
         );
       } finally {
         setIsPosting(false);
@@ -333,7 +375,7 @@ export function BuyTokensModal({
     }
 
     finalize();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buySuccess, buyReceipt]);
 
   // Reset on close
@@ -395,8 +437,13 @@ export function BuyTokensModal({
     });
   }
 
-  const amountValid = usdcDollars >= 1 && !exceedsRemaining && !exceedsBalance && !deadlinePassed;
-  const canInvest = isConnected && !!investorAddress && !!contracts && amountValid;
+  const amountValid =
+    usdcDollars >= 1 &&
+    !exceedsRemaining &&
+    !exceedsBalance &&
+    !deadlinePassed;
+  const canInvest =
+    isConnected && !!investorAddress && !!contracts && amountValid;
 
   // ── Render ─────────────────────────────────────────────────────────────
   return (
@@ -428,7 +475,9 @@ export function BuyTokensModal({
               {/* Offering info */}
               <div className="rounded-xl border border-border bg-muted/20 px-4 py-3 flex items-center justify-between">
                 <div>
-                  <p className="font-body text-xs text-muted-foreground">Offering #{listing.offeringId.toString()}</p>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Offering #{listing.offeringId.toString()}
+                  </p>
                   <p className="font-display text-sm font-bold text-foreground mt-0.5">
                     {truncateAddr(listing.creator)}
                   </p>
@@ -443,7 +492,6 @@ export function BuyTokensModal({
                 </div>
               </div>
 
-              {/* Deadline warning */}
               {deadlinePassed && (
                 <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3">
                   <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
@@ -453,7 +501,6 @@ export function BuyTokensModal({
                 </div>
               )}
 
-              {/* Not connected */}
               {!isConnected && (
                 <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3">
                   <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
@@ -466,10 +513,15 @@ export function BuyTokensModal({
               {/* USDC input */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <p className="font-body text-sm font-bold text-foreground">USDC Amount</p>
+                  <p className="font-body text-sm font-bold text-foreground">
+                    USDC Amount
+                  </p>
                   {balanceDollars !== null && (
                     <p className="font-body text-xs text-muted-foreground">
-                      Balance: <span className="text-foreground font-semibold">{fmtUSD(balanceDollars)}</span>
+                      Balance:{" "}
+                      <span className="text-foreground font-semibold">
+                        {fmtUSD(balanceDollars)}
+                      </span>
                     </p>
                   )}
                 </div>
@@ -499,15 +551,15 @@ export function BuyTokensModal({
                 )}
                 {exceedsRemaining && (
                   <p className="font-body text-xs text-destructive">
-                    Amount exceeds the remaining raise capacity ({fmtUSD(remainingDollars)}).
+                    Amount exceeds remaining capacity ({fmtUSD(remainingDollars)}).
                   </p>
                 )}
-                {/* Quick-select */}
                 {remainingDollars > 0 && (
                   <div className="grid grid-cols-4 gap-1.5">
                     {[0.25, 0.5, 0.75, 1].map((pct, idx) => {
                       const val = Math.floor(remainingDollars * pct);
-                      const label = idx < 3 ? `${(pct * 100).toFixed(0)}%` : "MAX";
+                      const label =
+                        idx < 3 ? `${(pct * 100).toFixed(0)}%` : "MAX";
                       return (
                         <button
                           key={label}
@@ -534,10 +586,14 @@ export function BuyTokensModal({
                       <TrendingUp className="h-3.5 w-3.5 text-creo-teal" />
                     </div>
                     <div>
-                      <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">RST</p>
+                      <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">
+                        RST
+                      </p>
                       <p className="font-display text-sm font-bold text-creo-teal">
                         {rstPreview !== null
-                          ? rstPreview.toLocaleString("en-US", { maximumFractionDigits: 2 })
+                          ? rstPreview.toLocaleString("en-US", {
+                              maximumFractionDigits: 2,
+                            })
                           : "—"}
                       </p>
                     </div>
@@ -547,7 +603,9 @@ export function BuyTokensModal({
                       <Zap className="h-3.5 w-3.5 text-creo-pink" />
                     </div>
                     <div>
-                      <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">Creator Tokens</p>
+                      <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Creator Tokens
+                      </p>
                       <p className="font-display text-sm font-bold text-creo-pink">
                         {ctPreview.toLocaleString()}
                       </p>
@@ -555,7 +613,8 @@ export function BuyTokensModal({
                   </div>
                 </div>
                 <p className="font-body text-[10px] text-muted-foreground/60">
-                  Revenue share: {(Number(listing.revenueSharePct) / 100).toFixed(0)}% ·{" "}
+                  Revenue share:{" "}
+                  {(Number(listing.revenueSharePct) / 100).toFixed(0)}% ·{" "}
                   {Number(listing.durationMonths)} months
                 </p>
               </div>
@@ -581,10 +640,14 @@ export function BuyTokensModal({
               className="p-6 flex flex-col gap-4"
             >
               <div>
-                <h3 className="font-display text-base font-bold text-foreground">Approve USDC</h3>
+                <h3 className="font-display text-base font-bold text-foreground">
+                  Approve USDC
+                </h3>
                 <p className="font-body text-sm text-muted-foreground mt-1">
                   Grant the RevenueShare contract permission to pull{" "}
-                  <span className="font-semibold text-foreground">{fmtUSD(usdcDollars)}</span>{" "}
+                  <span className="font-semibold text-foreground">
+                    {fmtUSD(usdcDollars)}
+                  </span>{" "}
                   USDC from your wallet.
                 </p>
               </div>
@@ -592,76 +655,117 @@ export function BuyTokensModal({
               {/* Amount summary */}
               <div className="rounded-xl border-2 border-creo-teal/20 bg-creo-teal/[0.04] px-4 py-3 flex items-center justify-between">
                 <div>
-                  <p className="font-body text-xs text-muted-foreground">Investing</p>
+                  <p className="font-body text-xs text-muted-foreground">
+                    Investing
+                  </p>
                   <p className="font-display text-2xl font-bold text-creo-teal mt-0.5">
                     {fmtUSD(usdcDollars)}
                   </p>
                   <p className="font-body text-xs text-muted-foreground mt-0.5">
-                    Offering #{listing.offeringId.toString()} · {truncateAddr(listing.creator)}
+                    Offering #{listing.offeringId.toString()} ·{" "}
+                    {truncateAddr(listing.creator)}
                   </p>
                 </div>
                 <Coins className="h-7 w-7 text-creo-teal/30" />
               </div>
 
-              {/* Approve step */}
-              <div
-                className={`rounded-xl border-2 p-4 transition-all ${
-                  allowanceSufficient || approveSuccess
-                    ? "border-creo-teal/20 bg-creo-teal/[0.03]"
-                    : "border-border"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    {allowanceSufficient || approveSuccess ? (
-                      <CheckCircle2 className="h-4 w-4 text-creo-teal" />
-                    ) : (
-                      <div className="h-5 w-5 rounded-full border-2 border-border flex items-center justify-center font-body text-[11px] font-bold text-muted-foreground">
-                        1
-                      </div>
-                    )}
-                    <span className="font-body text-sm font-bold text-foreground">
-                      Approve USDC
-                    </span>
+              {/* Creator registration check */}
+              {isRegisteredLoading ? (
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-muted/20 px-4 py-3">
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
+                  <p className="font-body text-sm text-muted-foreground">
+                    Checking creator registration…
+                  </p>
+                </div>
+              ) : !creatorRegistered ? (
+                <div className="flex items-start gap-2 rounded-xl border border-creo-yellow/30 bg-creo-yellow/10 px-4 py-3">
+                  <Clock className="h-4 w-4 text-creo-yellow shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-body text-sm font-semibold text-creo-yellow">
+                      Creator not yet registered
+                    </p>
+                    <p className="font-body text-xs text-muted-foreground mt-0.5">
+                      This creator's token contract registration is pending
+                      protocol approval. Investments will be available once
+                      the backend completes their onboarding.
+                    </p>
                   </div>
-                  {(allowanceSufficient || approveSuccess) && (
-                    <span className="font-body text-xs text-creo-teal">Done</span>
+                </div>
+              ) : null}
+
+              {/* Approve step — only shown when creator is registered */}
+              {!isRegisteredLoading && creatorRegistered && (
+                <div
+                  className={`rounded-xl border-2 p-4 transition-all ${
+                    allowanceSufficient || approveSuccess
+                      ? "border-creo-teal/20 bg-creo-teal/[0.03]"
+                      : "border-border"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {allowanceSufficient || approveSuccess ? (
+                        <CheckCircle2 className="h-4 w-4 text-creo-teal" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full border-2 border-border flex items-center justify-center font-body text-[11px] font-bold text-muted-foreground">
+                          1
+                        </div>
+                      )}
+                      <span className="font-body text-sm font-bold text-foreground">
+                        Approve USDC
+                      </span>
+                    </div>
+                    {(allowanceSufficient || approveSuccess) && (
+                      <span className="font-body text-xs text-creo-teal">
+                        Done
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-body text-xs text-muted-foreground mb-3 ml-7">
+                    Approve the RevenueShare contract to spend{" "}
+                    <span className="font-semibold text-foreground">
+                      {fmtUSD(usdcDollars)}
+                    </span>{" "}
+                    USDC.
+                  </p>
+                  {!allowanceSufficient && !approveSuccess && (
+                    walletChainId !== BASE_SEPOLIA_CHAIN_ID ? (
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID })
+                        }
+                        className="ml-7 bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20"
+                      >
+                        Switch to Base Sepolia
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={handleApprove}
+                        disabled={
+                          !isConnected || isApproving || approveConfirming
+                        }
+                        className="ml-7 bg-creo-teal/10 text-creo-teal hover:bg-creo-teal/20 border border-creo-teal/20"
+                      >
+                        {isApproving || approveConfirming ? (
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                            Approving…
+                          </>
+                        ) : (
+                          "Approve USDC"
+                        )}
+                      </Button>
+                    )
+                  )}
+                  {approveWriteError && (
+                    <p className="font-body text-xs text-destructive mt-2 ml-7">
+                      {extractError(approveWriteError)}
+                    </p>
                   )}
                 </div>
-                <p className="font-body text-xs text-muted-foreground mb-3 ml-7">
-                  Approve the RevenueShare contract to spend{" "}
-                  <span className="font-semibold text-foreground">{fmtUSD(usdcDollars)}</span> USDC.
-                </p>
-                {!allowanceSufficient && !approveSuccess && (
-                  walletChainId !== BASE_SEPOLIA_CHAIN_ID ? (
-                    <Button
-                      size="sm"
-                      onClick={() => switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID })}
-                      className="ml-7 bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20"
-                    >
-                      Switch to Base Sepolia
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      onClick={handleApprove}
-                      disabled={!isConnected || isApproving || approveConfirming}
-                      className="ml-7 bg-creo-teal/10 text-creo-teal hover:bg-creo-teal/20 border border-creo-teal/20"
-                    >
-                      {isApproving || approveConfirming ? (
-                        <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />Approving…</>
-                      ) : (
-                        "Approve USDC"
-                      )}
-                    </Button>
-                  )
-                )}
-                {approveWriteError && (
-                  <p className="font-body text-xs text-destructive mt-2 ml-7">
-                    {extractError(approveWriteError)}
-                  </p>
-                )}
-              </div>
+              )}
 
               <TxLine
                 label="USDC Approval"
@@ -672,20 +776,22 @@ export function BuyTokensModal({
 
               {/* Proceed once approved */}
               <AnimatePresence>
-                {(allowanceSufficient || approveSuccess) && !awaitingAllowanceConfirm && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <Button
-                      onClick={() => setStep(2)}
-                      className="w-full bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90"
+                {(allowanceSufficient || approveSuccess) &&
+                  !awaitingAllowanceConfirm && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
                     >
-                      Continue to Invest <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </motion.div>
-                )}
+                      <Button
+                        onClick={() => setStep(2)}
+                        className="w-full bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90"
+                      >
+                        Continue to Invest{" "}
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </motion.div>
+                  )}
                 {awaitingAllowanceConfirm && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
@@ -722,9 +828,12 @@ export function BuyTokensModal({
               className="p-6 flex flex-col gap-4"
             >
               <div>
-                <h3 className="font-display text-base font-bold text-foreground">Confirm Investment</h3>
+                <h3 className="font-display text-base font-bold text-foreground">
+                  Confirm Investment
+                </h3>
                 <p className="font-body text-sm text-muted-foreground mt-1">
-                  Review and confirm your investment. RSTs and Creator Tokens will be minted to your wallet in the same transaction.
+                  RSTs and Creator Tokens will be minted to your wallet in the
+                  same transaction.
                 </p>
               </div>
 
@@ -733,16 +842,32 @@ export function BuyTokensModal({
                 {[
                   { l: "You Invest", v: fmtUSD(usdcDollars) },
                   { l: "Offering ID", v: `#${listing.offeringId.toString()}` },
-                  { l: "Revenue Share", v: `${(Number(listing.revenueSharePct) / 100).toFixed(0)}%` },
-                  { l: "Duration", v: `${Number(listing.durationMonths)} months` },
-                  { l: "RST (est.)", v: rstPreview !== null ? rstPreview.toLocaleString("en-US", { maximumFractionDigits: 2 }) : "—" },
+                  {
+                    l: "Revenue Share",
+                    v: `${(Number(listing.revenueSharePct) / 100).toFixed(0)}%`,
+                  },
+                  {
+                    l: "Duration",
+                    v: `${Number(listing.durationMonths)} months`,
+                  },
+                  {
+                    l: "RST (est.)",
+                    v:
+                      rstPreview !== null
+                        ? rstPreview.toLocaleString("en-US", {
+                            maximumFractionDigits: 2,
+                          })
+                        : "—",
+                  },
                   { l: "Creator Tokens", v: ctPreview.toLocaleString() },
                 ].map(({ l, v }) => (
                   <div key={l}>
                     <p className="font-body text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
                       {l}
                     </p>
-                    <p className="font-display text-sm font-bold text-foreground mt-0.5">{v}</p>
+                    <p className="font-display text-sm font-bold text-foreground mt-0.5">
+                      {v}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -754,7 +879,6 @@ export function BuyTokensModal({
                 isConfirmed={buySuccess && !isPosting}
               />
 
-              {/* Errors */}
               {(buyWriteError || postError) && (
                 <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3">
                   <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
@@ -772,11 +896,16 @@ export function BuyTokensModal({
                 {isBuying || buyConfirming || isPosting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    {isPosting ? "Saving…" : buyConfirming ? "Confirming…" : "Submitting…"}
+                    {isPosting
+                      ? "Saving…"
+                      : buyConfirming
+                      ? "Confirming…"
+                      : "Submitting…"}
                   </>
                 ) : (
                   <>
-                    Invest {fmtUSD(usdcDollars)} <ArrowRight className="h-4 w-4 ml-2" />
+                    Invest {fmtUSD(usdcDollars)}{" "}
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </>
                 )}
               </Button>
@@ -811,7 +940,9 @@ export function BuyTokensModal({
                 </h3>
                 <p className="font-body text-sm text-muted-foreground mt-1.5">
                   You've successfully invested{" "}
-                  <span className="font-semibold text-foreground">{fmtUSD(usdcDollars)}</span>{" "}
+                  <span className="font-semibold text-foreground">
+                    {fmtUSD(usdcDollars)}
+                  </span>{" "}
                   in Offering #{listing.offeringId.toString()}.
                 </p>
               </div>
@@ -830,14 +961,36 @@ export function BuyTokensModal({
               <div className="grid grid-cols-3 gap-3 w-full">
                 {[
                   { l: "USDC Invested", v: fmtUSD(usdcDollars) },
-                  { l: "RST Received", v: resultRst ? Number(BigInt(resultRst)) / 1e18 > 1e6 ? `${(Number(BigInt(resultRst)) / 1e18 / 1e6).toFixed(2)}M` : (Number(BigInt(resultRst)) / 1e18).toLocaleString("en-US", { maximumFractionDigits: 2 }) : "—" },
-                  { l: "Creator Tokens", v: resultCt ? Number(BigInt(resultCt)).toLocaleString() : "—" },
+                  {
+                    l: "RST Received",
+                    v: resultRst
+                      ? (() => {
+                          const n = Number(BigInt(resultRst)) / 1e18;
+                          return n > 1e6
+                            ? `${(n / 1e6).toFixed(2)}M`
+                            : n.toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              });
+                        })()
+                      : "—",
+                  },
+                  {
+                    l: "Creator Tokens",
+                    v: resultCt
+                      ? Number(BigInt(resultCt)).toLocaleString()
+                      : "—",
+                  },
                 ].map(({ l, v }) => (
-                  <div key={l} className="rounded-xl border border-border bg-card p-3 text-left">
+                  <div
+                    key={l}
+                    className="rounded-xl border border-border bg-card p-3 text-left"
+                  >
                     <p className="font-body text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
                       {l}
                     </p>
-                    <p className="font-display text-base font-bold text-foreground mt-0.5">{v}</p>
+                    <p className="font-display text-base font-bold text-foreground mt-0.5">
+                      {v}
+                    </p>
                   </div>
                 ))}
               </div>
