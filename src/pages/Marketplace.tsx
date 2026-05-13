@@ -341,12 +341,12 @@ const Marketplace = () => {
                 </Button>
               )}
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
+                {/* <div className="flex items-center gap-1">
                   <Star className="h-3.5 w-3.5 text-creo-yellow" />
                   <span className="font-body text-xs text-muted-foreground font-medium">
                     {l.kreoScore}
                   </span>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-1">
                   <Shield className="h-3.5 w-3.5 text-creo-teal" />
                   <span className="font-body text-xs text-muted-foreground font-medium">
