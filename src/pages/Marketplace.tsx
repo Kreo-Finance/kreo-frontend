@@ -10,12 +10,14 @@ import {
   TrendingUp,
   Zap,
   BarChart3,
+  Coins,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 import CreoScoreBadge from "@/components/ui/CreoScoreBadge";
+import { BuyTokensModal } from "@/components/BuyTokensModal";
 import { useMarketplaceData } from "@/hooks/useMarketplaceData";
 import type { MarketplaceListing } from "@/hooks/useMarketplaceData";
 import { formatUsdc } from "@/config/contracts";
@@ -139,6 +141,7 @@ const Marketplace = () => {
   const [filter, setFilter] = useState<"all" | "active" | "funded">("all");
   const [sort, setSort] = useState<SortKey>("top");
   const [sortOpen, setSortOpen] = useState(false);
+  const [buyModalListing, setBuyModalListing] = useState<MarketplaceListing | null>(null);
 
   const { listings, stats, isLoading, isError } = useMarketplaceData();
 
@@ -267,26 +270,38 @@ const Marketplace = () => {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5">
-                <Star className="h-3.5 w-3.5 text-creo-yellow" />
-                <span className="font-body text-xs text-muted-foreground font-medium">
-                  {l.kreoScore}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5 text-creo-teal" />
-                <span className="font-body text-xs text-muted-foreground font-medium">
-                  {bondStr}
-                </span>
+          <div className="flex items-center justify-between pt-4 border-t border-border mt-auto gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              {l.status === 0 && (
+                <Button
+                  size="sm"
+                  onClick={() => setBuyModalListing(l)}
+                  className="bg-gradient-hero text-primary-foreground font-body text-xs gap-1.5 shrink-0"
+                >
+                  <Coins className="h-3 w-3" />
+                  Buy Tokens
+                </Button>
+              )}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <Star className="h-3.5 w-3.5 text-creo-yellow" />
+                  <span className="font-body text-xs text-muted-foreground font-medium">
+                    {l.kreoScore}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Shield className="h-3.5 w-3.5 text-creo-teal" />
+                  <span className="font-body text-xs text-muted-foreground font-medium">
+                    {bondStr}
+                  </span>
+                </div>
               </div>
             </div>
             <Link to={profilePath}>
               <Button
                 size="sm"
                 variant="outline"
-                className="border-creo-pink/40 text-creo-pink hover:bg-creo-pink hover:text-white hover:border-creo-pink font-body text-xs gap-1.5 transition-all"
+                className="border-creo-pink/40 text-creo-pink hover:bg-creo-pink hover:text-white hover:border-creo-pink font-body text-xs gap-1.5 transition-all shrink-0"
               >
                 <User className="h-3 w-3" />
                 View Profile
@@ -548,6 +563,14 @@ const Marketplace = () => {
       </section>
 
       <FooterSection />
+
+      {buyModalListing && (
+        <BuyTokensModal
+          open={!!buyModalListing}
+          onOpenChange={(v) => { if (!v) setBuyModalListing(null); }}
+          listing={buyModalListing}
+        />
+      )}
     </div>
   );
 };
