@@ -360,6 +360,7 @@ export function BuyTokensModal({
           usdcAmount: usdcAmt.toString(),
           rstAmount: rstAmt.toString(),
           ctAmount: ctAmt.toString(),
+          creatorAddress: listing.creator,
         });
 
         setStep(3);

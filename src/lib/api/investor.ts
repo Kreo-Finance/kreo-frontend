@@ -5,6 +5,7 @@ export interface BuyTokensPayload {
   usdcAmount: string;  // 6-dec, e.g. "100000000" = $100
   rstAmount: string;   // 18-dec
   ctAmount: string;
+  creatorAddress: string;
 }
 
 export interface BuyTokensResponse {
