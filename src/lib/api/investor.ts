@@ -1,5 +1,39 @@
 import { apiClient } from './auth';
 
+export interface PortfolioSummary {
+  totalInvested: string;
+  claimableNow: string;
+  totalEarned: string;
+  avgYield: string;
+}
+
+export interface PortfolioPosition {
+  offeringId: string;
+  creatorAddress: string;
+  creatorName: string;
+  creatorCategory: string;
+  creatorInitials: string;
+  investedUsdc: string;
+  investedFormatted: string;
+  rstBalance: string;
+  rstFormatted: string;
+  creatorTokenSymbol: string;
+  creatorTokenAmount: string;
+  claimableUsdc: string;
+  claimableFormatted: string;
+  status: string;
+  settledMonths: number;
+  durationMonths: number;
+  lastSettlementAt: number;
+  revenueSharePct: number;
+  fundraiseTarget: string;
+}
+
+export interface PortfolioResponse {
+  summary: PortfolioSummary;
+  positions: PortfolioPosition[];
+}
+
 export interface BuyTokensPayload {
   offeringId: string;
   usdcAmount: string;  // 6-dec, e.g. "100000000" = $100
@@ -16,6 +50,11 @@ export interface BuyTokensResponse {
 export const investorApi = {
   buyTokens: async (payload: BuyTokensPayload): Promise<BuyTokensResponse> => {
     const response = await apiClient.post('users/investor/buy-tokens', payload, { timeout: 60000 });
+    return response.data;
+  },
+
+  getPortfolio: async (): Promise<PortfolioResponse> => {
+    const response = await apiClient.get<PortfolioResponse>('users/investor/portfolio', { timeout: 30000 });
     return response.data;
   },
 };
