@@ -47,7 +47,7 @@ export const investorApi = {
   },
 
   getPortfolio: async (): Promise<PortfolioResponse> => {
-    const response = await apiClient.get<PortfolioResponse>('users/investor/portfolio', { timeout: 30000 });
-    return response.data;
+    const response = await apiClient.get<{ data: PortfolioResponse }>('users/investor/portfolio', { timeout: 30000 });
+    return response.data.data;
   },
 };
