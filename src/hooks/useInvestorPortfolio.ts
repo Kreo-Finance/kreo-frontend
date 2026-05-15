@@ -4,7 +4,6 @@ import type { PortfolioSummary, PortfolioPosition } from '@/lib/api/investor';
 
 const EMPTY_SUMMARY: PortfolioSummary = {
   totalInvested: '$0.00',
-  claimableNow: '$0.00',
   totalEarned: '$0.00',
   avgYield: '0%',
 };

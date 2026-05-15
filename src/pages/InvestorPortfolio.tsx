@@ -4,7 +4,6 @@ import {
   TrendingUp,
   Coins,
   Wallet,
-  Clock,
   Loader2,
   AlertCircle,
 } from "lucide-react";
@@ -34,6 +33,9 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function PositionCard({ h }: { h: PortfolioPosition }) {
+  const addrShort = `${h.creatorAddress.slice(0, 6)}…${h.creatorAddress.slice(-4)}`;
+  const initials = h.creatorAddress.slice(2, 4).toUpperCase();
+
   return (
     <div className="rounded-lg border border-border p-4 hover:border-creo-pink/30 transition-colors">
       <div className="flex flex-col lg:flex-row lg:items-center gap-4">
@@ -41,16 +43,15 @@ function PositionCard({ h }: { h: PortfolioPosition }) {
         <div className="flex items-center gap-3 lg:w-52">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-creo-pink/10">
             <span className="font-display text-xs font-bold text-creo-pink">
-              {h.creatorInitials || h.creatorAddress.slice(2, 4).toUpperCase()}
+              {initials}
             </span>
           </div>
           <div className="min-w-0">
             <p className="font-display text-sm font-semibold text-foreground truncate">
-              {h.creatorName ||
-                `${h.creatorAddress.slice(0, 6)}…${h.creatorAddress.slice(-4)}`}
+              {addrShort}
             </p>
             <p className="font-body text-xs text-muted-foreground truncate">
-              {h.creatorCategory || `Offering #${h.offeringId}`}
+              Offering #{h.offeringId}
             </p>
           </div>
         </div>
@@ -76,7 +77,7 @@ function PositionCard({ h }: { h: PortfolioPosition }) {
               Creator Tokens
             </p>
             <p className="font-display text-sm font-bold text-creo-teal">
-              {h.creatorTokenAmount} {h.creatorTokenSymbol}
+              {h.creatorTokenAmount}
             </p>
           </div>
           <div>
@@ -90,12 +91,9 @@ function PositionCard({ h }: { h: PortfolioPosition }) {
         {/* Actions */}
         <div className="flex items-center gap-3 shrink-0">
           <StatusBadge status={h.status} />
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span className="font-body text-xs">
-              {h.settledMonths}/{h.durationMonths} mo
-            </span>
-          </div>
+          <span className="font-body text-xs text-muted-foreground">
+            {h.durationMonths} mo
+          </span>
           <Button
             size="sm"
             variant="outline"
@@ -121,13 +119,6 @@ const InvestorPortfolio = () => {
       bg: "bg-creo-pink/10",
     },
     {
-      label: "Claimable Now",
-      value: summary.claimableNow,
-      icon: Wallet,
-      color: "text-creo-teal",
-      bg: "bg-creo-teal/10",
-    },
-    {
       label: "Total Earned",
       value: summary.totalEarned,
       icon: TrendingUp,
@@ -138,8 +129,8 @@ const InvestorPortfolio = () => {
       label: "Avg. Yield",
       value: summary.avgYield,
       icon: Coins,
-      color: "text-creo-pink",
-      bg: "bg-creo-pink/10",
+      color: "text-creo-teal",
+      bg: "bg-creo-teal/10",
     },
   ];
 
@@ -162,12 +153,12 @@ const InvestorPortfolio = () => {
               </div>
               <Button className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
                 <Wallet className="h-4 w-4 mr-2" />
-                Claim All — {summary.claimableNow}
+                Claim All
               </Button>
             </div>
 
             {/* Stats */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div className="grid gap-4 sm:grid-cols-3 mb-8">
               {statsConfig.map((stat, i) => (
                 <motion.div
                   key={stat.label}

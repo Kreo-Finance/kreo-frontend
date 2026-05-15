@@ -2,7 +2,6 @@ import { apiClient } from './auth';
 
 export interface PortfolioSummary {
   totalInvested: string;
-  claimableNow: string;
   totalEarned: string;
   avgYield: string;
 }
@@ -10,21 +9,15 @@ export interface PortfolioSummary {
 export interface PortfolioPosition {
   offeringId: string;
   creatorAddress: string;
-  creatorName: string;
-  creatorCategory: string;
-  creatorInitials: string;
   investedUsdc: string;
   investedFormatted: string;
   rstBalance: string;
   rstFormatted: string;
-  creatorTokenSymbol: string;
   creatorTokenAmount: string;
   claimableUsdc: string;
   claimableFormatted: string;
   status: string;
-  settledMonths: number;
   durationMonths: number;
-  lastSettlementAt: number;
   revenueSharePct: number;
   fundraiseTarget: string;
 }
