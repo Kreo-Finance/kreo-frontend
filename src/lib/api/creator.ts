@@ -1,33 +1,39 @@
 import { apiClient } from './auth';
 
+export interface EarningsChartPoint {
+  month: string;
+  monthLabel: string;
+  amount: number;
+  aboveAverage: boolean;
+}
+
 export interface OfferingDisplay {
   offeringId: number | string;
-  revenueShare?: string;
-  revenueSharePct?: number;
-  duration?: string;
-  durationMonths?: number;
-  raised?: string;
-  totalRaised?: string;
+  revenueSharePct: number;   // basis points (e.g. 5000 = 50%)
+  durationMonths: number;
+  totalRaised: string;
   status: string;
+  settledMonths?: number;
+  fundraiseDeadline?: number;
 }
 
 export interface CreatorProfileData {
   address: string;
   kreoScore: number;
-  scoreTier: number;
+  scoreTier: string;           // "NEWCOMER" | "ESTABLISHED" | "TRUSTED" | "ELITE"
   scoreTierLabel: string;
   offeringsCompleted: number;
   totalRaised: string;
-  settlementRate: number;
-  avgInvestorROI: number;
+  settlementRate: string;      // pre-formatted e.g. "100%"
+  avgInvestorROI: string;      // pre-formatted e.g. "245.74%"
   conservativeFloor: string;
   varianceTier: "LOW" | "MEDIUM" | "HIGH";
   monthsRecorded: number;
   socialProofScore: number;
   isPaused: boolean;
-  earningsChart: number[];
+  earningsChart: EarningsChartPoint[];
   averageMonthlyEarnings: number;
-  creatorTokenId: string;
+  creatorTokenId: number | string;
   creatorTokenRegistered: boolean;
   activeOfferings: OfferingDisplay[];
   completedOfferings: OfferingDisplay[];
@@ -127,7 +133,10 @@ export const creatorApi = {
   },
 
   getCreatorProfile: async (address: string): Promise<CreatorProfileData> => {
-    const response = await apiClient.get(`users/creator/${address}/profile`, { timeout: 30000 });
-    return response.data;
+    const response = await apiClient.get<{ success: boolean; data: CreatorProfileData }>(
+      `users/creator/${address}/profile`,
+      { timeout: 30000 }
+    );
+    return response.data.data;
   },
 };

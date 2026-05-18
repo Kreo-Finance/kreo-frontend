@@ -47,35 +47,32 @@ const TIER_NEXT_START: Record<TierNumber, number | null> = {
 
 const TIER_START: Record<TierNumber, number> = { 0: 0, 1: 100, 2: 300, 3: 600 };
 
-const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: "bg-creo-teal/10 text-creo-teal",
-  COMPLETED: "bg-muted text-muted-foreground",
-  PENDING_RELEASE: "bg-creo-yellow/10 text-creo-yellow",
+const SCORE_TIER_MAP: Record<string, TierNumber> = {
+  NEWCOMER: 0,
+  ESTABLISHED: 1,
+  TRUSTED: 2,
+  ELITE: 3,
 };
 
-function getMonthLabel(index: number, total: number): string {
-  if (total <= 6) return `Month ${index + 1}`;
-  return `M${index + 1}`;
-}
+const STATUS_STYLES: Record<string, string> = {
+  ACTIVE: "bg-creo-teal/10 text-creo-teal",
+  FUNDRAISING: "bg-creo-teal/10 text-creo-teal",
+  COMPLETED: "bg-muted text-muted-foreground",
+  SETTLED: "bg-muted text-muted-foreground",
+  PENDING_RELEASE: "bg-creo-yellow/10 text-creo-yellow",
+};
 
 function getOfferingId(o: OfferingDisplay): string {
   return String(o.offeringId);
 }
 
+// revenueSharePct from API is basis points (5000 = 50%)
 function getRevenueShare(o: OfferingDisplay): string {
-  if (o.revenueShare) return o.revenueShare;
-  if (o.revenueSharePct !== undefined) return `${o.revenueSharePct}%`;
-  return "—";
+  return `${(o.revenueSharePct / 100).toFixed(0)}%`;
 }
 
 function getDuration(o: OfferingDisplay): string {
-  if (o.duration) return o.duration;
-  if (o.durationMonths !== undefined) return `${o.durationMonths} months`;
-  return "—";
-}
-
-function getRaised(o: OfferingDisplay): string {
-  return o.raised ?? o.totalRaised ?? "—";
+  return `${o.durationMonths} month${o.durationMonths !== 1 ? "s" : ""}`;
 }
 
 // ── Skeleton loader ───────────────────────────────────────────────────────────
@@ -116,7 +113,7 @@ const CreatorProfile = () => {
 
   const { profile, isLoading, isError } = useCreatorProfile(paramAddress);
 
-  const tier = (profile?.scoreTier ?? 0) as TierNumber;
+  const tier = (SCORE_TIER_MAP[profile?.scoreTier ?? ""] ?? 0) as TierNumber;
   const score = profile?.kreoScore ?? 0;
 
   const displayAddr = profile
@@ -130,17 +127,14 @@ const CreatorProfile = () => {
     !!profile &&
     connectedAddress?.toLowerCase() === profile.address.toLowerCase();
 
-  // Chart data
+  // Chart data — earningsChart is an array of { month, amount, aboveAverage } objects
   const earningsHistory = profile?.earningsChart ?? [];
-  const avg =
-    earningsHistory.length > 0
-      ? earningsHistory.reduce((a, b) => a + b, 0) / earningsHistory.length
-      : 0;
+  const avg = profile?.averageMonthlyEarnings ?? 0;
 
-  const chartData = earningsHistory.map((val, i) => ({
-    month: getMonthLabel(i, earningsHistory.length),
-    value: val,
-    aboveAvg: val >= avg,
+  const chartData = earningsHistory.map((pt) => ({
+    month: pt.month,
+    value: pt.amount,
+    aboveAvg: pt.aboveAverage,
   }));
 
   // Offerings tabs
@@ -479,7 +473,7 @@ const CreatorProfile = () => {
                             {getDuration(o)}
                           </span>
                           <span className="font-display text-sm font-bold text-foreground">
-                            {getRaised(o)}
+                            {o.totalRaised}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
