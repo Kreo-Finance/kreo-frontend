@@ -1,5 +1,38 @@
 import { apiClient } from './auth';
 
+export interface OfferingDisplay {
+  offeringId: number | string;
+  revenueShare?: string;
+  revenueSharePct?: number;
+  duration?: string;
+  durationMonths?: number;
+  raised?: string;
+  totalRaised?: string;
+  status: string;
+}
+
+export interface CreatorProfileData {
+  address: string;
+  kreoScore: number;
+  scoreTier: number;
+  scoreTierLabel: string;
+  offeringsCompleted: number;
+  totalRaised: string;
+  settlementRate: number;
+  avgInvestorROI: number;
+  conservativeFloor: string;
+  varianceTier: "LOW" | "MEDIUM" | "HIGH";
+  monthsRecorded: number;
+  socialProofScore: number;
+  isPaused: boolean;
+  earningsChart: number[];
+  averageMonthlyEarnings: number;
+  creatorTokenId: string;
+  creatorTokenRegistered: boolean;
+  activeOfferings: OfferingDisplay[];
+  completedOfferings: OfferingDisplay[];
+}
+
 export interface RegisterCreatorPayload {
   stripeSourceHash: string;
   kycVerified: boolean;
@@ -91,5 +124,10 @@ export const creatorApi = {
   getOfferings: async (): Promise<OfferingRecord[]> => {
     const response = await apiClient.get<GetOfferingsResponse>('users/creator/offerings', { timeout: 30000 });
     return response.data.data;
+  },
+
+  getCreatorProfile: async (address: string): Promise<CreatorProfileData> => {
+    const response = await apiClient.get(`users/creator/${address}/profile`, { timeout: 30000 });
+    return response.data;
   },
 };
