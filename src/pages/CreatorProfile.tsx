@@ -257,7 +257,7 @@ const CreatorProfile = () => {
                     </Button>
                     <p className="font-body text-xs text-muted-foreground mt-1.5 text-center">
                       <TrendingUp className="h-3 w-3 inline mr-1" />
-                      {profile.avgInvestorROI}% avg ROI
+                      {profile.avgInvestorROI} avg ROI
                     </p>
                   </div>
                 </div>
@@ -303,9 +303,9 @@ const CreatorProfile = () => {
                   { label: "Total Raised", value: profile.totalRaised },
                   {
                     label: "Settlement Rate",
-                    value: `${profile.settlementRate}%`,
+                    value: profile.settlementRate,
                   },
-                  { label: "Avg Investor ROI", value: `${profile.avgInvestorROI}%` },
+                  { label: "Avg Investor ROI", value: profile.avgInvestorROI },
                 ].map(({ label, value }) => (
                   <div
                     key={label}
@@ -457,9 +457,9 @@ const CreatorProfile = () => {
 
                 {shownOfferings.length > 0 ? (
                   <div className="space-y-3">
-                    {shownOfferings.map((o) => (
+                    {shownOfferings.map((o, i) => (
                       <div
-                        key={getOfferingId(o)}
+                        key={`${offeringsTab}-${getOfferingId(o)}-${i}`}
                         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-lg border border-border p-4 hover:bg-muted/40 transition-colors"
                       >
                         <div className="flex items-center gap-4 flex-wrap">
