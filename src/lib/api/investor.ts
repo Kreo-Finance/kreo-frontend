@@ -1,5 +1,34 @@
 import { apiClient } from './auth';
 
+// Merge duplicate positions that share the same offeringId.
+// The backend may emit one row per buyTokens() tx for the same offering;
+// RST balance / claimable come from contract reads and are already correct on
+// any row, so we only need to sum investedUsdc and creatorTokenAmount.
+function mergePositions(raw: PortfolioPosition[]): PortfolioPosition[] {
+  const map = new Map<string, PortfolioPosition>();
+  for (const p of raw) {
+    const existing = map.get(p.offeringId);
+    if (!existing) {
+      map.set(p.offeringId, { ...p });
+    } else {
+      const sumUsdc = BigInt(existing.investedUsdc) + BigInt(p.investedUsdc);
+      const sumCt =
+        Number(existing.creatorTokenAmount) + Number(p.creatorTokenAmount);
+      const dollars = Number(sumUsdc) / 1_000_000;
+      map.set(p.offeringId, {
+        ...existing,
+        investedUsdc: sumUsdc.toString(),
+        investedFormatted: `$${dollars.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+        creatorTokenAmount: sumCt.toLocaleString('en-US'),
+      });
+    }
+  }
+  return Array.from(map.values());
+}
+
 export interface PortfolioSummary {
   totalInvested: string;
   totalEarned: string;
@@ -48,6 +77,7 @@ export const investorApi = {
 
   getPortfolio: async (): Promise<PortfolioResponse> => {
     const response = await apiClient.get<{ data: PortfolioResponse }>('users/investor/portfolio', { timeout: 30000 });
-    return response.data.data;
+    const data = response.data.data;
+    return { ...data, positions: mergePositions(data.positions ?? []) };
   },
 };
