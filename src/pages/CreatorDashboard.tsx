@@ -8,6 +8,7 @@ import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
 import { useAccount } from "wagmi";
 import CreoScorePanel from "@/components/dashboard/CreoScorePanel";
+import SettlementStatusCard from "@/components/dashboard/SettlementStatusCard";
 import WalletGate from "@/components/WalletGate";
 import { useCreatorVaultData } from "@/hooks/useCreatorVaultData";
 import { formatUsdc, formatBps, VARIANCE_TIER_LABELS } from "@/config/contracts";
@@ -241,6 +242,12 @@ const CreatorDashboard = () => {
                 </div>
               </div>
             </motion.div>
+
+            {/* Settlement Status */}
+            <SettlementStatusCard
+              creatorAddress={isConnected && address ? address : undefined}
+              motionDelay={0.5}
+            />
 
             {/* CreoScore Panel */}
             <CreoScorePanel
