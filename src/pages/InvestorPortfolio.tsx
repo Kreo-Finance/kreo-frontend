@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   DollarSign,
@@ -6,12 +7,42 @@ import {
   Wallet,
   Loader2,
   AlertCircle,
+  ExternalLink,
+  CheckCircle2,
 } from "lucide-react";
+import {
+  useReadContracts,
+  useWriteContract,
+  useAccount,
+  useSwitchChain,
+} from "wagmi";
+import { baseSepolia } from "viem/chains";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import WalletGate from "@/components/WalletGate";
 import { useInvestorPortfolio } from "@/hooks/useInvestorPortfolio";
+import { useClaimEarnings } from "@/hooks/useClaimEarnings";
+import { useToast } from "@/hooks/use-toast";
+import { SETTLEMENT_ABI } from "@/abi/Settlement";
+import {
+  getContractAddresses,
+  BASE_SEPOLIA_CHAIN_ID,
+  formatUsdc,
+} from "@/config/contracts";
 import type { PortfolioPosition } from "@/lib/api/investor";
+
+const BASESCAN = (hash: string) => `https://sepolia.basescan.org/tx/${hash}`;
+
+function fmtSettled(ts: bigint): string {
+  if (ts === 0n) return "No settlements yet";
+  const d = new Date(Number(ts) * 1000);
+  return `Last settled: ${d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })}`;
+}
 
 function StatusBadge({ status }: { status: string }) {
   const s = status.toUpperCase();
@@ -32,15 +63,41 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function PositionCard({ h }: { h: PortfolioPosition }) {
+interface PositionCardProps {
+  h: PortfolioPosition;
+  lastSettled: bigint;
+  autoClaimEnabled: boolean;
+  onAutoClaimToggle: (enabled: boolean) => void;
+  isAutoClaimPending: boolean;
+  onClaim: () => void;
+  isThisClaiming: boolean;
+  isAnyBusy: boolean;
+  claimTxHash?: `0x${string}`;
+  claimError?: string | null;
+}
+
+function PositionCard({
+  h,
+  lastSettled,
+  autoClaimEnabled,
+  onAutoClaimToggle,
+  isAutoClaimPending,
+  onClaim,
+  isThisClaiming,
+  isAnyBusy,
+  claimTxHash,
+  claimError,
+}: PositionCardProps) {
   const addrShort = `${h.creatorAddress.slice(0, 6)}…${h.creatorAddress.slice(-4)}`;
   const initials = h.creatorAddress.slice(2, 4).toUpperCase();
+  const hasClaimable = BigInt(h.claimableUsdc) > 0n;
+  const isConfirmed = isThisClaiming && !!claimTxHash && !isAnyBusy;
 
   return (
     <div className="rounded-lg border border-border p-4 hover:border-creo-pink/30 transition-colors">
-      <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-start gap-4">
         {/* Creator info */}
-        <div className="flex items-center gap-3 lg:w-52">
+        <div className="flex items-center gap-3 lg:w-52 shrink-0">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-creo-pink/10">
             <span className="font-display text-xs font-bold text-creo-pink">
               {initials}
@@ -85,22 +142,73 @@ function PositionCard({ h }: { h: PortfolioPosition }) {
             <p className="font-display text-sm font-bold text-creo-yellow">
               {h.claimableFormatted}
             </p>
+            <p className="font-body text-[10px] text-muted-foreground/60 mt-0.5">
+              {fmtSettled(lastSettled)}
+            </p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 shrink-0">
-          <StatusBadge status={h.status} />
-          <span className="font-body text-xs text-muted-foreground">
-            {h.durationMonths} mo
-          </span>
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-creo-teal/30 text-creo-teal hover:bg-creo-teal/10"
-          >
-            <span className="font-body text-xs">Claim</span>
-          </Button>
+        <div className="flex flex-col gap-2 shrink-0">
+          <div className="flex items-center gap-3">
+            <StatusBadge status={h.status} />
+            <span className="font-body text-xs text-muted-foreground">
+              {h.durationMonths} mo
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onClaim}
+              disabled={!hasClaimable || isAnyBusy}
+              className="border-creo-teal/30 text-creo-teal hover:bg-creo-teal/10 disabled:opacity-40"
+            >
+              {isThisClaiming && isAnyBusy ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                  <span className="font-body text-xs">Claiming…</span>
+                </>
+              ) : isConfirmed ? (
+                <>
+                  <CheckCircle2 className="h-3 w-3 mr-1.5 text-creo-teal" />
+                  <span className="font-body text-xs">Claimed</span>
+                </>
+              ) : (
+                <span className="font-body text-xs">Claim</span>
+              )}
+            </Button>
+          </div>
+
+          {/* Tx link */}
+          {isThisClaiming && claimTxHash && (
+            <a
+              href={BASESCAN(claimTxHash)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 font-body text-[10px] text-creo-teal hover:underline self-end"
+            >
+              Basescan <ExternalLink className="h-2.5 w-2.5" />
+            </a>
+          )}
+
+          {/* Error */}
+          {isThisClaiming && claimError && (
+            <p className="font-body text-[10px] text-destructive max-w-[180px]">
+              {claimError}
+            </p>
+          )}
+
+          {/* Auto-claim toggle */}
+          <div className="flex items-center gap-2 self-end">
+            <span className="font-body text-[10px] text-muted-foreground">
+              Auto-claim
+            </span>
+            <Switch
+              checked={autoClaimEnabled}
+              onCheckedChange={onAutoClaimToggle}
+              disabled={isAutoClaimPending}
+              className="data-[state=checked]:bg-creo-teal scale-75"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -108,7 +216,135 @@ function PositionCard({ h }: { h: PortfolioPosition }) {
 }
 
 const InvestorPortfolio = () => {
-  const { summary, positions, isLoading, isError } = useInvestorPortfolio();
+  const { summary, positions, isLoading, isError, refetch } =
+    useInvestorPortfolio();
+  const { address, chainId } = useAccount();
+  const { switchChainAsync } = useSwitchChain();
+  const { toast } = useToast();
+  const contracts = getContractAddresses(BASE_SEPOLIA_CHAIN_ID);
+
+  // ── Claim earnings ────────────────────────────────────────────────────────
+  const {
+    claimSingle,
+    claimAll,
+    txHash: claimTxHash,
+    isBusy: isClaimBusy,
+    isSuccess: claimSuccess,
+    claimMode,
+    claimedAmount,
+    activeOfferingId,
+    errorMsg: claimError,
+    resetAll: resetClaim,
+  } = useClaimEarnings();
+
+  // Show toast + refresh on claim confirmed
+  useEffect(() => {
+    if (!claimSuccess) return;
+    const amtStr = formatUsdc(claimedAmount);
+    toast({
+      title: `Received ${amtStr} USDC`,
+      description: "Earnings claimed successfully.",
+    });
+    refetch();
+    const t = setTimeout(resetClaim, 4000);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claimSuccess]);
+
+  // ── Settlement timestamps (multicall) ─────────────────────────────────────
+  const { data: settlementData } = useReadContracts({
+    contracts: positions.map((p) => ({
+      address: contracts?.SETTLEMENT as `0x${string}`,
+      abi: SETTLEMENT_ABI,
+      functionName: "s_lastSettlementTimestamp" as const,
+      args: [BigInt(p.offeringId)] as [bigint],
+    })),
+    query: { enabled: positions.length > 0 && !!contracts },
+  });
+
+  function getLastSettled(idx: number): bigint {
+    const result = settlementData?.[idx]?.result;
+    return typeof result === "bigint" ? result : 0n;
+  }
+
+  // ── Auto-claim state ──────────────────────────────────────────────────────
+  const [autoClaimState, setAutoClaimState] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [autoClaimPendingId, setAutoClaimPendingId] = useState<string | null>(
+    null
+  );
+
+  // Read initial on-chain auto-claim state
+  const { data: autoClaimData } = useReadContracts({
+    contracts: positions.map((p) => ({
+      address: contracts?.SETTLEMENT as `0x${string}`,
+      abi: SETTLEMENT_ABI,
+      functionName: "s_autoClaim" as const,
+      args: [address as `0x${string}`, BigInt(p.offeringId)] as [
+        `0x${string}`,
+        bigint,
+      ],
+    })),
+    query: { enabled: positions.length > 0 && !!contracts && !!address },
+  });
+
+  useEffect(() => {
+    if (!autoClaimData?.length) return;
+    const state: Record<string, boolean> = {};
+    positions.forEach((p, i) => {
+      state[p.offeringId] = (autoClaimData[i]?.result as boolean) ?? false;
+    });
+    setAutoClaimState(state);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoClaimData]);
+
+  const { writeContract: writeAutoClaim } = useWriteContract();
+
+  async function handleAutoClaimToggle(offeringId: string, enabled: boolean) {
+    setAutoClaimState((prev) => ({ ...prev, [offeringId]: enabled }));
+    if (chainId !== BASE_SEPOLIA_CHAIN_ID) {
+      try {
+        await switchChainAsync({ chainId: BASE_SEPOLIA_CHAIN_ID });
+      } catch {
+        setAutoClaimState((prev) => ({ ...prev, [offeringId]: !enabled }));
+        return;
+      }
+    }
+    setAutoClaimPendingId(offeringId);
+    writeAutoClaim(
+      {
+        chainId: BASE_SEPOLIA_CHAIN_ID,
+        address: contracts!.SETTLEMENT,
+        abi: SETTLEMENT_ABI,
+        functionName: "enableAutoClaim",
+        args: [[BigInt(offeringId)], enabled],
+        account: address,
+        chain: baseSepolia,
+        gas: BigInt(100_000),
+        maxFeePerGas: BigInt(10_000_000_000),
+        maxPriorityFeePerGas: BigInt(1_000_000_000),
+      },
+      {
+        onSuccess: () => setAutoClaimPendingId(null),
+        onError: () => {
+          setAutoClaimState((prev) => ({ ...prev, [offeringId]: !enabled }));
+          setAutoClaimPendingId(null);
+        },
+      }
+    );
+  }
+
+  // ── Claim All ─────────────────────────────────────────────────────────────
+  const claimableIds = positions
+    .filter((p) => BigInt(p.claimableUsdc) > 0n)
+    .map((p) => p.offeringId);
+  const totalClaimable = positions.reduce(
+    (acc, p) => acc + BigInt(p.claimableUsdc),
+    0n
+  );
+  const totalClaimableStr = formatUsdc(totalClaimable);
+  const isClaimAllBusy = isClaimBusy && claimMode === "all";
 
   const statsConfig = [
     {
@@ -151,10 +387,40 @@ const InvestorPortfolio = () => {
                   Your revenue share and creator token holdings.
                 </p>
               </div>
-              <Button className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90">
-                <Wallet className="h-4 w-4 mr-2" />
-                Claim All
-              </Button>
+              <div className="flex flex-col items-end gap-1">
+                <Button
+                  onClick={() => claimAll(claimableIds)}
+                  disabled={claimableIds.length === 0 || isClaimBusy}
+                  className="bg-gradient-hero font-display text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-40"
+                >
+                  {isClaimAllBusy ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Claiming…
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="h-4 w-4 mr-2" />
+                      Claim All — {totalClaimableStr}
+                    </>
+                  )}
+                </Button>
+                {isClaimAllBusy && claimTxHash && (
+                  <a
+                    href={BASESCAN(claimTxHash)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 font-body text-[10px] text-creo-teal hover:underline"
+                  >
+                    View on Basescan <ExternalLink className="h-2.5 w-2.5" />
+                  </a>
+                )}
+                {claimMode === "all" && claimError && (
+                  <p className="font-body text-[10px] text-destructive max-w-[240px] text-right">
+                    {claimError}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Stats */}
@@ -208,7 +474,8 @@ const InvestorPortfolio = () => {
                 <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3">
                   <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
                   <p className="font-body text-sm text-destructive">
-                    Failed to load portfolio. Check your connection and try again.
+                    Failed to load portfolio. Check your connection and try
+                    again.
                   </p>
                 </div>
               )}
@@ -216,7 +483,10 @@ const InvestorPortfolio = () => {
               {!isLoading && !isError && positions.length === 0 && (
                 <p className="font-body text-sm text-muted-foreground py-8 text-center">
                   No active positions yet. Head to the{" "}
-                  <a href="/marketplace" className="text-creo-teal hover:underline">
+                  <a
+                    href="/marketplace"
+                    className="text-creo-teal hover:underline"
+                  >
                     Marketplace
                   </a>{" "}
                   to invest.
@@ -225,8 +495,32 @@ const InvestorPortfolio = () => {
 
               {!isLoading && !isError && positions.length > 0 && (
                 <div className="space-y-4">
-                  {positions.map((h) => (
-                    <PositionCard key={`${h.offeringId}-${h.creatorAddress}`} h={h} />
+                  {positions.map((h, idx) => (
+                    <PositionCard
+                      key={`${h.offeringId}-${h.creatorAddress}`}
+                      h={h}
+                      lastSettled={getLastSettled(idx)}
+                      autoClaimEnabled={autoClaimState[h.offeringId] ?? false}
+                      onAutoClaimToggle={(enabled) =>
+                        handleAutoClaimToggle(h.offeringId, enabled)
+                      }
+                      isAutoClaimPending={autoClaimPendingId === h.offeringId}
+                      onClaim={() => claimSingle(h.offeringId)}
+                      isThisClaiming={
+                        activeOfferingId === h.offeringId && claimMode === "single"
+                      }
+                      isAnyBusy={isClaimBusy}
+                      claimTxHash={
+                        activeOfferingId === h.offeringId && claimMode === "single"
+                          ? claimTxHash
+                          : undefined
+                      }
+                      claimError={
+                        activeOfferingId === h.offeringId && claimMode === "single"
+                          ? claimError
+                          : null
+                      }
+                    />
                   ))}
                 </div>
               )}

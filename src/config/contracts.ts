@@ -9,6 +9,7 @@ interface ChainContracts {
   REVENUE_SHARE: `0x${string}`;
   KREO_SCORE: `0x${string}`;
   CREATOR_TOKEN: `0x${string}`;
+  SETTLEMENT: `0x${string}`;
 }
 
 // Add new chains here as a new key.
@@ -18,7 +19,8 @@ export const CONTRACT_ADDRESSES: Record<number, ChainContracts> = {
     USDC: "0xe39910131226c1997b2e8697f043b8b3c280478c",
     REVENUE_SHARE: "0x81E0c75578C89e2f4a8a867d6a2FD56192742F1D",
     KREO_SCORE: "0x92097b43D9C861E8C0891B89bE2039FfBD7720Ed",
-    CREATOR_TOKEN:"0x847038a125e62baa5f937d83916A30d8ff2d49f8"
+    CREATOR_TOKEN:"0x847038a125e62baa5f937d83916A30d8ff2d49f8",
+    SETTLEMENT:"0xB054F51a14c33f2e891f73d535356De1B433704B"
   },
 };
 
