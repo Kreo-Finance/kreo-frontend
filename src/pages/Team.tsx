@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowRight, Github, Twitter, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
@@ -116,6 +116,69 @@ const NftAvatarKundan = () => (
   </svg>
 );
 
+/** Ayushi — gold-themed CMO PFP */
+const NftAvatarAyushi = () => (
+  <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+      <radialGradient id="ay2-bg" cx="50%" cy="40%" r="70%">
+        <stop offset="0%" stopColor="#1a1000" />
+        <stop offset="100%" stopColor="#060400" />
+      </radialGradient>
+      <radialGradient id="ay2-glow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#eab308" stopOpacity="0.15" />
+        <stop offset="100%" stopColor="#eab308" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <rect width="400" height="400" fill="url(#ay2-bg)" />
+    <rect width="400" height="400" fill="url(#ay2-glow)" />
+    {[0,1,2,3,4].map(r => [0,1,2,3,4].map(c => (
+      <path key={`${r}-${c}`} d={`M${c*80+40} ${r*80+20} L${c*80+54} ${r*80+40} L${c*80+40} ${r*80+60} L${c*80+26} ${r*80+40} Z`} fill="none" stroke="#eab308" strokeWidth="0.6" opacity="0.12" />
+    )))}
+    <path d="M55 400 L55 300 Q80 258 148 248 L200 272 L252 248 Q320 258 345 300 L345 400 Z" fill="#1a1200" />
+    <path d="M200 272 L170 258 L158 248 L182 400 Z" fill="#261800" />
+    <path d="M200 272 L230 258 L242 248 L218 400 Z" fill="#261800" />
+    <circle cx="183" cy="270" r="4" fill="#eab308" opacity="0.85" />
+    <circle cx="217" cy="270" r="4" fill="#eab308" opacity="0.85" />
+    <rect x="176" y="290" width="48" height="40" rx="8" fill="#c89050" />
+    <rect x="106" y="115" width="188" height="192" rx="55" fill="#d4a060" />
+    <rect x="86" y="138" width="228" height="270" rx="30" fill="#1a0800" />
+    <ellipse cx="200" cy="120" rx="96" ry="52" fill="#1a0800" />
+    <rect x="106" y="133" width="188" height="40" fill="#1a0800" />
+    <rect x="86" y="143" width="28" height="210" rx="14" fill="#1a0800" />
+    <rect x="286" y="143" width="28" height="210" rx="14" fill="#1a0800" />
+    <path d="M200 120 Q182 138 172 162" stroke="#2a1000" strokeWidth="3" fill="none" opacity="0.7" />
+    <ellipse cx="107" cy="218" rx="13" ry="19" fill="#c08048" />
+    <ellipse cx="293" cy="218" rx="13" ry="19" fill="#c08048" />
+    <circle cx="107" cy="226" r="5" fill="#eab308" opacity="0.9" />
+    <ellipse cx="107" cy="236" rx="3" ry="5" fill="#eab308" opacity="0.8" />
+    <circle cx="293" cy="226" r="5" fill="#eab308" opacity="0.9" />
+    <ellipse cx="293" cy="236" rx="3" ry="5" fill="#eab308" opacity="0.8" />
+    <ellipse cx="163" cy="214" rx="26" ry="24" fill="white" />
+    <ellipse cx="237" cy="214" rx="26" ry="24" fill="white" />
+    <circle cx="163" cy="216" r="17" fill="#3d1f00" />
+    <circle cx="237" cy="216" r="17" fill="#3d1f00" />
+    <circle cx="163" cy="216" r="10" fill="#0f0600" />
+    <circle cx="237" cy="216" r="10" fill="#0f0600" />
+    <circle cx="163" cy="216" r="14" fill="none" stroke="#eab308" strokeWidth="2" opacity="0.55" />
+    <circle cx="237" cy="216" r="14" fill="none" stroke="#eab308" strokeWidth="2" opacity="0.55" />
+    <circle cx="170" cy="209" r="4.5" fill="white" opacity="0.85" />
+    <circle cx="244" cy="209" r="4.5" fill="white" opacity="0.85" />
+    <path d="M140 192 Q163 183 186 193" stroke="#1a0800" strokeWidth="5.5" strokeLinecap="round" fill="none" />
+    <path d="M214 193 Q237 183 260 192" stroke="#1a0800" strokeWidth="5.5" strokeLinecap="round" fill="none" />
+    <path d="M193 250 Q200 264 207 250" stroke="#a06030" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+    <path d="M168 280 Q200 305 232 280" stroke="#9a4820" strokeWidth="4" strokeLinecap="round" fill="none" />
+    <path d="M355 345 L378 365 L355 385 L332 365 Z" fill="#eab308" opacity="0.9" />
+    <path d="M355 352 L370 365 L355 378 L340 365 Z" fill="rgba(255,255,255,0.18)" />
+    <g stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <line x1="351" y1="357" x2="351" y2="373" />
+      <line x1="351" y1="365" x2="358" y2="357" />
+      <line x1="353" y1="362" x2="358" y2="373" />
+    </g>
+    <circle cx="360" cy="40" r="55" fill="#eab308" opacity="0.1" />
+    <circle cx="40" cy="360" r="40" fill="#d97706" opacity="0.1" />
+  </svg>
+);
+
 /** Tushar — teal-themed engineer PFP with headphones */
 const NftAvatarTushar = () => (
   <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
@@ -226,6 +289,7 @@ const NftAvatarTushar = () => (
 // ─── Team data ────────────────────────────────────────────────────────────────
 const team = [
   {
+    id: "kundan",
     name: "Kundan Kumar",
     handle: "0XNERD",
     role: "Founder & CEO",
@@ -242,7 +306,7 @@ const team = [
       twitter: "https://twitter.com/CodeBlocker52",
       github: "https://github.com/CodeBlocker52",
       linkedin: "https://linkedin.com/in/kundan-kumar",
-      farcaster:"https://farcaster.xyz/0xnerd"
+      farcaster: "https://farcaster.xyz/0xnerd",
     },
     highlights: [
       "4x ETHGlobal winner",
@@ -251,6 +315,7 @@ const team = [
     ],
   },
   {
+    id: "tushar",
     name: "Tushar",
     handle: "Tushar",
     role: "Co-Founder & CTO",
@@ -273,6 +338,30 @@ const team = [
       "Settlement & oracle architecture",
       "Chainlink Functions integration",
       "DeFi protocol engineering",
+    ],
+  },
+  {
+    id: "ayushi",
+    name: "Ayushi Mehta",
+    handle: "AYUSHI",
+    role: "CMO",
+    roleColor: "text-creo-yellow",
+    roleBg: "bg-creo-yellow/10 border-creo-yellow/20",
+    Avatar: NftAvatarAyushi,
+    initials: "AM",
+    initialsColor: "text-creo-yellow",
+    initialsBg: "bg-creo-yellow/10 border-creo-yellow/20",
+    accentColor: "creo-yellow",
+    bio: "Marketing and growth strategist with deep roots in Web3 community building and creator economy positioning. At Kreo Finance, Ayushi leads the go-to-market strategy, creator adoption campaigns, and brand voice across all channels. Previously worked at the intersection of DeFi and content creator communities, helping protocols bridge the gap between complex on-chain mechanics and the audiences they serve. Brings a data-driven approach to community growth, combining on-chain analytics with creator relationship management.",
+    focus: "Go-to-market strategy, creator acquisition, brand positioning, and community growth.",
+    links: {
+      twitter: "https://twitter.com/ayushimehta",
+      linkedin: "https://linkedin.com/in/ayushi-mehta",
+    },
+    highlights: [
+      "Web3 community building",
+      "Creator economy strategy",
+      "DeFi protocol marketing",
     ],
   },
 ];
@@ -329,6 +418,22 @@ function SocialLink({
 }
 
 const Team = () => {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.slice(1);
+    const tryScroll = (attempts = 0) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (attempts < 10) {
+        setTimeout(() => tryScroll(attempts + 1), 80);
+      }
+    };
+    tryScroll();
+  }, [hash]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -385,7 +490,8 @@ const Team = () => {
         {team.map((member, idx) => (
           <FadeIn key={member.name} delay={idx * 0.06}>
             <div
-              className={`border-b border-border ${
+              id={member.id}
+              className={`border-b border-border scroll-mt-16 ${
                 idx % 2 === 0 ? "" : "bg-card/30"
               }`}
             >
@@ -424,30 +530,18 @@ const Team = () => {
 
                     {/* Social links */}
                     <div className="flex gap-2">
-                      <SocialLink
-                        href={member.links.twitter}
-                        icon={Twitter}
-                        label="Twitter"
-                        accent={member.accentColor}
-                      />
-                      <SocialLink
-                        href={member.links.github}
-                        icon={Github}
-                        label="GitHub"
-                        accent={member.accentColor}
-                      />
-                      <SocialLink
-                        href={member.links.linkedin}
-                        icon={Linkedin}
-                        label="LinkedIn"
-                        accent={member.accentColor}
-                      />
-                      <SocialLink
-                        href={member.links.farcaster}
-                        icon={Farcaster}
-                        label="Farcaster"
-                        accent={member.accentColor}
-                      />
+                      {member.links.twitter && (
+                        <SocialLink href={member.links.twitter} icon={Twitter} label="Twitter" accent={member.accentColor} />
+                      )}
+                      {member.links.github && (
+                        <SocialLink href={member.links.github} icon={Github} label="GitHub" accent={member.accentColor} />
+                      )}
+                      {member.links.linkedin && (
+                        <SocialLink href={member.links.linkedin} icon={Linkedin} label="LinkedIn" accent={member.accentColor} />
+                      )}
+                      {member.links.farcaster && (
+                        <SocialLink href={member.links.farcaster} icon={Farcaster} label="Farcaster" accent={member.accentColor} />
+                      )}
                     </div>
                   </div>
 

@@ -25,7 +25,7 @@ type NavLink =
 const navLinks: NavLink[] = [
   { label: "MARKETPLACE", href: "/marketplace" },
   { label: "ROADMAP", href: "/#roadmap" },
-  { label: "TEAM", href: "/team" },
+  { label: "TEAM", href: "/#team" },
   {
     label: "FOR CREATORS",
     dropdown: [
