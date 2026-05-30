@@ -14,7 +14,6 @@ interface ChainContracts {
   PROTOCOL_TREASURY: `0x${string}`;
 }
 
-// Add new chains here as a new key.
 export const CONTRACT_ADDRESSES: Record<number, ChainContracts> = {
   [BASE_SEPOLIA_CHAIN_ID]: {
     KREO_VAULT: "0xb61ad80d492764a0746431D451C739f5119ea5bB",
