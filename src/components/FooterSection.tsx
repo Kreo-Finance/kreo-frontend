@@ -193,7 +193,6 @@ const FooterSection = () => {
         </div>
       </div>
 
-      <WaitlistDialog open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </footer>
   );
 };
