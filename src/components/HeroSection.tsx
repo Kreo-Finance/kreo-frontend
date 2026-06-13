@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import heroCreator from "@/assets/hero-creator.png";
 import heroInvestor from "@/assets/hero-investor.png";
+import WaitlistDialog from "@/components/WaitlistDialog";
 
 const headlines = [
   {
@@ -284,6 +285,8 @@ const HeroSection = () => {
           ))}
         </motion.div>
       </div>
+
+      <WaitlistDialog open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </section>
   );
 };

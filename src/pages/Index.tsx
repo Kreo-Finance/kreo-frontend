@@ -10,6 +10,7 @@ import FooterSection from "@/components/FooterSection";
 import RoadmapSection from "@/components/RoadmapSection";
 import TeamSection from "@/components/TeamSection";
 import FAQSection from "@/components/FAQSection";
+import RoadmapSection from "@/components/RoadmapSection";
 
 const Index = () => {
   return (
@@ -21,6 +22,7 @@ const Index = () => {
       <HowItWorksSection />
       <RaiseCalculatorSection />
       <ComparisonSection />
+      <RoadmapSection />
       {/* <TestimonialsSection /> */}
       <RoadmapSection />
       <TeamSection />
