@@ -8,7 +8,7 @@ import blogs from "@/data/blogs.json";
 const categoryColors: Record<string, string> = {
   "Creator Finance": "bg-creo-pink/10 text-creo-pink border-creo-pink/20",
   "Protocol Deep Dive": "bg-creo-teal/10 text-creo-teal border-creo-teal/20",
-  Industry: "bg-creo-yellow/10 text-creo-yellow border-creo-yellow/20",
+  "Industry": "bg-creo-yellow/10 text-creo-yellow border-creo-yellow/20",
 };
 
 const CoverIllustration = ({
@@ -21,137 +21,35 @@ const CoverIllustration = ({
   const icons: Record<string, JSX.Element> = {
     bank: (
       <svg viewBox="0 0 80 80" className="w-16 h-16 opacity-90" fill="none">
-        <rect
-          x="10"
-          y="35"
-          width="60"
-          height="30"
-          rx="3"
-          fill="white"
-          fillOpacity="0.25"
-        />
-        <rect
-          x="18"
-          y="42"
-          width="8"
-          height="16"
-          rx="1"
-          fill="white"
-          fillOpacity="0.5"
-        />
-        <rect
-          x="36"
-          y="42"
-          width="8"
-          height="16"
-          rx="1"
-          fill="white"
-          fillOpacity="0.5"
-        />
-        <rect
-          x="54"
-          y="42"
-          width="8"
-          height="16"
-          rx="1"
-          fill="white"
-          fillOpacity="0.5"
-        />
+        <rect x="10" y="35" width="60" height="30" rx="3" fill="white" fillOpacity="0.25" />
+        <rect x="18" y="42" width="8" height="16" rx="1" fill="white" fillOpacity="0.5" />
+        <rect x="36" y="42" width="8" height="16" rx="1" fill="white" fillOpacity="0.5" />
+        <rect x="54" y="42" width="8" height="16" rx="1" fill="white" fillOpacity="0.5" />
         <polygon points="40,10 70,35 10,35" fill="white" fillOpacity="0.4" />
-        <rect
-          x="8"
-          y="65"
-          width="64"
-          height="5"
-          rx="2"
-          fill="white"
-          fillOpacity="0.5"
-        />
+        <rect x="8" y="65" width="64" height="5" rx="2" fill="white" fillOpacity="0.5" />
         <circle cx="40" cy="22" r="4" fill="white" fillOpacity="0.8" />
       </svg>
     ),
     chart: (
       <svg viewBox="0 0 80 80" className="w-16 h-16 opacity-90" fill="none">
-        <polyline
-          points="10,60 22,40 34,50 46,25 58,35 70,15"
-          stroke="white"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeOpacity="0.8"
-        />
+        <polyline points="10,60 22,40 34,50 46,25 58,35 70,15" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.8" />
         <circle cx="10" cy="60" r="3" fill="white" fillOpacity="0.9" />
         <circle cx="22" cy="40" r="3" fill="white" fillOpacity="0.9" />
         <circle cx="34" cy="50" r="3" fill="white" fillOpacity="0.9" />
         <circle cx="46" cy="25" r="3" fill="white" fillOpacity="0.9" />
         <circle cx="58" cy="35" r="3" fill="white" fillOpacity="0.9" />
         <circle cx="70" cy="15" r="3" fill="white" fillOpacity="0.9" />
-        <line
-          x1="10"
-          y1="65"
-          x2="70"
-          y2="65"
-          stroke="white"
-          strokeWidth="2"
-          strokeOpacity="0.4"
-        />
-        <line
-          x1="10"
-          y1="15"
-          x2="10"
-          y2="65"
-          stroke="white"
-          strokeWidth="2"
-          strokeOpacity="0.4"
-        />
+        <line x1="10" y1="65" x2="70" y2="65" stroke="white" strokeWidth="2" strokeOpacity="0.4" />
+        <line x1="10" y1="15" x2="10" y2="65" stroke="white" strokeWidth="2" strokeOpacity="0.4" />
       </svg>
     ),
     globe: (
       <svg viewBox="0 0 80 80" className="w-16 h-16 opacity-90" fill="none">
-        <circle
-          cx="40"
-          cy="40"
-          r="28"
-          stroke="white"
-          strokeWidth="2.5"
-          strokeOpacity="0.6"
-        />
-        <ellipse
-          cx="40"
-          cy="40"
-          rx="14"
-          ry="28"
-          stroke="white"
-          strokeWidth="2"
-          strokeOpacity="0.5"
-        />
-        <line
-          x1="12"
-          y1="40"
-          x2="68"
-          y2="40"
-          stroke="white"
-          strokeWidth="2"
-          strokeOpacity="0.4"
-        />
-        <line
-          x1="16"
-          y1="28"
-          x2="64"
-          y2="28"
-          stroke="white"
-          strokeWidth="1.5"
-          strokeOpacity="0.3"
-        />
-        <line
-          x1="16"
-          y1="52"
-          x2="64"
-          y2="52"
-          stroke="white"
-          strokeWidth="1.5"
-          strokeOpacity="0.3"
-        />
+        <circle cx="40" cy="40" r="28" stroke="white" strokeWidth="2.5" strokeOpacity="0.6" />
+        <ellipse cx="40" cy="40" rx="14" ry="28" stroke="white" strokeWidth="2" strokeOpacity="0.5" />
+        <line x1="12" y1="40" x2="68" y2="40" stroke="white" strokeWidth="2" strokeOpacity="0.4" />
+        <line x1="16" y1="28" x2="64" y2="28" stroke="white" strokeWidth="1.5" strokeOpacity="0.3" />
+        <line x1="16" y1="52" x2="64" y2="52" stroke="white" strokeWidth="1.5" strokeOpacity="0.3" />
         <circle cx="40" cy="40" r="4" fill="white" fillOpacity="0.8" />
       </svg>
     ),
@@ -217,62 +115,13 @@ const Blog = () => {
                     <div className="absolute top-6 right-6 w-32 h-32 rounded-full border border-white" />
                     <div className="absolute bottom-6 left-6 w-20 h-20 rounded-full border border-white" />
                   </div>
-                  <svg
-                    viewBox="0 0 80 80"
-                    className="w-20 h-20 opacity-90"
-                    fill="none"
-                  >
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="28"
-                      stroke="white"
-                      strokeWidth="2.5"
-                      strokeOpacity="0.6"
-                    />
-                    <ellipse
-                      cx="40"
-                      cy="40"
-                      rx="14"
-                      ry="28"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeOpacity="0.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="40"
-                      x2="68"
-                      y2="40"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeOpacity="0.4"
-                    />
-                    <line
-                      x1="16"
-                      y1="28"
-                      x2="64"
-                      y2="28"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeOpacity="0.3"
-                    />
-                    <line
-                      x1="16"
-                      y1="52"
-                      x2="64"
-                      y2="52"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeOpacity="0.3"
-                    />
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="4"
-                      fill="white"
-                      fillOpacity="0.8"
-                    />
+                  <svg viewBox="0 0 80 80" className="w-20 h-20 opacity-90" fill="none">
+                    <circle cx="40" cy="40" r="28" stroke="white" strokeWidth="2.5" strokeOpacity="0.6" />
+                    <ellipse cx="40" cy="40" rx="14" ry="28" stroke="white" strokeWidth="2" strokeOpacity="0.5" />
+                    <line x1="12" y1="40" x2="68" y2="40" stroke="white" strokeWidth="2" strokeOpacity="0.4" />
+                    <line x1="16" y1="28" x2="64" y2="28" stroke="white" strokeWidth="1.5" strokeOpacity="0.3" />
+                    <line x1="16" y1="52" x2="64" y2="52" stroke="white" strokeWidth="1.5" strokeOpacity="0.3" />
+                    <circle cx="40" cy="40" r="4" fill="white" fillOpacity="0.8" />
                   </svg>
                   <div className="absolute top-4 left-4">
                     <span className="rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 font-body text-xs font-semibold text-white">
@@ -331,10 +180,7 @@ const Blog = () => {
             >
               <Link to={`/blog/${post.slug}`} className="group block h-full">
                 <div className="glass-card flex h-full flex-col overflow-hidden rounded-2xl border border-border hover:border-creo-teal/40 transition-colors duration-300">
-                  <CoverIllustration
-                    icon={post.coverIcon}
-                    gradient={post.gradient}
-                  />
+                  <CoverIllustration icon={post.coverIcon} gradient={post.gradient} />
                   <div className="flex flex-1 flex-col p-6">
                     <div className="flex items-center gap-3 mb-3">
                       <span

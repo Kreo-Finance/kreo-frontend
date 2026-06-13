@@ -14,7 +14,7 @@ const BannerSection = () => {
         <img
           src={heroBanner}
           alt="Vibrant web3 creator marketplace scene"
-          className="w-full h-64 md:h-96 object-cover"
+          className="w-full h-70 md:h-90 object-cover"
         />
       </motion.div>
 

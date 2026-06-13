@@ -1,7 +1,8 @@
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import heroCreator from "@/assets/hero-creator.png";
 import heroInvestor from "@/assets/hero-investor.png";
 import WaitlistDialog from "@/components/WaitlistDialog";
@@ -18,6 +19,12 @@ const headlines = [
     highlight: "Marketplace",
     connector: "for Creators",
     accent: "Revenue",
+  },
+  {
+    top: "The Financial",
+    highlight: "Layer",
+    connector: "for the Creator ",
+    accent: "Economy",
   },
   {
     top: "A New Paradigm",
@@ -82,8 +89,6 @@ function AnimatedStat({ value, inView }: { value: string; inView: boolean }) {
 const HeroSection = () => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
-
   const statsRef = useRef(null);
   const statsInView = useInView(statsRef, { once: true, margin: "-80px" });
 
@@ -117,7 +122,17 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen overflow-hidden pt-16">
-      {/* Background decorative elements */}
+      {/* Subtle grid mesh — same pattern as Pricing / Marketplace hero */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--creo-teal)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--creo-teal)) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      {/* Background glow orbs */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-creo-pink/10 blur-[120px]" />
         <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-creo-teal/10 blur-[120px]" />
@@ -125,16 +140,16 @@ const HeroSection = () => {
       </div>
 
       <div className="container relative mx-auto flex flex-col items-center px-4 pt-10 lg:pt-12">
-        {/* Badge */}
+        {/* Badge — styled to match Pricing / Marketplace pill */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-2"
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-creo-teal/30 bg-creo-teal/8 px-4 py-2"
         >
           <span className="h-2 w-2 rounded-full bg-creo-teal animate-pulse-glow" />
-          <span className="font-body text-xs font-medium text-muted-foreground">
-            Built on Base — Mainnet Live Coming Q3 2026
+          <span className="font-body text-xs font-semibold text-creo-teal tracking-widest uppercase">
+            Built on Base — Mainnet Live Coming Q2 2026
           </span>
         </motion.div>
 
@@ -163,14 +178,6 @@ const HeroSection = () => {
           </AnimatePresence>
         </div>
 
-        {/* Dot indicators placeholder */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="flex items-center gap-2 mt-4 mb-4"
-        />
-
         {/* Subheadline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -182,23 +189,30 @@ const HeroSection = () => {
           real yield backed by verifiable creator revenue — not speculation.
         </motion.p>
 
-        {/* CTA */}
+        {/* CTA Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-10 flex flex-col items-center gap-3"
+          className="mt-10 flex flex-col items-center gap-4 sm:flex-row"
         >
-          <Button
-            onClick={() => setWaitlistOpen(true)}
-            className="rounded-full bg-gradient-hero px-8 py-6 font-display text-base font-semibold text-primary-foreground shadow-glow-pink hover:opacity-90 flex items-center gap-2"
-          >
-            Join Waitlist
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-          <p className="font-body text-xs text-muted-foreground">
-            No spam, ever. Made for creators.
-          </p>
+          <Link to="/marketplace">
+            <Button
+              size="lg"
+              className="bg-gradient-hero px-8 py-6 font-display text-base font-semibold text-primary-foreground shadow-glow-pink hover:opacity-90"
+            >
+              Start Investing
+            </Button>
+          </Link>
+          {/* Search bar — rounded-xl with focus-within accent border */}
+          <div className="flex items-center rounded-xl border border-border bg-muted px-4 py-3 focus-within:border-creo-pink/50 transition-colors">
+            <input
+              type="text"
+              placeholder="Search for your Creators ..."
+              className="bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground outline-none w-48 sm:w-64"
+            />
+            <Search className="ml-2 h-4 w-4 text-muted-foreground" />
+          </div>
         </motion.div>
 
         {/* Floating Characters */}
@@ -207,53 +221,64 @@ const HeroSection = () => {
             initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
-            className="animate-float"
+            className="animate-float flex flex-col items-center"
           >
             <img
               src={heroCreator}
               alt="Web3 Creator character on skateboard"
               className="w-36 md:w-52 lg:w-60 drop-shadow-2xl"
             />
-            <p className="mt-2 text-center font-display text-xs font-semibold text-creo-pink">
-              CREATOR
-            </p>
+            {/* Character label — badge pill style */}
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-creo-pink/30 bg-creo-pink/10 px-3 py-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-creo-pink" />
+              <span className="font-body text-xs font-semibold text-creo-pink tracking-widest uppercase">
+                Creator
+              </span>
+            </div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.65 }}
-            className="animate-float-slow"
+            className="animate-float-slow flex flex-col items-center"
           >
             <img
               src={heroInvestor}
               alt="Web3 Investor character with coins"
               className="w-36 md:w-52 lg:w-60 drop-shadow-2xl"
             />
-            <p className="mt-2 text-center font-display text-xs font-semibold text-creo-teal">
-              INVESTOR
-            </p>
+            {/* Character label — badge pill style */}
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-creo-teal/30 bg-creo-teal/10 px-3 py-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-creo-teal" />
+              <span className="font-body text-xs font-semibold text-creo-teal tracking-widest uppercase">
+                Investor
+              </span>
+            </div>
           </motion.div>
         </div>
 
-        {/* Stats bar */}
+        {/* Stats bar — dividers + uppercase tracking labels */}
         <motion.div
           ref={statsRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 1 }}
-          className="mt-12 mb-8 flex flex-wrap items-center justify-center gap-8 md:gap-16"
+          className="mt-12 mb-8 flex flex-wrap items-center justify-center divide-x divide-border"
         >
           {[
-            { value: "$250B+", label: "Creator Economy" },
+            { value: "$500B+", label: "Creator Economy" },
             { value: "10-15%", label: "Projected Yield APY" },
             { value: "3%", label: "Platform Fee" },
           ].map((stat) => (
-            <div key={stat.label} className="text-center">
+            <div
+              key={stat.label}
+              className="px-8 md:px-12 text-center first:pl-0 last:pr-0"
+            >
               <div className="font-display text-2xl font-bold text-foreground md:text-3xl">
                 <AnimatedStat value={stat.value} inView={statsInView} />
               </div>
-              <div className="font-body text-xs text-muted-foreground">
+              <div className="font-body text-[10px] text-muted-foreground uppercase tracking-widest mt-1">
                 {stat.label}
               </div>
             </div>

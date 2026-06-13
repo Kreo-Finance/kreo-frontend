@@ -14,13 +14,13 @@ type ContentBlock =
 const categoryColors: Record<string, string> = {
   "Creator Finance": "bg-creo-pink/10 text-creo-pink border-creo-pink/20",
   "Protocol Deep Dive": "bg-creo-teal/10 text-creo-teal border-creo-teal/20",
-  Industry: "bg-creo-yellow/10 text-creo-yellow border-creo-yellow/20",
+  "Industry": "bg-creo-yellow/10 text-creo-yellow border-creo-yellow/20",
 };
 
 const gradientBorderColors: Record<string, string> = {
   "Creator Finance": "border-creo-pink/50",
   "Protocol Deep Dive": "border-creo-teal/50",
-  Industry: "border-creo-yellow/50",
+  "Industry": "border-creo-yellow/50",
 };
 
 const ContentRenderer = ({ block }: { block: ContentBlock }) => {
@@ -41,10 +41,7 @@ const ContentRenderer = ({ block }: { block: ContentBlock }) => {
       return (
         <ul className="space-y-2">
           {block.items.map((item, i) => (
-            <li
-              key={i}
-              className="flex gap-3 font-body text-base text-foreground/85"
-            >
+            <li key={i} className="flex gap-3 font-body text-base text-foreground/85">
               <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-creo-pink" />
               {item}
             </li>

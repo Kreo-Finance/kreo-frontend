@@ -14,10 +14,21 @@ import CreatorBond from "./pages/CreatorBond.tsx";
 import Marketplace from "./pages/Marketplace.tsx";
 import InvestorPortfolio from "./pages/InvestorPortfolio.tsx";
 import InvestorEarnings from "./pages/InvestorEarnings.tsx";
-import Documentation from "./pages/Documentation.tsx";
-import BlogPost from "./pages/BlogPost.tsx";
+import CreatorOnboarding from "./pages/onboarding/CreatorOnboarding.tsx";
+import InvestorOnboarding from "./pages/onboarding/InvestorOnboarding.tsx";
+import SelectYoutubeChannel from "./pages/onboarding/SelectYoutubeChannel.tsx";
+import GumroadCallback from "./pages/onboarding/GumroadCallback.tsx";
+import StripeCallback from "./pages/onboarding/StripeCallback.tsx";
+import CreatorProfile from "./pages/CreatorProfile.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
+import TermsOfService from "./pages/TermsOfService.tsx";
 import Blog from "./pages/Blog.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 import Pricing from "./pages/Pricing.tsx";
+import HelpCenter from "./pages/HelpCenter.tsx";
+import Documentation from "./pages/Documentation.tsx";
+import Team from "./pages/Team.tsx";
+import ScrollToTop from "./components/ScrollToTop.tsx";
 
 const App = () => (
   <ThemeProvider>
@@ -26,26 +37,55 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/documentation" element={<Documentation />} />
-            {/* <Route path="/creator/dashboard" element={<CreatorDashboard />} />
-            <Route path="/creator/offerings" element={<CreatorOfferings />} />
-            <Route path="/creator/analytics" element={<CreatorAnalytics />} /> */}
-            {/* <Route path="/creator/bond" element={<CreatorBond />} />
-            <Route path="/investor/dashboard" element={<InvestorPortfolio />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/investor/portfolio" element={<InvestorPortfolio />} />
-            <Route path="/investor/earnings" element={<InvestorEarnings />} /> */}
+            <Route path="/team" element={<Team />} />
 
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* Public creator profile */}
+            <Route path="/creator/:address" element={<CreatorProfile />} />
+
+            {/* Creator */}
+            <Route path="/creator/dashboard" element={<CreatorDashboard />} />
+            <Route path="/creator/offerings" element={<CreatorOfferings />} />
+            <Route path="/creator/analytics" element={<CreatorAnalytics />} />
+            <Route path="/creator/bond" element={<CreatorBond />} />
+
+            {/* Investor */}
+            <Route path="/investor/portfolio" element={<InvestorPortfolio />} />
+            <Route path="/investor/earnings" element={<InvestorEarnings />} />
+
+            {/* Onboarding */}
+            <Route path="/onboarding/creator" element={<CreatorOnboarding />} />
+            <Route
+              path="/onboarding/investor"
+              element={<InvestorOnboarding />}
+            />
+            <Route
+              path="/onboarding/creator/youtube/channels"
+              element={<SelectYoutubeChannel />}
+            />
+            <Route
+              path="/onboarding/creator/gumroad/callback"
+              element={<GumroadCallback />}
+            />
+            <Route
+              path="/onboarding/creator/stripe/account"
+              element={<StripeCallback />}
+            />
+
+            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-        <Analytics />
       </TooltipProvider>
     </Web3Provider>
   </ThemeProvider>

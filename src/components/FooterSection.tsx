@@ -1,11 +1,21 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import WaitlistDialog from "@/components/WaitlistDialog";
-
+import { Link } from "react-router-dom";
 const footerLinks = {
-  Protocol: ["Discover", "Features", "Pricing", "Roadmap"],
-  Resources: ["Blog", "Documentation", "Help Center", "About"],
-  Legal: ["Terms of Service", "Privacy Policy", "Security"],
+  Protocol: [
+    { text: "Marketplace", href: "/marketplace" },
+    { text: "Creator Dashboard", href: "/creator/dashboard" },
+    { text: "Pricing", href: "/pricing" },
+    { text: "Portfolio", href: "/investor/portfolio" },
+  ],
+  Resources: [
+    { text: "Blog", href: "/blog" },
+    { text: "Documentation", href: "/documentation" },
+    { text: "Help Center", href: "/help-center" },
+  ],
+  Legal: [
+    { text: "Terms of Service", href: "/terms-of-service" },
+    { text: "Privacy Policy", href: "/privacy-policy" },
+    // { text: "Security", href: "#" },
+  ],
 };
 
 const XIcon = () => (
@@ -63,50 +73,94 @@ const socials = [
   },
 ];
 
-const FooterSection = () => {
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
+const KreoMarkFooter = () => (
+  <svg
+    width="72"
+    height="72"
+    viewBox="0 0 28 28"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="fm-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="hsl(168, 72%, 48%)" />
+        <stop offset="100%" stopColor="hsl(340, 82%, 65%)" />
+      </linearGradient>
+      <linearGradient id="fm-inner" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
+        <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
+      </linearGradient>
+    </defs>
+    <path d="M14 1.5 L26.5 14 L14 26.5 L1.5 14 Z" fill="url(#fm-grad)" />
+    <path d="M14 6.5 L21.5 14 L14 21.5 L6.5 14 Z" fill="url(#fm-inner)" />
+    <path d="M14 1.5 L6.5 14 L14 14 Z" fill="rgba(255,255,255,0.12)" />
+    <g fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="11.5" y1="9.5" x2="11.5" y2="18.5" />
+      <line x1="11.5" y1="14" x2="16.5" y2="9.5" />
+      <line x1="13" y1="12.4" x2="16.5" y2="18.5" />
+    </g>
+  </svg>
+);
 
+const FooterSection = () => {
   return (
     <footer className="border-t border-border bg-background">
       {/* CTA strip */}
       <div className="h-2 bg-gradient-teal-pink" />
 
       <div className="container mx-auto px-4 py-16">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          {/* Newsletter / CTA */}
-          <div className="lg:col-span-1">
-            <h3 className="font-display text-2xl font-bold leading-snug">
-              Join to get the early beta access and other privileges.
-            </h3>
-            <p className="mt-3 font-body text-sm text-muted-foreground">
-              Be among the first to experience KREO. Connect your wallet and
-              secure your spot on the waitlist.
-            </p>
-            <Button
-              onClick={() => setWaitlistOpen(true)}
-              className="mt-6 bg-creo-pink font-body text-sm font-semibold text-primary-foreground hover:opacity-90 h-11 px-6"
-            >
-              Join Waitlist
-            </Button>
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
+          {/* Brand lockup */}
+          <div className="lg:col-span-2 flex flex-col justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <KreoMarkFooter />
+                <span
+                  className="font-display font-bold text-gradient-hero leading-none"
+                  style={{ fontSize: "clamp(3rem, 8vw, 5rem)" }}
+                >
+                  KREO
+                </span>
+              </div>
+              <p className="font-body text-muted-foreground text-center leading-relaxed max-w-xs">
+               Your Earnings. Your Capital.
+              </p>
+            </div>
           </div>
 
           {/* Link columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
+            <div key={title} className="lg:col-span-1">
               <h4 className="font-display text-sm font-semibold text-foreground mb-4">
                 {title}
               </h4>
               <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {links.map((link) => {
+                  const linkText = typeof link === "string" ? link : link.text;
+                  const linkHref = typeof link === "string" ? "#" : link.href;
+                  const isInternalLink = linkHref.startsWith("/");
+
+                  return (
+                    <li key={linkText}>
+                      {isInternalLink ? (
+                        <Link
+                          to={linkHref}
+                          className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {linkText}
+                        </Link>
+                      ) : (
+                        <a
+                          href={linkHref}
+                          className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {linkText}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -115,9 +169,6 @@ const FooterSection = () => {
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <div className="flex items-center gap-2">
-            <span className="font-display text-xl font-bold text-gradient-hero">
-              KREO
-            </span>
             <span className="font-body text-sm text-muted-foreground">
               © {new Date().getFullYear()} Kreo Finance. All rights reserved
             </span>

@@ -177,10 +177,7 @@ function BulletList({ items }: { items: string[] }) {
   return (
     <ul className="space-y-2 mb-4">
       {items.map((item, i) => (
-        <li
-          key={i}
-          className="flex gap-3 font-body text-sm text-muted-foreground leading-relaxed"
-        >
+        <li key={i} className="flex gap-3 font-body text-sm text-muted-foreground leading-relaxed">
           <ChevronRight className="h-4 w-4 text-creo-teal flex-shrink-0 mt-0.5" />
           <span>{item}</span>
         </li>
@@ -203,7 +200,7 @@ function Sidebar({
   onSelect: (id: string) => void;
 }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
-    Object.fromEntries(NAV_SECTIONS.map((s) => [s.id, true])),
+    Object.fromEntries(NAV_SECTIONS.map((s) => [s.id, true]))
   );
 
   return (
@@ -278,6 +275,7 @@ function Sidebar({
 function DocContent() {
   return (
     <div className="max-w-3xl mx-auto px-8 py-12 space-y-0">
+
       {/* ── INTRODUCTION ─────────────────────────────────────────────────── */}
       <section id="introduction">
         <div className="mb-10">
@@ -297,40 +295,20 @@ function DocContent() {
             </span>
           </h1>
           <p className="font-body text-muted-foreground text-lg leading-relaxed max-w-2xl">
-            Everything you need to understand, build with, and participate in
-            the KREO revenue-backed offering protocol.
+            Everything you need to understand, build with, and participate in the KREO
+            revenue-backed offering protocol.
           </p>
         </div>
 
         <div className="grid sm:grid-cols-3 gap-4 mb-12">
           {[
-            {
-              icon: Users,
-              label: "Creators",
-              desc: "Tokenize your revenue and raise capital",
-              color: "text-creo-yellow",
-              bg: "bg-creo-yellow/5 border-creo-yellow/20",
-            },
-            {
-              icon: TrendingUp,
-              label: "Investors",
-              desc: "Earn USDC monthly from creator revenue",
-              color: "text-creo-teal",
-              bg: "bg-creo-teal/5 border-creo-teal/20",
-            },
-            {
-              icon: Shield,
-              label: "Protocol",
-              desc: "On-chain, transparent, trust-minimized",
-              color: "text-creo-pink",
-              bg: "bg-creo-pink/5 border-creo-pink/20",
-            },
+            { icon: Users, label: "Creators", desc: "Tokenize your revenue and raise capital", color: "text-creo-yellow", bg: "bg-creo-yellow/5 border-creo-yellow/20" },
+            { icon: TrendingUp, label: "Investors", desc: "Earn USDC monthly from creator revenue", color: "text-creo-teal", bg: "bg-creo-teal/5 border-creo-teal/20" },
+            { icon: Shield, label: "Protocol", desc: "On-chain, transparent, trust-minimized", color: "text-creo-pink", bg: "bg-creo-pink/5 border-creo-pink/20" },
           ].map(({ icon: Icon, label, desc, color, bg }) => (
             <div key={label} className={`rounded-xl border ${bg} p-5`}>
               <Icon className={`h-5 w-5 ${color} mb-3`} />
-              <p className="font-display font-semibold text-foreground text-sm mb-1">
-                {label}
-              </p>
+              <p className="font-display font-semibold text-foreground text-sm mb-1">{label}</p>
               <p className="font-body text-xs text-muted-foreground">{desc}</p>
             </div>
           ))}
@@ -339,29 +317,27 @@ function DocContent() {
         <DocH2 id="what-is-kreo">What is KREO?</DocH2>
         <div className="mt-4 mb-6" />
         <DocP>
-          KREO is a decentralised protocol that lets content creators and
-          digital entrepreneurs tokenize their future revenue streams. In
-          exchange for a portion of their upcoming earnings, creators receive
-          upfront USDC capital — without surrendering equity, taking on debt, or
-          dealing with traditional financial gatekeepers.
+          KREO is a decentralised protocol that lets content creators and digital entrepreneurs
+          tokenize their future revenue streams. In exchange for a portion of their upcoming
+          earnings, creators receive upfront USDC capital — without surrendering equity, taking on
+          debt, or dealing with traditional financial gatekeepers.
         </DocP>
         <DocP>
-          On the other side of each offering are investors who earn predictable,
-          monthly USDC distributions backed by real creator revenue. Every
-          offering, every settlement, and every fee is verifiable on-chain.
+          On the other side of each offering are investors who earn predictable, monthly USDC
+          distributions backed by real creator revenue. Every offering, every settlement, and every
+          fee is verifiable on-chain.
         </DocP>
         <Callout color="teal">
-          KREO is not a lending platform. There are no interest rates, no loan
-          agreements, and no collateral requirements. Creators share future
-          revenue — investors receive a portion of that revenue until the agreed
-          total is reached.
+          KREO is not a lending platform. There are no interest rates, no loan agreements, and no
+          collateral requirements. Creators share future revenue — investors receive a portion of
+          that revenue until the agreed total is reached.
         </Callout>
 
         <DocH2 id="core-concepts">Core Concepts</DocH2>
         <div className="mt-4 mb-4" />
         <DocP>
-          Before diving deeper, it helps to understand the four pillars that
-          underpin the KREO protocol:
+          Before diving deeper, it helps to understand the four pillars that underpin the KREO
+          protocol:
         </DocP>
 
         {[
@@ -369,34 +345,34 @@ function DocContent() {
             term: "Revenue-Backed Offering (RBO)",
             color: "text-creo-teal",
             bg: "bg-creo-teal/5 border-creo-teal/20",
-            desc: "A creator launches an RBO specifying the capital they want to raise and the total revenue they commit to distribute back (always ≥ 122% of the raise). Investors fund the offering in return for monthly USDC distributions.",
+            desc:
+              "A creator launches an RBO specifying the capital they want to raise and the total revenue they commit to distribute back (always ≥ 122% of the raise). Investors fund the offering in return for monthly USDC distributions.",
           },
           {
             term: "KreoScore",
             color: "text-creo-yellow",
             bg: "bg-creo-yellow/5 border-creo-yellow/20",
-            desc: "An on-chain reputation score for creators, ranging from 0 to 6+. It is calculated from successful offering completions, settlement consistency, and community signals. A higher KreoScore unlocks lower bond requirements and larger raise ceilings.",
+            desc:
+              "An on-chain reputation score for creators, ranging from 0 to 6+. It is calculated from successful offering completions, settlement consistency, and community signals. A higher KreoScore unlocks lower bond requirements and larger raise ceilings.",
           },
           {
             term: "Commitment Bond",
             color: "text-creo-pink",
             bg: "bg-creo-pink/5 border-creo-pink/20",
-            desc: "Before launching, creators deposit a refundable bond (4–10% of the raise) as a skin-in-the-game signal. It is returned with a 2% bonus on successful completion, or distributed to investors if the creator defaults.",
+            desc:
+              "Before launching, creators deposit a refundable bond (4–10% of the raise) as a skin-in-the-game signal. It is returned with a 2% bonus on successful completion, or distributed to investors if the creator defaults.",
           },
           {
             term: "Monthly Settlement",
             color: "text-creo-teal",
             bg: "bg-creo-teal/5 border-creo-teal/20",
-            desc: "Each month, creators contribute a share of their verified revenue to the offering pool. A 3% protocol fee is deducted, and the remainder is distributed automatically in USDC to all investors proportional to their stake.",
+            desc:
+              "Each month, creators contribute a share of their verified revenue to the offering pool. A 3% protocol fee is deducted, and the remainder is distributed automatically in USDC to all investors proportional to their stake.",
           },
         ].map(({ term, color, bg, desc }) => (
           <div key={term} className={`rounded-xl border ${bg} p-5 mb-4`}>
-            <p className={`font-display font-semibold text-sm ${color} mb-2`}>
-              {term}
-            </p>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed">
-              {desc}
-            </p>
+            <p className={`font-display font-semibold text-sm ${color} mb-2`}>{term}</p>
+            <p className="font-body text-sm text-muted-foreground leading-relaxed">{desc}</p>
           </div>
         ))}
 
@@ -404,39 +380,15 @@ function DocContent() {
         <div className="mt-4 mb-4" />
         <div className="rounded-xl border border-border overflow-hidden">
           {[
-            [
-              "Offering",
-              "A fundraising event where a creator tokenizes future revenue.",
-            ],
+            ["Offering", "A fundraising event where a creator tokenizes future revenue."],
             ["RBO", "Revenue-Backed Offering — the core instrument on KREO."],
-            [
-              "Settlement",
-              "The monthly revenue contribution from creator to the pool.",
-            ],
-            [
-              "KreoScore",
-              "Creator reputation score (0–6+) used to determine bond rates.",
-            ],
-            [
-              "Commitment Bond",
-              "A refundable deposit required before launching an offering.",
-            ],
-            [
-              "USDC",
-              "USD Coin — the stablecoin used for all capital and distributions on KREO.",
-            ],
-            [
-              "Oracle",
-              "A service that verifies creator revenue data on-chain.",
-            ],
-            [
-              "Raise Ceiling",
-              "The maximum amount a creator can raise, scaled by KreoScore.",
-            ],
-            [
-              "Default",
-              "When a creator stops making settlements on an active offering.",
-            ],
+            ["Settlement", "The monthly revenue contribution from creator to the pool."],
+            ["KreoScore", "Creator reputation score (0–6+) used to determine bond rates."],
+            ["Commitment Bond", "A refundable deposit required before launching an offering."],
+            ["USDC", "USD Coin — the stablecoin used for all capital and distributions on KREO."],
+            ["Oracle", "A service that verifies creator revenue data on-chain."],
+            ["Raise Ceiling", "The maximum amount a creator can raise, scaled by KreoScore."],
+            ["Default", "When a creator stops making settlements on an active offering."],
           ].map(([term, def], i) => (
             <div
               key={term}
@@ -445,9 +397,7 @@ function DocContent() {
               <span className="font-display font-semibold text-sm text-foreground w-36 flex-shrink-0">
                 {term}
               </span>
-              <span className="font-body text-sm text-muted-foreground">
-                {def}
-              </span>
+              <span className="font-body text-sm text-muted-foreground">{def}</span>
             </div>
           ))}
         </div>
@@ -465,56 +415,29 @@ function DocContent() {
         </div>
         <div className="mt-4" />
         <DocP>
-          The KREO protocol operates on a simple premise: creators have
-          predictable future revenue, and investors want stable yield. KREO
-          connects them with an on-chain trust layer that makes the relationship
-          transparent, automated, and fair.
+          The KREO protocol operates on a simple premise: creators have predictable future
+          revenue, and investors want stable yield. KREO connects them with an on-chain
+          trust layer that makes the relationship transparent, automated, and fair.
         </DocP>
 
         <div className="my-8 rounded-2xl border border-border bg-muted/20 overflow-hidden">
           {[
-            {
-              step: "01",
-              title: "Creator launches an offering",
-              desc: "After passing KYC, a creator deposits their Commitment Bond and publishes an offering with a target raise amount and a minimum return commitment (≥ 122%).",
-            },
-            {
-              step: "02",
-              title: "Investors fund the offering",
-              desc: "The offering is listed on the marketplace. Investors can browse creator analytics, review the offering terms, and commit USDC before the closing date.",
-            },
-            {
-              step: "03",
-              title: "Capital is delivered in 72 hours",
-              desc: "Once the offering closes successfully, the raised USDC is sent to the creator's wallet within 72 hours — no milestones, no drip release.",
-            },
-            {
-              step: "04",
-              title: "Monthly settlements begin",
-              desc: "Each month, the creator contributes their agreed revenue share. The protocol verifies it via oracle, deducts the 3% fee, and distributes the remainder to investors.",
-            },
-            {
-              step: "05",
-              title: "Offering completes",
-              desc: "When cumulative distributions reach 100% of the committed return, the offering is closed on-chain, the creator's bond is returned with a 2% bonus, and KreoScore increases.",
-            },
+            { step: "01", title: "Creator launches an offering", desc: "After passing KYC, a creator deposits their Commitment Bond and publishes an offering with a target raise amount and a minimum return commitment (≥ 122%)." },
+            { step: "02", title: "Investors fund the offering", desc: "The offering is listed on the marketplace. Investors can browse creator analytics, review the offering terms, and commit USDC before the closing date." },
+            { step: "03", title: "Capital is delivered in 72 hours", desc: "Once the offering closes successfully, the raised USDC is sent to the creator's wallet within 72 hours — no milestones, no drip release." },
+            { step: "04", title: "Monthly settlements begin", desc: "Each month, the creator contributes their agreed revenue share. The protocol verifies it via oracle, deducts the 3% fee, and distributes the remainder to investors." },
+            { step: "05", title: "Offering completes", desc: "When cumulative distributions reach 100% of the committed return, the offering is closed on-chain, the creator's bond is returned with a 2% bonus, and KreoScore increases." },
           ].map(({ step, title, desc }, i) => (
             <div
               key={step}
               className={`flex gap-5 p-6 ${i < 4 ? "border-b border-border" : ""}`}
             >
               <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
-                <span className="font-display font-bold text-xs text-primary-foreground">
-                  {step}
-                </span>
+                <span className="font-display font-bold text-xs text-primary-foreground">{step}</span>
               </div>
               <div>
-                <p className="font-display font-semibold text-foreground text-sm mb-1">
-                  {title}
-                </p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                  {desc}
-                </p>
+                <p className="font-display font-semibold text-foreground text-sm mb-1">{title}</p>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
             </div>
           ))}
@@ -523,132 +446,76 @@ function DocContent() {
         <DocH2 id="revenue-offerings">Revenue-Backed Offerings</DocH2>
         <div className="mt-4 mb-4" />
         <DocP>
-          A Revenue-Backed Offering (RBO) is a creator's promise to distribute a
-          fixed total amount of USDC to investors over time, sourced from their
-          own verified revenue. Unlike equity, an RBO does not dilute the
-          creator's ownership. Unlike debt, there are no interest compounding
-          mechanisms.
+          A Revenue-Backed Offering (RBO) is a creator's promise to distribute a fixed total amount
+          of USDC to investors over time, sourced from their own verified revenue. Unlike equity,
+          an RBO does not dilute the creator's ownership. Unlike debt, there are no interest
+          compounding mechanisms.
         </DocP>
-        <DocP>Each RBO specifies:</DocP>
-        <BulletList
-          items={[
-            "Raise amount — the USDC the creator wants to receive upfront.",
-            "Return multiple — always ≥ 122% of the raise (e.g., raise $10,000 → return $12,200+).",
-            "Monthly settlement cap — the maximum amount the creator commits per settlement period.",
-            "Offering duration — the window during which investors can commit capital.",
-          ]}
-        />
+        <DocP>
+          Each RBO specifies:
+        </DocP>
+        <BulletList items={[
+          "Raise amount — the USDC the creator wants to receive upfront.",
+          "Return multiple — always ≥ 122% of the raise (e.g., raise $10,000 → return $12,200+).",
+          "Monthly settlement cap — the maximum amount the creator commits per settlement period.",
+          "Offering duration — the window during which investors can commit capital.",
+        ]} />
 
         <Callout color="pink">
-          The 122% minimum return is not arbitrary — it is designed to ensure
-          investors are fairly compensated for the time value of capital after
-          the 3% protocol fee is factored in across a typical offering
-          lifecycle.
+          The 122% minimum return is not arbitrary — it is designed to ensure investors are fairly
+          compensated for the time value of capital after the 3% protocol fee is factored in across
+          a typical offering lifecycle.
         </Callout>
 
         <DocH2 id="kreoscore">KreoScore System</DocH2>
         <div className="mt-4 mb-4" />
         <DocP>
-          KreoScore is an on-chain reputation score assigned to every creator.
-          It ranges from 0 (no history) to 6+ (elite track record). The score
-          updates automatically after each offering event and is used to
-          determine the creator's bond rate and raise ceiling.
+          KreoScore is an on-chain reputation score assigned to every creator. It ranges from 0
+          (no history) to 6+ (elite track record). The score updates automatically after each
+          offering event and is used to determine the creator's bond rate and raise ceiling.
         </DocP>
 
         <div className="grid sm:grid-cols-2 gap-4 my-6">
           {[
-            {
-              label: "First Offering",
-              score: "No KreoScore",
-              bond: "10%",
-              color: "text-muted-foreground",
-              border: "border-border",
-            },
-            {
-              label: "Bronze",
-              score: "KreoScore 1–2",
-              bond: "8%",
-              color: "text-creo-yellow",
-              border: "border-creo-yellow/30",
-            },
-            {
-              label: "Silver",
-              score: "KreoScore 3–5",
-              bond: "6%",
-              color: "text-creo-teal",
-              border: "border-creo-teal/30",
-            },
-            {
-              label: "Gold",
-              score: "KreoScore 6+",
-              bond: "4%",
-              color: "text-creo-pink",
-              border: "border-creo-pink/30",
-            },
+            { label: "First Offering", score: "No KreoScore", bond: "10%", color: "text-muted-foreground", border: "border-border" },
+            { label: "Bronze", score: "KreoScore 1–2", bond: "8%", color: "text-creo-yellow", border: "border-creo-yellow/30" },
+            { label: "Silver", score: "KreoScore 3–5", bond: "6%", color: "text-creo-teal", border: "border-creo-teal/30" },
+            { label: "Gold", score: "KreoScore 6+", bond: "4%", color: "text-creo-pink", border: "border-creo-pink/30" },
           ].map(({ label, score, bond, color, border }) => (
-            <div
-              key={label}
-              className={`rounded-xl border ${border} p-4 flex items-center justify-between`}
-            >
+            <div key={label} className={`rounded-xl border ${border} p-4 flex items-center justify-between`}>
               <div>
-                <p className={`font-display font-bold text-2xl ${color}`}>
-                  {bond}
-                </p>
-                <p className="font-body text-xs text-muted-foreground mt-1">
-                  {score}
-                </p>
+                <p className={`font-display font-bold text-2xl ${color}`}>{bond}</p>
+                <p className="font-body text-xs text-muted-foreground mt-1">{score}</p>
               </div>
-              <p className="font-display font-semibold text-sm text-foreground">
-                {label}
-              </p>
+              <p className="font-display font-semibold text-sm text-foreground">{label}</p>
             </div>
           ))}
         </div>
 
         <DocP>
-          Factors that positively impact KreoScore include on-time settlements,
-          successful offering completions, and community endorsements. Oracle
-          failures and verified technical errors are excluded from scoring.
+          Factors that positively impact KreoScore include on-time settlements, successful
+          offering completions, and community endorsements. Oracle failures and verified
+          technical errors are excluded from scoring.
         </DocP>
 
         <DocH2 id="commitment-bond">Commitment Bond</DocH2>
         <div className="mt-4 mb-4" />
         <DocP>
-          The Commitment Bond is a refundable USDC deposit that every creator
-          must provide before launching an offering. It is locked for the
-          duration of the offering and serves as a skin-in-the-game signal to
-          investors.
+          The Commitment Bond is a refundable USDC deposit that every creator must provide before
+          launching an offering. It is locked for the duration of the offering and serves as a
+          skin-in-the-game signal to investors.
         </DocP>
 
         <div className="rounded-2xl border border-border bg-muted/20 divide-y divide-border my-6">
           {[
-            {
-              scenario: "On success",
-              outcome: "100% returned + 2% bonus",
-              color: "text-creo-teal",
-              desc: "Complete your offering commitments and your full bond is returned, plus a 2% bonus reward.",
-            },
-            {
-              scenario: "On default",
-              outcome: "Distributed to investors",
-              color: "text-creo-pink",
-              desc: "If a creator abandons an active offering, the bond is proportionally distributed to investors — not taken by the platform.",
-            },
-            {
-              scenario: "Oracle failure",
-              outcome: "Zero penalty — excluded",
-              color: "text-creo-yellow",
-              desc: "Technical failures and API errors outside the creator's control are never counted against the bond.",
-            },
+            { scenario: "On success", outcome: "100% returned + 2% bonus", color: "text-creo-teal", desc: "Complete your offering commitments and your full bond is returned, plus a 2% bonus reward." },
+            { scenario: "On default", outcome: "Distributed to investors", color: "text-creo-pink", desc: "If a creator abandons an active offering, the bond is proportionally distributed to investors — not taken by the platform." },
+            { scenario: "Oracle failure", outcome: "Zero penalty — excluded", color: "text-creo-yellow", desc: "Technical failures and API errors outside the creator's control are never counted against the bond." },
           ].map(({ scenario, outcome, color, desc }) => (
             <div key={scenario} className="p-5">
               <div className="flex items-center justify-between mb-2">
-                <p className="font-body text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {scenario}
-                </p>
-                <p className={`font-display font-semibold text-sm ${color}`}>
-                  {outcome}
-                </p>
+                <p className="font-body text-xs font-semibold uppercase tracking-widest text-muted-foreground">{scenario}</p>
+                <p className={`font-display font-semibold text-sm ${color}`}>{outcome}</p>
               </div>
               <p className="font-body text-sm text-muted-foreground">{desc}</p>
             </div>
@@ -658,9 +525,8 @@ function DocContent() {
         <DocH2 id="settlements">Settlements</DocH2>
         <div className="mt-4 mb-4" />
         <DocP>
-          Settlements are the monthly revenue contributions that a creator makes
-          to their active offering pool. They are the mechanism through which
-          investors receive their returns.
+          Settlements are the monthly revenue contributions that a creator makes to their active
+          offering pool. They are the mechanism through which investors receive their returns.
         </DocP>
 
         <div className="rounded-xl border border-border bg-muted/30 p-6 font-mono text-sm space-y-3 my-6">
@@ -668,42 +534,22 @@ function DocContent() {
             Settlement breakdown — example $1,000
           </p>
           {[
-            {
-              label: "Creator revenue contribution",
-              value: "$1,000.00",
-              color: "text-foreground",
-            },
-            {
-              label: "Protocol fee (3%)",
-              value: "−$30.00",
-              color: "text-creo-pink",
-            },
-            {
-              label: "Net distributed to investors",
-              value: "$970.00",
-              color: "text-creo-teal",
-              bold: true,
-            },
-            {
-              label: "Additional investor charge",
-              value: "none",
-              color: "text-muted-foreground",
-            },
+            { label: "Creator revenue contribution", value: "$1,000.00", color: "text-foreground" },
+            { label: "Protocol fee (3%)", value: "−$30.00", color: "text-creo-pink" },
+            { label: "Net distributed to investors", value: "$970.00", color: "text-creo-teal", bold: true },
+            { label: "Additional investor charge", value: "none", color: "text-muted-foreground" },
           ].map(({ label, value, color, bold }) => (
             <div key={label} className="flex justify-between gap-4">
               <span className="text-muted-foreground">{label}</span>
-              <span className={`${color} ${bold ? "font-bold" : ""}`}>
-                {value}
-              </span>
+              <span className={`${color} ${bold ? "font-bold" : ""}`}>{value}</span>
             </div>
           ))}
         </div>
 
         <DocP>
-          If a settlement is delayed by a verified oracle error, it is not
-          counted as a missed settlement. Creators have a grace window defined
-          in the offering terms before a settlement is flagged as a default
-          event.
+          If a settlement is delayed by a verified oracle error, it is not counted as a missed
+          settlement. Creators have a grace window defined in the offering terms before a
+          settlement is flagged as a default event.
         </DocP>
       </section>
 
@@ -719,49 +565,25 @@ function DocContent() {
         </div>
         <div className="mt-4" />
         <DocP>
-          KREO is built for digital creators, streamers, content producers, and
-          online entrepreneurs who have consistent, verifiable revenue and need
-          upfront capital to grow — without giving up equity or taking on
-          traditional debt.
+          KREO is built for digital creators, streamers, content producers, and online
+          entrepreneurs who have consistent, verifiable revenue and need upfront capital
+          to grow — without giving up equity or taking on traditional debt.
         </DocP>
 
         <div className="grid sm:grid-cols-2 gap-4 my-6">
           {[
-            {
-              icon: Zap,
-              label: "72h capital delivery",
-              desc: "Capital arrives in your wallet within 72 hours of offering close.",
-            },
-            {
-              icon: Coins,
-              label: "3% only on settlements",
-              desc: "No subscriptions, no upfront charges, no cut on your raise.",
-            },
-            {
-              icon: Star,
-              label: "Build your KreoScore",
-              desc: "Every completed offering unlocks better terms for your next raise.",
-            },
-            {
-              icon: Shield,
-              label: "Bond returned + bonus",
-              desc: "Succeed and get your bond back with a 2% reward.",
-            },
+            { icon: Zap, label: "72h capital delivery", desc: "Capital arrives in your wallet within 72 hours of offering close." },
+            { icon: Coins, label: "3% only on settlements", desc: "No subscriptions, no upfront charges, no cut on your raise." },
+            { icon: Star, label: "Build your KreoScore", desc: "Every completed offering unlocks better terms for your next raise." },
+            { icon: Shield, label: "Bond returned + bonus", desc: "Succeed and get your bond back with a 2% reward." },
           ].map(({ icon: Icon, label, desc }) => (
-            <div
-              key={label}
-              className="flex gap-4 p-4 rounded-xl border border-border bg-muted/20"
-            >
+            <div key={label} className="flex gap-4 p-4 rounded-xl border border-border bg-muted/20">
               <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-creo-yellow/10 border border-creo-yellow/20 flex items-center justify-center">
                 <Icon className="h-4 w-4 text-creo-yellow" />
               </div>
               <div>
-                <p className="font-display font-semibold text-sm text-foreground mb-0.5">
-                  {label}
-                </p>
-                <p className="font-body text-xs text-muted-foreground">
-                  {desc}
-                </p>
+                <p className="font-display font-semibold text-sm text-foreground mb-0.5">{label}</p>
+                <p className="font-body text-xs text-muted-foreground">{desc}</p>
               </div>
             </div>
           ))}
@@ -769,64 +591,54 @@ function DocContent() {
 
         <DocH3 id="creator-kyc">KYC & Onboarding</DocH3>
         <DocP>
-          Before launching an offering, all creators must complete identity
-          verification (KYC) through our regulated partner, Sumsub. This is a
-          one-time process and takes an average of 5–10 minutes.
+          Before launching an offering, all creators must complete identity verification (KYC)
+          through our regulated partner, Sumsub. This is a one-time process and takes an average
+          of 5–10 minutes.
         </DocP>
-        <BulletList
-          items={[
-            "Government-issued photo ID (passport, national ID, or driver's licence).",
-            "A selfie or short liveness video for identity matching.",
-            "Basic personal details: name, date of birth, country of residence.",
-            "Revenue channel verification — a link to your primary revenue platform (YouTube, Twitch, Spotify, etc.).",
-          ]}
-        />
+        <BulletList items={[
+          "Government-issued photo ID (passport, national ID, or driver's licence).",
+          "A selfie or short liveness video for identity matching.",
+          "Basic personal details: name, date of birth, country of residence.",
+          "Revenue channel verification — a link to your primary revenue platform (YouTube, Twitch, Spotify, etc.).",
+        ]} />
         <DocP>
-          Verification is typically completed within 24 hours. Once approved,
-          you will be able to deposit your Commitment Bond and publish your
-          first offering.
+          Verification is typically completed within 24 hours. Once approved, you will be able
+          to deposit your Commitment Bond and publish your first offering.
         </DocP>
 
         <DocH3 id="creator-offering">Creating an Offering</DocH3>
         <DocP>
           After KYC approval, navigate to the Creator Dashboard and select{" "}
-          <InlineCode>New Offering</InlineCode>. You will be prompted to
-          configure:
+          <InlineCode>New Offering</InlineCode>. You will be prompted to configure:
         </DocP>
-        <BulletList
-          items={[
-            "Raise amount — how much USDC you want to receive upfront.",
-            "Total return commitment — the total you agree to distribute back (min 122% of raise).",
-            "Monthly settlement cap — your maximum contribution per settlement cycle.",
-            "Offering window — how long the offering stays open for investors (e.g., 14 days).",
-            "Commitment Bond — calculated automatically from your KreoScore and raise amount.",
-          ]}
-        />
+        <BulletList items={[
+          "Raise amount — how much USDC you want to receive upfront.",
+          "Total return commitment — the total you agree to distribute back (min 122% of raise).",
+          "Monthly settlement cap — your maximum contribution per settlement cycle.",
+          "Offering window — how long the offering stays open for investors (e.g., 14 days).",
+          "Commitment Bond — calculated automatically from your KreoScore and raise amount.",
+        ]} />
         <Callout color="yellow">
-          Your offering goes live on the public marketplace as soon as the
-          Commitment Bond transaction is confirmed on-chain. Make sure all
-          details are correct before publishing — offering terms cannot be
-          edited once live.
+          Your offering goes live on the public marketplace as soon as the Commitment Bond
+          transaction is confirmed on-chain. Make sure all details are correct before publishing —
+          offering terms cannot be edited once live.
         </Callout>
 
         <DocH3 id="creator-settlements">Managing Settlements</DocH3>
         <DocP>
-          Once your offering is fully funded and capital is delivered, monthly
-          settlement cycles begin. On each settlement date, you contribute your
-          agreed revenue share via the Creator Dashboard.
+          Once your offering is fully funded and capital is delivered, monthly settlement cycles
+          begin. On each settlement date, you contribute your agreed revenue share via the
+          Creator Dashboard.
         </DocP>
-        <BulletList
-          items={[
-            "Navigate to Creator Dashboard → Settlements.",
-            "Review the oracle-verified revenue figure for the period.",
-            "Approve the USDC transfer from your connected wallet.",
-            "The protocol automatically deducts the 3% fee and distributes the remainder.",
-          ]}
-        />
+        <BulletList items={[
+          "Navigate to Creator Dashboard → Settlements.",
+          "Review the oracle-verified revenue figure for the period.",
+          "Approve the USDC transfer from your connected wallet.",
+          "The protocol automatically deducts the 3% fee and distributes the remainder.",
+        ]} />
         <DocP>
-          You can view your running total of settlements made, the amount
-          remaining until offering completion, and your current KreoScore trend
-          — all from the dashboard.
+          You can view your running total of settlements made, the amount remaining until
+          offering completion, and your current KreoScore trend — all from the dashboard.
         </DocP>
       </section>
 
@@ -842,49 +654,25 @@ function DocContent() {
         </div>
         <div className="mt-4" />
         <DocP>
-          KREO gives investors access to a new asset class: real-world creator
-          revenue streams tokenized on-chain. Instead of volatile tokens or
-          opaque yield strategies, you invest in predictable USDC distributions
-          backed by verifiable human economic activity.
+          KREO gives investors access to a new asset class: real-world creator revenue streams
+          tokenized on-chain. Instead of volatile tokens or opaque yield strategies, you invest
+          in predictable USDC distributions backed by verifiable human economic activity.
         </DocP>
 
         <div className="grid sm:grid-cols-2 gap-4 my-6">
           {[
-            {
-              icon: TrendingUp,
-              label: "122%+ minimum return",
-              desc: "Every offering guarantees a minimum modelled return, already accounting for the 3% fee.",
-            },
-            {
-              icon: Coins,
-              label: "Monthly USDC income",
-              desc: "Distributions arrive automatically — no claiming, no gas on your end.",
-            },
-            {
-              icon: Lock,
-              label: "Bond-backed protection",
-              desc: "If a creator defaults, their Commitment Bond is distributed to you first.",
-            },
-            {
-              icon: Shield,
-              label: "No additional investor fees",
-              desc: "The 3% settlement fee is the only deduction and it's shared with the creator side.",
-            },
+            { icon: TrendingUp, label: "122%+ minimum return", desc: "Every offering guarantees a minimum modelled return, already accounting for the 3% fee." },
+            { icon: Coins, label: "Monthly USDC income", desc: "Distributions arrive automatically — no claiming, no gas on your end." },
+            { icon: Lock, label: "Bond-backed protection", desc: "If a creator defaults, their Commitment Bond is distributed to you first." },
+            { icon: Shield, label: "No additional investor fees", desc: "The 3% settlement fee is the only deduction and it's shared with the creator side." },
           ].map(({ icon: Icon, label, desc }) => (
-            <div
-              key={label}
-              className="flex gap-4 p-4 rounded-xl border border-border bg-muted/20"
-            >
+            <div key={label} className="flex gap-4 p-4 rounded-xl border border-border bg-muted/20">
               <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-creo-teal/10 border border-creo-teal/20 flex items-center justify-center">
                 <Icon className="h-4 w-4 text-creo-teal" />
               </div>
               <div>
-                <p className="font-display font-semibold text-sm text-foreground mb-0.5">
-                  {label}
-                </p>
-                <p className="font-body text-xs text-muted-foreground">
-                  {desc}
-                </p>
+                <p className="font-display font-semibold text-sm text-foreground mb-0.5">{label}</p>
+                <p className="font-body text-xs text-muted-foreground">{desc}</p>
               </div>
             </div>
           ))}
@@ -892,30 +680,25 @@ function DocContent() {
 
         <DocH3 id="investor-marketplace">Browsing the Marketplace</DocH3>
         <DocP>
-          The KREO Marketplace lists all currently open offerings. Each listing
-          shows:
+          The KREO Marketplace lists all currently open offerings. Each listing shows:
         </DocP>
-        <BulletList
-          items={[
-            "Creator name and verified revenue platform.",
-            "Raise amount and total return commitment.",
-            "KreoScore — the creator's on-chain reputation metric.",
-            "Offering progress — how much of the target has already been committed.",
-            "Time remaining until the offering closes.",
-          ]}
-        />
+        <BulletList items={[
+          "Creator name and verified revenue platform.",
+          "Raise amount and total return commitment.",
+          "KreoScore — the creator's on-chain reputation metric.",
+          "Offering progress — how much of the target has already been committed.",
+          "Time remaining until the offering closes.",
+        ]} />
         <DocP>
-          Click any offering to view the full creator profile, historical
-          settlement performance (for returning creators), and revenue
-          analytics. To invest, connect your wallet and approve the USDC
-          transfer.
+          Click any offering to view the full creator profile, historical settlement performance
+          (for returning creators), and revenue analytics. To invest, connect your wallet and
+          approve the USDC transfer.
         </DocP>
 
         <DocH3 id="investor-returns">Returns & Distributions</DocH3>
         <DocP>
-          Your USDC distributions begin after the offering closes and the first
-          settlement cycle completes. Distributions are proportional to your
-          stake in the offering.
+          Your USDC distributions begin after the offering closes and the first settlement cycle
+          completes. Distributions are proportional to your stake in the offering.
         </DocP>
 
         <div className="rounded-xl border border-border bg-muted/30 p-6 font-mono text-sm space-y-2 my-6">
@@ -924,21 +707,9 @@ function DocContent() {
           </p>
           {[
             { label: "Your stake", value: "10%", color: "text-foreground" },
-            {
-              label: "Minimum total return (122%)",
-              value: "$1,220.00",
-              color: "text-creo-teal",
-            },
-            {
-              label: "Protocol fee share (3% of settlements)",
-              value: "priced in",
-              color: "text-muted-foreground",
-            },
-            {
-              label: "Monthly distribution (example)",
-              value: "~$97.00",
-              color: "text-creo-teal bold",
-            },
+            { label: "Minimum total return (122%)", value: "$1,220.00", color: "text-creo-teal" },
+            { label: "Protocol fee share (3% of settlements)", value: "priced in", color: "text-muted-foreground" },
+            { label: "Monthly distribution (example)", value: "~$97.00", color: "text-creo-teal bold" },
           ].map(({ label, value, color }) => (
             <div key={label} className="flex justify-between gap-4">
               <span className="text-muted-foreground">{label}</span>
@@ -949,23 +720,20 @@ function DocContent() {
 
         <DocH3 id="investor-protection">Risk Protection</DocH3>
         <DocP>
-          KREO is designed so that investor protection is the default, not an
-          afterthought. Several mechanisms work together to limit downside risk:
+          KREO is designed so that investor protection is the default, not an afterthought.
+          Several mechanisms work together to limit downside risk:
         </DocP>
-        <BulletList
-          items={[
-            "Commitment Bond — distributed to investors on creator default.",
-            "KYC verification — all creators are identity-verified before any offering goes live.",
-            "Oracle verification — revenue data is verified on-chain before each settlement is accepted.",
-            "KreoScore gating — first-time creators have smaller raise ceilings, limiting exposure.",
-            "On-chain settlement — every distribution is a transparent, auditable transaction.",
-          ]}
-        />
+        <BulletList items={[
+          "Commitment Bond — distributed to investors on creator default.",
+          "KYC verification — all creators are identity-verified before any offering goes live.",
+          "Oracle verification — revenue data is verified on-chain before each settlement is accepted.",
+          "KreoScore gating — first-time creators have smaller raise ceilings, limiting exposure.",
+          "On-chain settlement — every distribution is a transparent, auditable transaction.",
+        ]} />
         <Callout color="teal">
-          KREO does not guarantee returns. Past settlements and KreoScore are
-          indicators of creator reliability, not contractual guarantees. Always
-          review the offering terms and creator analytics before committing
-          capital.
+          KREO does not guarantee returns. Past settlements and KreoScore are indicators of
+          creator reliability, not contractual guarantees. Always review the offering terms and
+          creator analytics before committing capital.
         </Callout>
       </section>
 
@@ -981,51 +749,25 @@ function DocContent() {
         </div>
         <div className="mt-4" />
         <DocP>
-          The KREO protocol is implemented as a set of audited smart contracts
-          deployed on EVM compatible networks. The architecture is intentionally
-          minimal — each contract has a single, well-defined responsibility.
+          The KREO protocol is implemented as a set of audited smart contracts deployed on EVM
+          compatible networks. The architecture is intentionally minimal — each contract has
+          a single, well-defined responsibility.
         </DocP>
 
         <div className="rounded-2xl border border-border bg-muted/20 divide-y divide-border my-6">
           {[
-            {
-              contract: "KreoOffering.sol",
-              role: "Core",
-              desc: "Manages offering lifecycle: creation, funding, settlement, completion, and default handling.",
-            },
-            {
-              contract: "KreoBond.sol",
-              role: "Bond",
-              desc: "Holds and releases Commitment Bond deposits. Handles bonus payouts and investor distributions on default.",
-            },
-            {
-              contract: "KreoScore.sol",
-              role: "Reputation",
-              desc: "On-chain KreoScore ledger. Updated automatically by the protocol after each offering event.",
-            },
-            {
-              contract: "KreoOracle.sol",
-              role: "Oracle",
-              desc: "Verifies creator revenue data submitted during each settlement cycle.",
-            },
-            {
-              contract: "KreoTreasury.sol",
-              role: "Fees",
-              desc: "Collects and manages the 3% protocol fee from each settlement.",
-            },
+            { contract: "KreoOffering.sol", role: "Core", desc: "Manages offering lifecycle: creation, funding, settlement, completion, and default handling." },
+            { contract: "KreoBond.sol", role: "Bond", desc: "Holds and releases Commitment Bond deposits. Handles bonus payouts and investor distributions on default." },
+            { contract: "KreoScore.sol", role: "Reputation", desc: "On-chain KreoScore ledger. Updated automatically by the protocol after each offering event." },
+            { contract: "KreoOracle.sol", role: "Oracle", desc: "Verifies creator revenue data submitted during each settlement cycle." },
+            { contract: "KreoTreasury.sol", role: "Fees", desc: "Collects and manages the 3% protocol fee from each settlement." },
           ].map(({ contract, role, desc }) => (
             <div key={contract} className="p-5 flex gap-4">
               <div className="flex-shrink-0">
-                <p className="font-mono text-sm text-creo-teal font-semibold">
-                  {contract}
-                </p>
-                <p className="font-body text-xs text-muted-foreground mt-0.5 uppercase tracking-widest">
-                  {role}
-                </p>
+                <p className="font-mono text-sm text-creo-teal font-semibold">{contract}</p>
+                <p className="font-body text-xs text-muted-foreground mt-0.5 uppercase tracking-widest">{role}</p>
               </div>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                {desc}
-              </p>
+              <p className="font-body text-sm text-muted-foreground leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -1033,24 +775,23 @@ function DocContent() {
         <DocH2 id="onchain-transparency">On-Chain Transparency</DocH2>
         <div className="mt-4 mb-4" />
         <DocP>
-          Every action on KREO — offering creation, investor commitment,
-          settlement, fee collection, and bond release — is an on-chain
-          transaction. There is no off-chain database that can be manipulated
-          after the fact.
+          Every action on KREO — offering creation, investor commitment, settlement, fee
+          collection, and bond release — is an on-chain transaction. There is no off-chain
+          database that can be manipulated after the fact.
         </DocP>
-        <DocP>This means:</DocP>
-        <BulletList
-          items={[
-            "Any investor can independently verify settlement history for any creator.",
-            "Fee amounts are fixed in contract code — the platform cannot unilaterally change them.",
-            "KreoScore cannot be gamed — it is updated deterministically by contract logic.",
-            "Default events are triggered by contract conditions, not platform discretion.",
-          ]}
-        />
+        <DocP>
+          This means:
+        </DocP>
+        <BulletList items={[
+          "Any investor can independently verify settlement history for any creator.",
+          "Fee amounts are fixed in contract code — the platform cannot unilaterally change them.",
+          "KreoScore cannot be gamed — it is updated deterministically by contract logic.",
+          "Default events are triggered by contract conditions, not platform discretion.",
+        ]} />
         <Callout color="pink">
-          Smart contract audits are conducted by independent third-party
-          security firms before each major protocol upgrade. Audit reports are
-          published publicly and linked from the KREO GitHub repository.
+          Smart contract audits are conducted by independent third-party security firms before
+          each major protocol upgrade. Audit reports are published publicly and linked from the
+          KREO GitHub repository.
         </Callout>
 
         {/* CTA */}
@@ -1061,8 +802,7 @@ function DocContent() {
               Ready to get started?
             </h3>
             <p className="font-body text-muted-foreground text-sm mb-6 max-w-md mx-auto">
-              Join as a creator and raise capital, or explore live offerings as
-              an investor.
+              Join as a creator and raise capital, or explore live offerings as an investor.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
@@ -1106,7 +846,7 @@ const Documentation = () => {
           }
         }
       },
-      { rootMargin: "-20% 0px -70% 0px", threshold: 0 },
+      { rootMargin: "-20% 0px -70% 0px", threshold: 0 }
     );
 
     allIds.forEach((id) => {
@@ -1134,11 +874,7 @@ const Documentation = () => {
           className="w-12 h-12 rounded-full bg-creo-pink text-primary-foreground flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity"
           aria-label="Toggle navigation"
         >
-          {mobileSidebarOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
+          {mobileSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 

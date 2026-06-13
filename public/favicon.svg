@@ -1,0 +1,24 @@
+<svg width="32" height="32" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="km-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(168, 72%, 48%)" />
+      <stop offset="100%" stop-color="hsl(340, 82%, 65%)" />
+    </linearGradient>
+    <linearGradient id="km-inner" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.25)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0.05)" />
+    </linearGradient>
+  </defs>
+  <!-- Outer diamond -->
+  <path d="M14 1.5 L26.5 14 L14 26.5 L1.5 14 Z" fill="url(#km-grad)" />
+  <!-- Inner diamond facet -->
+  <path d="M14 6.5 L21.5 14 L14 21.5 L6.5 14 Z" fill="url(#km-inner)" />
+  <!-- Top-left facet highlight -->
+  <path d="M14 1.5 L6.5 14 L14 14 Z" fill="rgba(255,255,255,0.12)" />
+  <!-- K letterform -->
+  <g fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="11.5" y1="9.5" x2="11.5" y2="18.5" />
+    <line x1="11.5" y1="14" x2="16.5" y2="9.5" />
+    <line x1="13" y1="12.4" x2="16.5" y2="18.5" />
+  </g>
+</svg>

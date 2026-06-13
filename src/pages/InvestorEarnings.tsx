@@ -3,6 +3,7 @@ import { Wallet, TrendingUp, Clock, ArrowUpRight, ToggleLeft, ToggleRight } from
 import { useState } from "react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Button } from "@/components/ui/button";
+import WalletGate from "@/components/WalletGate";
 
 const earningsByCreator = [
   { creator: "Rahul Mehta", avatar: "RM", claimable: "$58.20", totalEarned: "$178.50", lastSettlement: "Feb 28, 2026", nextSettlement: "Mar 29, 2026" },
@@ -19,6 +20,7 @@ const InvestorEarnings = () => {
       <DashboardSidebar type="investor" />
 
       <main className="flex-1 pt-16 lg:pt-0">
+        <WalletGate message="Connect your wallet to view and claim your earnings.">
         <div className="p-6 lg:p-8 max-w-5xl">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
@@ -103,6 +105,7 @@ const InvestorEarnings = () => {
             ))}
           </div>
         </div>
+        </WalletGate>
       </main>
     </div>
   );
