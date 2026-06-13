@@ -95,7 +95,13 @@ const KreoMarkFooter = () => (
     <path d="M14 1.5 L26.5 14 L14 26.5 L1.5 14 Z" fill="url(#fm-grad)" />
     <path d="M14 6.5 L21.5 14 L14 21.5 L6.5 14 Z" fill="url(#fm-inner)" />
     <path d="M14 1.5 L6.5 14 L14 14 Z" fill="rgba(255,255,255,0.12)" />
-    <g fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <g
+      fill="none"
+      stroke="white"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="11.5" y1="9.5" x2="11.5" y2="18.5" />
       <line x1="11.5" y1="14" x2="16.5" y2="9.5" />
       <line x1="13" y1="12.4" x2="16.5" y2="18.5" />
@@ -124,7 +130,7 @@ const FooterSection = () => {
                 </span>
               </div>
               <p className="font-body text-muted-foreground text-center leading-relaxed max-w-xs">
-               Your Earnings. Your Capital.
+                Your Earnings. Your Capital.
               </p>
             </div>
           </div>
@@ -192,8 +198,6 @@ const FooterSection = () => {
           </span>
         </div>
       </div>
-
-      <WaitlistDialog open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </footer>
   );
 };
