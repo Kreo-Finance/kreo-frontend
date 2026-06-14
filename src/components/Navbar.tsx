@@ -25,7 +25,7 @@ type NavLink =
 const navLinks: NavLink[] = [
   { label: "MARKETPLACE", href: "/marketplace" },
   { label: "ROADMAP", href: "/#roadmap" },
-  { label: "TEAM", href: "/#team" },
+  // { label: "TEAM", href: "/#team" },
   {
     label: "FOR CREATORS",
     dropdown: [
@@ -71,7 +71,13 @@ const KreoMark = () => (
     {/* Top-left facet highlight */}
     <path d="M14 1.5 L6.5 14 L14 14 Z" fill="rgba(255,255,255,0.12)" />
     {/* K letterform */}
-    <g fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <g
+      fill="none"
+      stroke="white"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="11.5" y1="9.5" x2="11.5" y2="18.5" />
       <line x1="11.5" y1="14" x2="16.5" y2="9.5" />
       <line x1="13" y1="12.4" x2="16.5" y2="18.5" />
@@ -87,7 +93,9 @@ const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&!?%";
 
 function useScramble() {
   const [chars, setChars] = useState<string[]>(WORD.split(""));
-  const [landed, setLanded] = useState<boolean[]>(WORD.split("").map(() => true));
+  const [landed, setLanded] = useState<boolean[]>(
+    WORD.split("").map(() => true),
+  );
 
   useEffect(() => {
     const ids: ReturnType<typeof setTimeout>[] = [];
@@ -104,25 +112,34 @@ function useScramble() {
 
       for (let f = 0; f < frames; f++) {
         ids.push(
-          setTimeout(() => {
-            setChars((prev) => {
-              const n = [...prev];
-              n[li] = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-              return n;
-            });
-          }, stagger + f * 45),
+          setTimeout(
+            () => {
+              setChars((prev) => {
+                const n = [...prev];
+                n[li] =
+                  SCRAMBLE_CHARS[
+                    Math.floor(Math.random() * SCRAMBLE_CHARS.length)
+                  ];
+                return n;
+              });
+            },
+            stagger + f * 45,
+          ),
         );
       }
 
       ids.push(
-        setTimeout(() => {
-          setChars((prev) => {
-            const n = [...prev];
-            n[li] = target;
-            return n;
-          });
-          setLanded((prev) => prev.map((v, i) => (i === li ? true : v)));
-        }, stagger + frames * 45),
+        setTimeout(
+          () => {
+            setChars((prev) => {
+              const n = [...prev];
+              n[li] = target;
+              return n;
+            });
+            setLanded((prev) => prev.map((v, i) => (i === li ? true : v)));
+          },
+          stagger + frames * 45,
+        ),
       );
     });
 
@@ -334,7 +351,10 @@ function NavbarCTA() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
-        <DropdownMenuItem onClick={cta.gotoDashboard} className="font-body text-sm cursor-pointer">
+        <DropdownMenuItem
+          onClick={cta.gotoDashboard}
+          className="font-body text-sm cursor-pointer"
+        >
           Go to Dashboard
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -363,7 +383,6 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-white/5">
       <div className="container mx-auto relative flex h-16 items-center justify-between px-4 lg:px-8 gap-4">
-
         {/* Logo */}
         <Link
           to="/"
@@ -372,31 +391,35 @@ const Navbar = () => {
           <span className="inline-flex items-center gap-1">
             <KreoMark />
             <span className="inline-flex items-center gap-px">
-            {chars.map((char, i) => (
-              <motion.span
-                key={`${i}-${landed[i] ? "on" : "off"}`}
-                initial={
-                  landed[i]
-                    ? { y: -10, scale: 1.4, filter: "blur(4px)" }
-                    : { opacity: 1 }
-                }
-                animate={
-                  landed[i]
-                    ? { y: 0, scale: 1, filter: "blur(0px)" }
-                    : { opacity: 1 }
-                }
-                transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
-                style={{ display: "inline-block", minWidth: "0.6em" }}
-                className={
-                  landed[i]
-                    ? "text-gradient-hero"
-                    : "text-violet-400 drop-shadow-[0_0_8px_rgba(167,139,250,0.9)]"
-                }
-                whileHover={{ y: -3, scale: 1.2, transition: { duration: 0.12 } }}
-              >
-                {char}
-              </motion.span>
-            ))}
+              {chars.map((char, i) => (
+                <motion.span
+                  key={`${i}-${landed[i] ? "on" : "off"}`}
+                  initial={
+                    landed[i]
+                      ? { y: -10, scale: 1.4, filter: "blur(4px)" }
+                      : { opacity: 1 }
+                  }
+                  animate={
+                    landed[i]
+                      ? { y: 0, scale: 1, filter: "blur(0px)" }
+                      : { opacity: 1 }
+                  }
+                  transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+                  style={{ display: "inline-block", minWidth: "0.6em" }}
+                  className={
+                    landed[i]
+                      ? "text-gradient-hero"
+                      : "text-violet-400 drop-shadow-[0_0_8px_rgba(167,139,250,0.9)]"
+                  }
+                  whileHover={{
+                    y: -3,
+                    scale: 1.2,
+                    transition: { duration: 0.12 },
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
             </span>
             <span className="ml-1 self-start mt-1 rounded px-1.5 py-px text-[10px] font-bold tracking-widest uppercase bg-gradient-hero text-white leading-tight shadow-sm">
               BETA
@@ -470,7 +493,11 @@ const Navbar = () => {
             aria-label="Toggle theme"
             className="h-9 w-9 rounded-full border border-creo-pink/30 bg-creo-pink/5 flex items-center justify-center text-creo-pink hover:bg-creo-pink/15 transition-colors flex-shrink-0"
           >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
           </button>
 
           <NavbarCTA />
@@ -489,7 +516,10 @@ const Navbar = () => {
       {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
-          <MobileMenu onClose={() => setMobileOpen(false)} location={location} />
+          <MobileMenu
+            onClose={() => setMobileOpen(false)}
+            location={location}
+          />
         )}
       </AnimatePresence>
     </nav>
@@ -522,7 +552,9 @@ function MobileMenu({
           link.dropdown ? (
             <div key={link.label}>
               <button
-                onClick={() => setOpenGroup(openGroup === link.label ? null : link.label)}
+                onClick={() =>
+                  setOpenGroup(openGroup === link.label ? null : link.label)
+                }
                 className="w-full flex items-center justify-between font-body text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg px-3 py-2.5 transition-colors"
               >
                 {link.label}
@@ -562,7 +594,7 @@ function MobileMenu({
                         >
                           {item.label}
                         </Link>
-                      )
+                      ),
                     )}
                   </motion.div>
                 )}
@@ -610,14 +642,21 @@ function MobileMenu({
           {/* Mobile CTA — mirrors desktop variant */}
           {(cta.variant === "connect" || cta.variant === "signing") && (
             <Button
-              onClick={() => { cta.open(); onClose(); }}
+              onClick={() => {
+                cta.open();
+                onClose();
+              }}
               disabled={cta.authenticating}
               className="w-full bg-gradient-hero font-body text-sm font-semibold text-primary-foreground flex items-center justify-center gap-2"
             >
               {cta.authenticating ? (
-                <><Loader2 size={14} className="animate-spin" /> Signing…</>
+                <>
+                  <Loader2 size={14} className="animate-spin" /> Signing…
+                </>
               ) : (
-                <><Wallet size={16} /> Connect Wallet</>
+                <>
+                  <Wallet size={16} /> Connect Wallet
+                </>
               )}
             </Button>
           )}
@@ -625,7 +664,10 @@ function MobileMenu({
           {cta.variant === "get-started" && (
             <>
               <Button
-                onClick={() => { cta.setRoleModalOpen(true); onClose(); }}
+                onClick={() => {
+                  cta.setRoleModalOpen(true);
+                  onClose();
+                }}
                 className="w-full bg-gradient-hero font-body text-sm font-semibold text-primary-foreground"
               >
                 Get Started
@@ -639,17 +681,24 @@ function MobileMenu({
 
           {cta.variant === "complete-setup" && (
             <Button
-              onClick={() => { cta.resumeOnboarding(); onClose(); }}
+              onClick={() => {
+                cta.resumeOnboarding();
+                onClose();
+              }}
               className="w-full bg-amber-400 hover:bg-amber-500 font-body text-sm font-semibold text-black"
             >
               Complete Setup
             </Button>
           )}
 
-          {(cta.variant === "dashboard-single" || cta.variant === "dashboard-switcher") && (
+          {(cta.variant === "dashboard-single" ||
+            cta.variant === "dashboard-switcher") && (
             <>
               <Button
-                onClick={() => { cta.gotoDashboard(); onClose(); }}
+                onClick={() => {
+                  cta.gotoDashboard();
+                  onClose();
+                }}
                 className="w-full bg-gradient-hero font-body text-sm font-semibold text-primary-foreground"
               >
                 Dashboard
@@ -659,7 +708,11 @@ function MobileMenu({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => { cta.setActiveRole("creator"); cta.gotoDashboard(); onClose(); }}
+                    onClick={() => {
+                      cta.setActiveRole("creator");
+                      cta.gotoDashboard();
+                      onClose();
+                    }}
                     className={`flex-1 font-body text-xs ${cta.activeRole === "creator" ? "border-primary text-foreground" : ""}`}
                   >
                     Creator
@@ -667,7 +720,11 @@ function MobileMenu({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => { cta.setActiveRole("investor"); cta.gotoDashboard(); onClose(); }}
+                    onClick={() => {
+                      cta.setActiveRole("investor");
+                      cta.gotoDashboard();
+                      onClose();
+                    }}
                     className={`flex-1 font-body text-xs ${cta.activeRole === "investor" ? "border-primary text-foreground" : ""}`}
                   >
                     Investor
@@ -676,7 +733,10 @@ function MobileMenu({
               )}
               <Button
                 variant="ghost"
-                onClick={() => { cta.handleDisconnect(); onClose(); }}
+                onClick={() => {
+                  cta.handleDisconnect();
+                  onClose();
+                }}
                 className="w-full font-body text-sm text-destructive hover:text-destructive"
               >
                 Disconnect
