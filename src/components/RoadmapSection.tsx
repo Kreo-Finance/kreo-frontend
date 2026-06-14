@@ -5,33 +5,36 @@ const phases = [
   {
     num: "01",
     phase: "Phase 1",
-    period: "Q2 2026",
+    period: "Q3 2026",
     title: "Mainnet Beta Launch",
     description:
       "Smart contracts live on Base testnet. Singapore entity incorporated. Creator and investor onboarding complete. First on-chain raise, capital release, and monthly settlement cycle executed in beta.",
-    milestone: "Beta opens July 2026 — accredited investors across all three variance tiers.",
+    milestone:
+      "Beta opens July 2026 — accredited investors across all three variance tiers.",
     accent: "creo-teal",
     glowPos: "20% 40%",
   },
   {
     num: "02",
     phase: "Phase 2",
-    period: "Q3 2026",
+    period: "Q4 2026",
     title: "Insurance Pool & Token Launch",
     description:
       "External audit complete. Base Mainnet deployed with 48-hour governance timelock. $KREO token launched via SAFT round. Staking drives real USDC yield from the insurance pool. RST secondary market on Uniswap V3.",
-    milestone: "$KREO staking — insurance pool-backed yield paid in USDC, not promises.",
+    milestone:
+      "$KREO staking — insurance pool-backed yield paid in USDC, not promises.",
     accent: "creo-pink",
     glowPos: "80% 40%",
   },
   {
     num: "03",
     phase: "Phase 3",
-    period: "Q4 2026",
+    period: "Q1 2027",
     title: "Global Scale Through DAO Governance",
     description:
       "KREO DAO assumes full on-chain governance — no admin keys in production. Cross-chain to Ethereum and Solana. Institutional APIs and whitelabel settlement infrastructure. Full retail compliance across all target markets.",
-    milestone: "KREO DAO governs the protocol — fee rates, oracle parameters, treasury.",
+    milestone:
+      "KREO DAO governs the protocol — fee rates, oracle parameters, treasury.",
     accent: "creo-yellow",
     glowPos: "50% 80%",
   },
@@ -91,7 +94,6 @@ function FadeIn({
 export default function RoadmapSection() {
   return (
     <section id="roadmap" className="border-t border-border">
-
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <FadeIn className="container mx-auto px-4 pt-20 md:pt-28 pb-16 md:pb-20 max-w-4xl text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[hsl(var(--creo-teal))/30] bg-[hsl(var(--creo-teal))/8] text-[hsl(var(--creo-teal))] text-xs font-semibold tracking-widest uppercase mb-6">
@@ -183,7 +185,9 @@ export default function RoadmapSection() {
                 <div
                   className={`inline-block rounded-xl border ${c.border} ${c.bg} px-5 py-4 max-w-sm`}
                 >
-                  <p className={`font-body text-xs font-semibold tracking-widest uppercase ${c.text} mb-1`}>
+                  <p
+                    className={`font-body text-xs font-semibold tracking-widest uppercase ${c.text} mb-1`}
+                  >
                     Key milestone
                   </p>
                   <p className="font-body text-sm text-muted-foreground leading-snug">

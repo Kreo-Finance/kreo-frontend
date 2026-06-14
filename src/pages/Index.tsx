@@ -21,6 +21,7 @@ const Index = () => {
       <HowItWorksSection />
       <RaiseCalculatorSection />
       <ComparisonSection />
+      <RoadmapSection />
       {/* <TestimonialsSection /> */}
       {/* <TeamSection /> */}
       <FAQSection />
